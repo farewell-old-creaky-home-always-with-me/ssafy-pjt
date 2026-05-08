@@ -1,0 +1,29 @@
+# Claude
+.claude/
+CLAUDE.md
+
+# Node
+node_modules/
+dist/
+.pnpm-store/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Config
+js/config.js
