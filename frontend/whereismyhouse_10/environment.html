@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>환경 정보 - SSAFY Home</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <style>
+    .env-page {
+      min-height: calc(100vh - 64px);
+      background: #F4F6F9;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .env-header {
+      background: #fff;
+      border-bottom: 1px solid #f3f4f6;
+      padding: 1rem 1.5rem;
+    }
+
+    .env-map-area {
+      flex: 1;
+      position: relative;
+      min-height: 500px;
+    }
+
+    .env-map {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #E8F0FE, #D4E4F7);
+      overflow: hidden;
+    }
+
+    .env-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 5;
+    }
+
+    .env-legend {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 20;
+      width: 18rem;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+      border: 1px solid #f3f4f6;
+      overflow: hidden;
+    }
+
+    .env-legend-header {
+      padding: 0.875rem 1.25rem;
+      border-bottom: 1px solid #f3f4f6;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .env-legend-header h3 {
+      color: #1A3C6E;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .env-active-count {
+      color: #2D9CDB;
+      background: rgba(45, 156, 219, 0.1);
+      border-radius: 0.5rem;
+      padding: 0.125rem 0.5rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+    }
+
+    .env-layer-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid transparent;
+      background: none;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .env-layer-btn.on {
+      background: #F4F6F9;
+      border-color: #e5e7eb;
+    }
+
+    .env-layer-btn:not(.on):hover {
+      background: rgba(244, 246, 249, 0.5);
+    }
+
+    .env-layer-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .env-layer-icon i[data-lucide] {
+      width: 18px;
+      height: 18px;
+    }
+
+    .env-layer-label {
+      color: #1A3C6E;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .env-layer-count {
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.375rem;
+      font-size: 0.625rem;
+      font-weight: 600;
+    }
+
+    .env-layer-desc {
+      color: #9ca3af;
+      font-size: 0.6875rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 10rem;
+    }
+
+    .env-legend-footer {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid #f3f4f6;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      color: #9ca3af;
+      font-size: 0.6875rem;
+    }
+
+    .env-legend-footer i[data-lucide] {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .overlay-dot {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.6;
+      filter: blur(4px);
+    }
+
+    .overlay-region {
+      position: absolute;
+      border-radius: 40%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a href="./index.html" class="navbar-logo">
+        <div class="navbar-logo-icon"><i data-lucide="home"></i></div>
+        <span class="navbar-logo-text">SSAFY <span class="blue">Home</span></span>
+      </a>
+      <div class="navbar-nav">
+        <a href="./index.html" class="nav-link"><i data-lucide="home"></i> 홈</a>
+        <a href="./search.html" class="nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+        <a href="./favorites.html" class="nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge"
+            style="display:none"></span></a>
+        <a href="./commercial.html" class="nav-link"><i data-lucide="store"></i> 상권 정보</a>
+        <a href="./environment.html" class="nav-link active"><i data-lucide="tree-pine"></i> 환경 정보</a>
+        <a href="./notices.html" class="nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+      </div>
+      <div class="navbar-auth">
+        <div class="navbar-divider"></div>
+        <a href="./login.html" class="nav-link"><i data-lucide="log-in"></i> 로그인</a>
+        <a href="./profile.html" class="nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+      </div>
+      <button class="navbar-hamburger" id="navbar-hamburger" aria-label="메뉴 열기">
+        <span id="menu-icon-open"><i data-lucide="menu"></i></span>
+        <span id="menu-icon-close" style="display:none"><i data-lucide="x"></i></span>
+        <span class="hamburger-dot" style="display:none"></span>
+      </button>
+    </div>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="./index.html" class="mobile-nav-link"><i data-lucide="home"></i> 홈</a>
+      <a href="./search.html" class="mobile-nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+      <a href="./favorites.html" class="mobile-nav-link"><i data-lucide="heart"></i> 관심지역<span
+          class="nav-badge fav-badge" style="display:none"></span></a>
+      <a href="./commercial.html" class="mobile-nav-link"><i data-lucide="store"></i> 상권 정보</a>
+      <a href="./environment.html" class="mobile-nav-link active"><i data-lucide="tree-pine"></i> 환경 정보</a>
+      <a href="./notices.html" class="mobile-nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+      <a href="./login.html" class="mobile-nav-link"><i data-lucide="log-in"></i> 로그인</a>
+      <a href="./profile.html" class="mobile-nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+    </div>
+  </nav>
+
+  <div class="env-page">
+    <div class="env-header">
+      <div class="container" style="padding-top:0;padding-bottom:0">
+        <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">환경 정보</h1>
+        <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">지도 위에서 환경 데이터 레이어를 확인하세요</p>
+      </div>
+    </div>
+
+    <div class="env-map-area">
+      <div id="map" class="env-map"></div>
+      <div class="env-empty" id="env-empty" style="pointer-events:none;">
+        <div
+          style="width:5rem;height:5rem;border-radius:50%;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+          <i data-lucide="map-pin" style="width:40px;height:40px;color:#2D9CDB"></i>
+        </div>
+        <p
+          style="color:rgba(26,60,110,0.8);font-size:0.875rem;font-weight:600;background:rgba(255,255,255,0.8);padding:4px 8px;border-radius:4px;">
+          좌측 패널에서 레이어를 활성화해 주세요</p>
+      </div>
+
+      <!-- Legend panel -->
+      <div class="env-legend">
+        <div class="env-legend-header">
+          <h3>데이터 레이어</h3>
+          <span class="env-active-count" id="active-count">0/3 활성</span>
+        </div>
+        <div style="padding:0.75rem;display:flex;flex-direction:column;gap:0.5rem" id="layer-list"></div>
+        <div class="env-legend-footer">
+          <i data-lucide="info"></i>
+          데이터 출처: 환경부 공공데이터 포털
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">
+        <div class="footer-logo-icon"><i data-lucide="home"></i></div>
+        <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+      </div>
+      <div class="footer-links">
+        <a href="#">이용약관</a>
+        <a href="#">개인정보처리방침</a>
+        <a href="#">고객센터</a>
+      </div>
+      <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="./js/favorites-store.js"></script>
+  <script src="./js/user-store.js"></script>
+  <script src="./js/shared.js"></script>
+  <script type="text/javascript"
+    src="//dapi.kakao.com/v2/maps/sdk.js?appkey=227682b2e9b3b2df904dcf685fce8b25&libraries=services"></script>
+  <script>
+    lucide.createIcons();
+
+    const LAYERS = [
+      { key: 'green', label: '공원/녹지', icon: 'tree-pine', color: '#27AE60', desc: '서울시 주요 공원 현황', count: 0 },
+      { key: 'water', label: '수질', icon: 'droplets', color: '#2D9CDB', desc: '한강 수질 자동측정소', count: 0 },
+      { key: 'air', label: '대기', icon: 'wind', color: '#EB5757', desc: '서울시 권역별 대기환경', count: 0 },
+    ];
+
+    const active = { green: true, water: false, air: false };
+    let map;
+    let mapOverlays = [];
+    let layerData = { green: [], water: [], air: [] };
+    let infowindow;
+    let places;
+
+    const API_KEY = '766c634d5363686f313030494c546a6e';
+
+    // ── 공원 데이터 (좌표 직접 제공) ──────────────────────────────
+    async function fetchGreenData() {
+      const url = `http://openapi.seoul.go.kr:8088/${API_KEY}/json/SearchParkInfoService/1/100/`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.SearchParkInfoService) {
+          return data.SearchParkInfoService.row
+            .map(p => ({
+              lat: parseFloat(p.YCRD),
+              lng: parseFloat(p.XCRD),
+              name: p.PARK_NM,
+              info: `주소: ${p.PARK_ADDR || '정보 없음'}`
+            }))
+            .filter(p => !isNaN(p.lat) && !isNaN(p.lng));
+        }
+      } catch (e) { console.error('green fetch error:', e); }
+      return [];
+    }
+
+    // ── 대기 데이터 (구청 키워드로 좌표 획득) ─────────────────────
+    async function fetchAirData() {
+      const url = `http://openapi.seoul.go.kr:8088/${API_KEY}/json/RealtimeCityAir/1/25/`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.RealtimeCityAir) {
+          return data.RealtimeCityAir.row.map(a => ({
+            query: `서울특별시 ${a.MSRSTN_NM}청`,
+            name: `${a.MSRSTN_NM} 대기측정`,
+            info: `미세먼지: ${a.PM} / 상태: ${a.CAI_GRD}`
+          }));
+        }
+      } catch (e) { console.error('air fetch error:', e); }
+      return [];
+    }
+
+    // ── 수질 데이터 (측정소명 키워드로 좌표 획득) ─────────────────
+    async function fetchWaterData() {
+      const url = `http://openapi.seoul.go.kr:8088/${API_KEY}/json/WPOSInformationTime/1/10/`;
+      try {
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.WPOSInformationTime) {
+          const siteMap = new Map();
+          data.WPOSInformationTime.row.forEach(w => {
+            if (!siteMap.has(w.MSRSTN_NM)) {
+              siteMap.set(w.MSRSTN_NM, {
+                query: `서울 ${w.MSRSTN_NM === '선유' ? '선유도공원' : w.MSRSTN_NM}`,
+                name: `${w.MSRSTN_NM} 수질측정소`,
+                info: `수온: ${w.WATT} / pH: ${w.TOT_PH}`
+              });
+            }
+          });
+          return Array.from(siteMap.values());
+        }
+      } catch (e) { console.error('water fetch error:', e); }
+      return [];
+    }
+
+    function searchKeywordPromise(keyword) {
+      return new Promise(resolve => {
+        places.keywordSearch(keyword, (result, status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            resolve({ lat: parseFloat(result[0].y), lng: parseFloat(result[0].x) });
+          } else {
+            resolve(null);
+          }
+        });
+      });
+    }
+
+    async function initData() {
+      const emptyEl = document.getElementById('env-empty');
+      emptyEl.style.display = 'flex';
+      emptyEl.innerHTML = '<p style="font-weight:600;color:#1A3C6E;">환경 데이터를 불러오는 중입니다...</p>';
+
+      // 공원
+      const green = await fetchGreenData();
+      layerData.green = green;
+      LAYERS.find(l => l.key === 'green').count = green.length;
+
+      // 대기
+      const rawAir = await fetchAirData();
+      for (const a of rawAir) {
+        const coords = await searchKeywordPromise(a.query);
+        if (coords) layerData.air.push({ ...a, ...coords });
+      }
+      LAYERS.find(l => l.key === 'air').count = layerData.air.length;
+
+      // 수질
+      const rawWater = await fetchWaterData();
+      for (const w of rawWater) {
+        const coords = await searchKeywordPromise(w.query);
+        if (coords) layerData.water.push({ ...w, ...coords });
+      }
+      LAYERS.find(l => l.key === 'water').count = layerData.water.length;
+
+      // 로딩 완료 → 안내 문구 복원
+      emptyEl.innerHTML = `
+      <div style="width:5rem;height:5rem;border-radius:50%;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;box-shadow:0 1px 3px rgba(0,0,0,0.05)">
+        <i data-lucide="map-pin" style="width:40px;height:40px;color:#2D9CDB"></i>
+      </div>
+      <p style="color:rgba(26,60,110,0.8);font-size:0.875rem;font-weight:600;background:rgba(255,255,255,0.8);padding:4px 8px;border-radius:4px;">
+        좌측 패널에서 레이어를 활성화해 주세요</p>`;
+      lucide.createIcons();
+
+      renderLayers();
+      renderMapOverlays();
+    }
+
+    function initMap() {
+      const mapContainer = document.getElementById('map');
+      map = new kakao.maps.Map(mapContainer, {
+        center: new kakao.maps.LatLng(37.5665, 126.9780),
+        level: 8
+      });
+      places = new kakao.maps.services.Places();
+      infowindow = new kakao.maps.InfoWindow({ zIndex: 1 });
+    }
+
+    function renderLayers() {
+      const activeCnt = Object.values(active).filter(Boolean).length;
+      document.getElementById('active-count').textContent = `${activeCnt}/3 활성`;
+
+      const container = document.getElementById('layer-list');
+      container.innerHTML = LAYERS.map(layer => {
+        const on = active[layer.key];
+        return `
+      <button class="env-layer-btn ${on ? 'on' : ''}" onclick="toggleLayer('${layer.key}')">
+        <div class="env-layer-icon" style="background:${on ? layer.color + '15' : '#F4F6F9'}">
+          <i data-lucide="${layer.icon}" style="color:${on ? layer.color : '#aaa'}"></i>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div class="env-layer-label">
+            ${layer.label}
+            <span class="env-layer-count" style="background:${on ? layer.color + '15' : '#F4F6F9'};color:${on ? layer.color : '#aaa'}">${layer.count}</span>
+          </div>
+          <p class="env-layer-desc">${layer.desc}</p>
+        </div>
+        <i data-lucide="${on ? 'eye' : 'eye-off'}" style="color:${on ? layer.color : '#d1d5db'};width:16px;height:16px;flex-shrink:0"></i>
+      </button>`;
+      }).join('');
+      lucide.createIcons({ nodes: [container] });
+    }
+
+    function clearOverlays() {
+      mapOverlays.forEach(o => o.setMap(null));
+      mapOverlays = [];
+    }
+
+    function renderMapOverlays() {
+      clearOverlays();
+      const activeCnt = Object.values(active).filter(Boolean).length;
+      document.getElementById('env-empty').style.display = activeCnt === 0 ? 'flex' : 'none';
+      if (!map) return;
+
+      LAYERS.filter(l => active[l.key]).forEach(layer => {
+        const items = layerData[layer.key] || [];
+        const radius = layer.key === 'green' ? 300 : layer.key === 'air' ? 500 : 250;
+        items.forEach(data => {
+          const pos = new kakao.maps.LatLng(data.lat, data.lng);
+
+          const circle = new kakao.maps.Circle({
+            center: pos, radius,
+            strokeWeight: 2, strokeColor: layer.color, strokeOpacity: 0.8,
+            fillColor: layer.color, fillOpacity: 0.2
+          });
+          circle.setMap(map);
+          mapOverlays.push(circle);
+
+          const marker = new kakao.maps.Marker({ position: pos });
+          marker.setMap(map);
+          mapOverlays.push(marker);
+
+          kakao.maps.event.addListener(marker, 'click', () => {
+            infowindow.setContent(`
+            <div style="padding:10px;font-size:12px;color:#1A3C6E;min-width:150px;white-space:nowrap;">
+              <span style="font-weight:700;display:block;margin-bottom:4px;">${data.name}</span>
+              <span style="color:#6b7280;">${data.info}</span>
+            </div>`);
+            infowindow.open(map, marker);
+          });
+        });
+      });
+    }
+
+    function toggleLayer(key) {
+      active[key] = !active[key];
+      renderLayers();
+      renderMapOverlays();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initMap();
+      renderLayers();
+      initData();
+    });
+  </script>
+</body>
+
+</html>

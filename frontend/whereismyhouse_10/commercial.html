@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>상권 정보 - SSAFY Home</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/commercial.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="./index.html" class="navbar-logo">
+      <div class="navbar-logo-icon"><i data-lucide="home"></i></div>
+      <span class="navbar-logo-text">SSAFY <span class="blue">Home</span></span>
+    </a>
+    <div class="navbar-nav">
+      <a href="./index.html" class="nav-link"><i data-lucide="home"></i> 홈</a>
+      <a href="./search.html" class="nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+      <a href="./favorites.html" class="nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+      <a href="./commercial.html" class="nav-link active"><i data-lucide="store"></i> 상권 정보</a>
+      <a href="./environment.html" class="nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+      <a href="./notices.html" class="nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    </div>
+    <div class="navbar-auth">
+      <div class="navbar-divider"></div>
+      <a href="./login.html" class="nav-link"><i data-lucide="log-in"></i> 로그인</a>
+      <a href="./profile.html" class="nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+    </div>
+    <button class="navbar-hamburger" id="navbar-hamburger" aria-label="메뉴 열기">
+      <span id="menu-icon-open"><i data-lucide="menu"></i></span>
+      <span id="menu-icon-close" style="display:none"><i data-lucide="x"></i></span>
+      <span class="hamburger-dot" style="display:none"></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="./index.html" class="mobile-nav-link"><i data-lucide="home"></i> 홈</a>
+    <a href="./search.html" class="mobile-nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+    <a href="./favorites.html" class="mobile-nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+    <a href="./commercial.html" class="mobile-nav-link active"><i data-lucide="store"></i> 상권 정보</a>
+    <a href="./environment.html" class="mobile-nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+    <a href="./notices.html" class="mobile-nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    <a href="./login.html" class="mobile-nav-link"><i data-lucide="log-in"></i> 로그인</a>
+    <a href="./profile.html" class="mobile-nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+  </div>
+</nav>
+
+<div class="commercial-page">
+  <div class="commercial-header">
+    <div class="container" style="padding-top:0;padding-bottom:0">
+      <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">상권 정보</h1>
+      <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">주변 편의시설 및 상권 정보를 확인하세요</p>
+    </div>
+  </div>
+
+  <div class="commercial-tabs" id="cat-tabs"></div>
+
+  <div class="map-area">
+    <div class="map-placeholder" id="map" style="overflow:hidden;">
+      <div class="map-center-icon" id="map-center-hint">
+        <div class="icon-wrap"><i data-lucide="map-pin"></i></div>
+        <p style="color:rgba(26,60,110,0.6);font-size:0.875rem;font-weight:500">지도 영역 (Kakao / Naver Map API 연동 예정)</p>
+      </div>
+      <div id="markers-container"></div>
+    </div>
+
+    <div class="bottom-sheet collapsed" id="bottom-sheet" style="display:none">
+      <button class="sheet-handle" id="sheet-handle" onclick="toggleSheet()" aria-label="시트 토글">
+        <i data-lucide="chevron-up"></i>
+      </button>
+      <div class="sheet-summary">
+        <div style="display:flex;align-items:center;gap:0.75rem;min-width:0;flex:1">
+          <div class="sheet-shop-icon" id="sheet-icon"></div>
+          <div style="min-width:0">
+            <p id="sheet-name" style="color:#1A3C6E;font-size:0.9375rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></p>
+            <p id="sheet-address" style="color:#9ca3af;font-size:0.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></p>
+          </div>
+        </div>
+        <button class="sheet-close-btn" onclick="closeSheet()"><i data-lucide="x"></i></button>
+      </div>
+      <div class="sheet-detail">
+        <div class="sheet-detail-grid" id="sheet-detail-grid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-icon"><i data-lucide="home"></i></div>
+      <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">고객센터</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="./js/favorites-store.js"></script>
+<script src="./js/user-store.js"></script>
+<script src="./js/shared.js"></script>
+<script src="./js/config.js"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=227682b2e9b3b2df904dcf685fce8b25&libraries=services"></script>
+<script src="./js/commercial.js"></script>
+</body>
+</html>

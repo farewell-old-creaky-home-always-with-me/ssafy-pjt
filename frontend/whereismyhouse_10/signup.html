@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>회원가입 - SSAFY Home</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/auth.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="./index.html" class="navbar-logo">
+      <div class="navbar-logo-icon"><i data-lucide="home"></i></div>
+      <span class="navbar-logo-text">SSAFY <span class="blue">Home</span></span>
+    </a>
+    <div class="navbar-nav">
+      <a href="./index.html" class="nav-link"><i data-lucide="home"></i> 홈</a>
+      <a href="./search.html" class="nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+      <a href="./favorites.html" class="nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+      <a href="./commercial.html" class="nav-link"><i data-lucide="store"></i> 상권 정보</a>
+      <a href="./environment.html" class="nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+      <a href="./notices.html" class="nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    </div>
+    <div class="navbar-auth">
+      <div class="navbar-divider"></div>
+      <a href="./login.html" class="nav-link"><i data-lucide="log-in"></i> 로그인</a>
+      <a href="./profile.html" class="nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+    </div>
+    <button class="navbar-hamburger" id="navbar-hamburger" aria-label="메뉴 열기">
+      <span id="menu-icon-open"><i data-lucide="menu"></i></span>
+      <span id="menu-icon-close" style="display:none"><i data-lucide="x"></i></span>
+      <span class="hamburger-dot" style="display:none"></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="./index.html" class="mobile-nav-link"><i data-lucide="home"></i> 홈</a>
+    <a href="./search.html" class="mobile-nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+    <a href="./favorites.html" class="mobile-nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+    <a href="./commercial.html" class="mobile-nav-link"><i data-lucide="store"></i> 상권 정보</a>
+    <a href="./environment.html" class="mobile-nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+    <a href="./notices.html" class="mobile-nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    <a href="./login.html" class="mobile-nav-link"><i data-lucide="log-in"></i> 로그인</a>
+    <a href="./profile.html" class="mobile-nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+  </div>
+</nav>
+
+<div class="auth-page">
+  <div class="auth-wrap-md">
+    <div class="auth-card card-lg">
+      <div class="auth-card-header">
+        <div class="auth-logo-icon"><i data-lucide="home"></i></div>
+        <h1 style="color:#1A3C6E;font-size:1.5rem;font-weight:700;margin-bottom:0.25rem">회원가입</h1>
+        <p style="color:#9ca3af;font-size:0.8125rem;margin:0">SSAFY Home 계정을 생성하세요</p>
+      </div>
+
+      <form class="auth-card-form" id="signup-form" novalidate style="padding-top:0.5rem">
+        <!-- 아이디 -->
+        <div class="form-group">
+          <label class="form-label" for="su-userid">아이디</label>
+          <div style="display:flex;gap:0.5rem">
+            <div class="input-icon-wrap" style="flex:1">
+              <span class="input-icon"><i data-lucide="user"></i></span>
+              <input id="su-userid" type="text" class="input-base" placeholder="영문, 숫자 4자 이상" autocomplete="username" />
+            </div>
+            <button type="button" id="dup-check-btn" class="btn btn-navy btn-sm" style="flex-shrink:0;white-space:nowrap">
+              중복확인
+            </button>
+          </div>
+          <div id="dup-badge" style="margin-top:0.375rem;display:none"></div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form-group">
+          <label class="form-label" for="su-pw">비밀번호</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon"><i data-lucide="lock"></i></span>
+            <input id="su-pw" type="password" class="input-base" style="padding-right:3rem" placeholder="6자 이상 입력하세요" autocomplete="new-password" />
+            <button type="button" class="pw-toggle" id="pw-toggle1"><i data-lucide="eye" id="pw-icon1"></i></button>
+          </div>
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="form-group">
+          <label class="form-label" for="su-pw-confirm">비밀번호 확인</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon"><i data-lucide="lock"></i></span>
+            <input id="su-pw-confirm" type="password" class="input-base" style="padding-right:3rem" placeholder="비밀번호를 다시 입력하세요" autocomplete="new-password" />
+            <button type="button" class="pw-toggle" id="pw-toggle2"><i data-lucide="eye" id="pw-icon2"></i></button>
+          </div>
+        </div>
+
+        <!-- 이름 -->
+        <div class="form-group">
+          <label class="form-label" for="su-name">이름</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon"><i data-lucide="user-circle"></i></span>
+            <input id="su-name" type="text" class="input-base" placeholder="이름을 입력하세요" autocomplete="name" />
+          </div>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="form-group">
+          <label class="form-label" for="su-email">이메일</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon"><i data-lucide="mail"></i></span>
+            <input id="su-email" type="email" class="input-base" placeholder="example@email.com" autocomplete="email" />
+          </div>
+        </div>
+
+        <!-- 전화번호 -->
+        <div class="form-group" style="margin-bottom:1.5rem">
+          <label class="form-label" for="su-phone">전화번호</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon"><i data-lucide="phone"></i></span>
+            <input id="su-phone" type="tel" class="input-base" placeholder="010-0000-0000" autocomplete="tel" />
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="signup-btn" style="font-size:0.9375rem">
+          가입하기
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-bottom-text">
+      이미 계정이 있으신가요? <a href="./login.html">로그인</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-icon"><i data-lucide="home"></i></div>
+      <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">고객센터</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="./js/favorites-store.js"></script>
+<script src="./js/user-store.js"></script>
+<script src="./js/shared.js"></script>
+<script>
+lucide.createIcons();
+
+const userIdEl = document.getElementById('su-userid');
+const pwEl = document.getElementById('su-pw');
+const pwConfEl = document.getElementById('su-pw-confirm');
+const nameEl = document.getElementById('su-name');
+const emailEl = document.getElementById('su-email');
+const phoneEl = document.getElementById('su-phone');
+const dupCheckBtn = document.getElementById('dup-check-btn');
+const dupBadge = document.getElementById('dup-badge');
+const signupBtn = document.getElementById('signup-btn');
+const form = document.getElementById('signup-form');
+
+let dupStatus = 'idle'; // idle | checking | available | taken
+const touched = {};
+
+// PW toggles
+[[document.getElementById('pw-toggle1'), document.getElementById('pw-icon1'), pwEl],
+ [document.getElementById('pw-toggle2'), document.getElementById('pw-icon2'), pwConfEl]].forEach(([btn, icon, inp]) => {
+  let show = false;
+  btn.addEventListener('click', () => {
+    show = !show;
+    inp.type = show ? 'text' : 'password';
+    icon.setAttribute('data-lucide', show ? 'eye-off' : 'eye');
+    lucide.createIcons({ nodes: [icon] });
+  });
+});
+
+// Phone format
+phoneEl.addEventListener('input', () => {
+  phoneEl.value = formatPhone(phoneEl.value);
+  if (touched.phone) validateField('phone');
+});
+
+// Validators
+function getErrors() {
+  const errs = {};
+  const uid = userIdEl.value.trim();
+  const pw = pwEl.value;
+  const pwc = pwConfEl.value;
+  const name = nameEl.value.trim();
+  const email = emailEl.value.trim();
+  const phone = phoneEl.value.trim();
+  if (!uid) errs.userId = '아이디를 입력해 주세요';
+  else if (uid.length < 4) errs.userId = '아이디는 4자 이상이어야 합니다';
+  else if (!/^[a-zA-Z0-9_]+$/.test(uid)) errs.userId = '영문, 숫자, 밑줄만 사용 가능합니다';
+  if (!pw) errs.password = '비밀번호를 입력해 주세요';
+  else if (pw.length < 6) errs.password = '비밀번호는 6자 이상이어야 합니다';
+  if (!pwc) errs.passwordConfirm = '비밀번호를 다시 입력해 주세요';
+  else if (pw !== pwc) errs.passwordConfirm = '비밀번호가 일치하지 않습니다';
+  if (!name) errs.name = '이름을 입력해 주세요';
+  if (!email) errs.email = '이메일을 입력해 주세요';
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errs.email = '올바른 이메일 형식이 아닙니다';
+  if (!phone) errs.phone = '전화번호를 입력해 주세요';
+  else if (!/^01[016789]-\d{3,4}-\d{4}$/.test(phone)) errs.phone = '올바른 전화번호 형식이 아닙니다 (예: 010-1234-5678)';
+  return errs;
+}
+
+const fieldMap = {
+  userId: userIdEl,
+  password: pwEl,
+  passwordConfirm: pwConfEl,
+  name: nameEl,
+  email: emailEl,
+  phone: phoneEl,
+};
+
+function validateField(key) {
+  const errs = getErrors();
+  const el = fieldMap[key];
+  if (errs[key]) showFieldError(el, errs[key]);
+  else clearFieldError(el);
+}
+
+Object.entries(fieldMap).forEach(([key, el]) => {
+  el.addEventListener('blur', () => { touched[key] = true; validateField(key); });
+  el.addEventListener('input', () => { if (touched[key]) validateField(key); });
+});
+
+// Dup check
+dupCheckBtn.addEventListener('click', async () => {
+  const uid = userIdEl.value.trim();
+  const errs = getErrors();
+  if (!uid || errs.userId) return;
+  
+  dupStatus = 'checking';
+  dupCheckBtn.disabled = true;
+  dupCheckBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> 확인 중';
+  lucide.createIcons({ nodes: [dupCheckBtn] });
+
+  await new Promise(r => setTimeout(r, 600));
+  
+  // 실제 중복 확인
+  const taken = UserStore.isUserIdTaken(uid);
+  
+  dupStatus = taken ? 'taken' : 'available';
+  dupBadge.style.display = 'block';
+  if (taken) {
+    dupBadge.innerHTML = '<span class="badge-taken"><i data-lucide="x-circle"></i> 이미 사용 중</span>';
+  } else {
+    dupBadge.innerHTML = '<span class="badge-available"><i data-lucide="check-circle-2"></i> 사용 가능</span>';
+  }
+  lucide.createIcons({ nodes: [dupBadge] });
+  dupCheckBtn.disabled = false;
+  dupCheckBtn.textContent = '중복확인';
+});
+
+userIdEl.addEventListener('input', () => {
+  if (dupStatus !== 'idle') { dupStatus = 'idle'; dupBadge.style.display = 'none'; }
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  Object.keys(fieldMap).forEach(k => { touched[k] = true; });
+  const errs = getErrors();
+  Object.keys(fieldMap).forEach(k => {
+    if (errs[k]) showFieldError(fieldMap[k], errs[k]);
+    else clearFieldError(fieldMap[k]);
+  });
+  if (Object.keys(errs).length > 0) return;
+  if (dupStatus !== 'available') { 
+    showFieldError(userIdEl, '아이디 중복확인을 먼저 진행해주세요');
+    return; 
+  }
+
+  signupBtn.disabled = true;
+  signupBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> 가입 처리 중...';
+  lucide.createIcons({ nodes: [signupBtn] });
+
+  await new Promise(r => setTimeout(r, 800));
+  
+  // 실제 회원가입 처리
+  const result = UserStore.register({
+    userId: userIdEl.value.trim(),
+    password: pwEl.value,
+    name: nameEl.value.trim(),
+    email: emailEl.value.trim(),
+    phone: phoneEl.value.trim()
+  });
+  
+  signupBtn.disabled = false;
+  
+  if (result.success) {
+    signupBtn.innerHTML = '<i data-lucide="check-circle-2"></i> 가입 완료';
+    lucide.createIcons({ nodes: [signupBtn] });
+    alert(result.message);
+    
+    // 로그인 페이지로 이동
+    setTimeout(() => {
+      window.location.href = './login.html';
+    }, 500);
+  } else {
+    signupBtn.textContent = '가입하기';
+    alert(result.message);
+  }
+});
+</script>
+</body>
+</html>

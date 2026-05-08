@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>마이페이지 - SSAFY Home</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/profile.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="./index.html" class="navbar-logo">
+      <div class="navbar-logo-icon"><i data-lucide="home"></i></div>
+      <span class="navbar-logo-text">SSAFY <span class="blue">Home</span></span>
+    </a>
+    <div class="navbar-nav">
+      <a href="./index.html" class="nav-link"><i data-lucide="home"></i> 홈</a>
+      <a href="./search.html" class="nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+      <a href="./favorites.html" class="nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+      <a href="./commercial.html" class="nav-link"><i data-lucide="store"></i> 상권 정보</a>
+      <a href="./environment.html" class="nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+      <a href="./notices.html" class="nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    </div>
+    <div class="navbar-auth">
+      <div class="navbar-divider"></div>
+      <a href="./login.html" class="nav-link"><i data-lucide="log-in"></i> 로그인</a>
+      <a href="./profile.html" class="nav-link active"><i data-lucide="user-circle"></i> 마이페이지</a>
+    </div>
+    <button class="navbar-hamburger" id="navbar-hamburger" aria-label="메뉴 열기">
+      <span id="menu-icon-open"><i data-lucide="menu"></i></span>
+      <span id="menu-icon-close" style="display:none"><i data-lucide="x"></i></span>
+      <span class="hamburger-dot" style="display:none"></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="./index.html" class="mobile-nav-link"><i data-lucide="home"></i> 홈</a>
+    <a href="./search.html" class="mobile-nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+    <a href="./favorites.html" class="mobile-nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+    <a href="./commercial.html" class="mobile-nav-link"><i data-lucide="store"></i> 상권 정보</a>
+    <a href="./environment.html" class="mobile-nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+    <a href="./notices.html" class="mobile-nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    <a href="./login.html" class="mobile-nav-link"><i data-lucide="log-in"></i> 로그인</a>
+    <a href="./profile.html" class="mobile-nav-link active"><i data-lucide="user-circle"></i> 마이페이지</a>
+  </div>
+</nav>
+
+<div class="profile-page">
+  <div class="profile-wrap">
+    <!-- Profile header card -->
+    <div class="card card-lg" style="margin-bottom:1.5rem;overflow:hidden">
+      <div class="profile-banner">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar"><i data-lucide="user"></i></div>
+        </div>
+      </div>
+      <div class="profile-name-section">
+        <h1 id="display-name" style="color:#1A3C6E;font-size:1.375rem;font-weight:700">김싸피</h1>
+        <p id="display-userid" style="color:#9ca3af;font-size:0.875rem;margin-top:0.25rem">@ssafyuser01</p>
+      </div>
+    </div>
+
+    <!-- Info / Edit card -->
+    <div class="card card-lg" style="overflow:hidden">
+      <!-- View mode -->
+      <div id="view-mode">
+        <div class="profile-section-header">
+          <h2>회원 정보</h2>
+        </div>
+        <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem">
+          <div class="profile-info-row">
+            <div class="profile-info-icon"><i data-lucide="user-circle"></i></div>
+            <div>
+              <p class="profile-info-label">이름</p>
+              <p class="profile-info-value" id="view-name">김싸피</p>
+            </div>
+          </div>
+          <div class="profile-info-row">
+            <div class="profile-info-icon"><i data-lucide="user"></i></div>
+            <div>
+              <p class="profile-info-label">아이디</p>
+              <p class="profile-info-value" id="view-userid">ssafyuser01</p>
+            </div>
+          </div>
+          <div class="profile-info-row">
+            <div class="profile-info-icon"><i data-lucide="mail"></i></div>
+            <div>
+              <p class="profile-info-label">이메일</p>
+              <p class="profile-info-value" id="view-email">ssafy01@ssafy.com</p>
+            </div>
+          </div>
+          <div class="profile-info-row">
+            <div class="profile-info-icon"><i data-lucide="phone"></i></div>
+            <div>
+              <p class="profile-info-label">전화번호</p>
+              <p class="profile-info-value" id="view-phone">010-1234-5678</p>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button class="btn btn-primary btn-full" onclick="startEdit()">
+              <i data-lucide="pencil"></i> 정보 수정
+            </button>
+            <button class="btn btn-outline-danger btn-full" onclick="showDeleteModal()">
+              <i data-lucide="trash-2"></i> 회원 탈퇴
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit mode -->
+      <div id="edit-mode" style="display:none">
+        <div class="profile-section-header">
+          <h2>정보 수정</h2>
+          <button class="cancel-close-btn" onclick="cancelEdit()" aria-label="수정 취소">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <form id="profile-form" novalidate style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem">
+          <div class="form-group">
+            <label class="form-label" for="edit-name">이름</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon"><i data-lucide="user-circle"></i></span>
+              <input id="edit-name" type="text" class="input-base" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">아이디</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon"><i data-lucide="user"></i></span>
+              <input type="text" class="input-base" id="edit-userid" disabled style="background:#f3f4f6;color:#9ca3af;cursor:not-allowed" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="edit-email">이메일</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon"><i data-lucide="mail"></i></span>
+              <input id="edit-email" type="email" class="input-base" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0.5rem">
+            <label class="form-label" for="edit-phone">전화번호</label>
+            <div class="input-icon-wrap">
+              <span class="input-icon"><i data-lucide="phone"></i></span>
+              <input id="edit-phone" type="tel" class="input-base" />
+            </div>
+          </div>
+          <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
+            <button type="submit" id="save-btn" class="btn btn-primary btn-full" style="font-size:0.875rem">
+              <i data-lucide="save"></i> 저장하기
+            </button>
+            <button type="button" class="btn btn-ghost btn-full" onclick="cancelEdit()" style="font-size:0.875rem">취소</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal-overlay hidden" id="delete-modal">
+  <div class="modal-backdrop" onclick="hideDeleteModal()"></div>
+  <div class="modal-box">
+    <div style="padding:2rem 1.5rem 0.5rem;text-align:center">
+      <div class="confirm-modal-icon"><i data-lucide="alert-triangle"></i></div>
+      <h3 style="color:#1A3C6E;font-size:1.125rem;font-weight:700;margin-bottom:0.5rem">정말 탈퇴하시겠습니까?</h3>
+      <p style="color:#9ca3af;font-size:0.8125rem">탈퇴 시 모든 데이터가 삭제되며<br>복구할 수 없습니다.</p>
+    </div>
+    <div style="display:flex;gap:0.75rem;padding:1.5rem">
+      <button class="btn btn-ghost btn-full" onclick="hideDeleteModal()" id="delete-cancel-btn">취소</button>
+      <button class="btn btn-danger btn-full" id="delete-confirm-btn" onclick="handleDelete()">탈퇴하기</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-icon"><i data-lucide="home"></i></div>
+      <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">고객센터</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="./js/favorites-store.js"></script>
+<script src="./js/user-store.js"></script>
+<script src="./js/shared.js"></script>
+<script>
+lucide.createIcons();
+
+// 로그인 확인
+const currentUser = UserStore.getCurrentUser();
+if (!currentUser) {
+  alert('로그인이 필요한 서비스입니다.');
+  window.location.href = './login.html';
+}
+
+// 현재 사용자 정보 표시
+const profile = currentUser;
+
+// UI에 사용자 정보 초기화
+document.getElementById('display-name').textContent = profile.name;
+document.getElementById('display-userid').textContent = '@' + profile.userId;
+document.getElementById('view-name').textContent = profile.name;
+document.getElementById('view-userid').textContent = profile.userId;
+document.getElementById('view-email').textContent = profile.email;
+document.getElementById('view-phone').textContent = profile.phone;
+
+function startEdit() {
+  document.getElementById('edit-name').value = profile.name;
+  document.getElementById('edit-userid').value = profile.userId;
+  document.getElementById('edit-email').value = profile.email;
+  document.getElementById('edit-phone').value = profile.phone;
+  document.getElementById('view-mode').style.display = 'none';
+  document.getElementById('edit-mode').style.display = 'block';
+}
+
+function cancelEdit() {
+  document.getElementById('view-mode').style.display = 'block';
+  document.getElementById('edit-mode').style.display = 'none';
+}
+
+document.getElementById('edit-phone').addEventListener('input', function() {
+  this.value = formatPhone(this.value);
+});
+
+document.getElementById('profile-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const name = document.getElementById('edit-name').value.trim();
+  const email = document.getElementById('edit-email').value.trim();
+  const phone = document.getElementById('edit-phone').value.trim();
+  let valid = true;
+
+  if (!name) { showFieldError(document.getElementById('edit-name'), '이름을 입력해 주세요'); valid = false; }
+  else clearFieldError(document.getElementById('edit-name'));
+
+  if (!email) { showFieldError(document.getElementById('edit-email'), '이메일을 입력해 주세요'); valid = false; }
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showFieldError(document.getElementById('edit-email'), '올바른 이메일 형식이 아닙니다'); valid = false; }
+  else clearFieldError(document.getElementById('edit-email'));
+
+  if (!phone) { showFieldError(document.getElementById('edit-phone'), '전화번호를 입력해 주세요'); valid = false; }
+  else if (!/^01[016789]-\d{3,4}-\d{4}$/.test(phone)) { showFieldError(document.getElementById('edit-phone'), '올바른 전화번호 형식이 아닙니다'); valid = false; }
+  else clearFieldError(document.getElementById('edit-phone'));
+
+  if (!valid) return;
+
+  const saveBtn = document.getElementById('save-btn');
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> 저장 중...';
+  lucide.createIcons({nodes:[saveBtn]});
+
+  await new Promise(r => setTimeout(r, 600));
+
+  // 실제 회원정보 수정
+  const result = UserStore.update(profile.userId, { name, email, phone });
+
+  saveBtn.disabled = false;
+  
+  if (result.success) {
+    // 프로필 데이터 업데이트
+    profile.name = name;
+    profile.email = email;
+    profile.phone = phone;
+    
+    // UI 업데이트
+    document.getElementById('display-name').textContent = name;
+    document.getElementById('view-name').textContent = name;
+    document.getElementById('view-email').textContent = email;
+    document.getElementById('view-phone').textContent = phone;
+
+    saveBtn.innerHTML = '<i data-lucide="check-circle-2"></i> 저장 완료';
+    lucide.createIcons({nodes:[saveBtn]});
+    
+    setTimeout(() => {
+      saveBtn.innerHTML = '<i data-lucide="save"></i> 저장하기';
+      lucide.createIcons({nodes:[saveBtn]});
+      cancelEdit();
+    }, 1000);
+  } else {
+    saveBtn.innerHTML = '<i data-lucide="save"></i> 저장하기';
+    lucide.createIcons({nodes:[saveBtn]});
+    alert(result.message);
+  }
+});
+
+function showDeleteModal() {
+  const m = document.getElementById('delete-modal');
+  m.classList.remove('hidden');
+  requestAnimationFrame(() => m.classList.add('visible'));
+}
+
+function hideDeleteModal() {
+  const m = document.getElementById('delete-modal');
+  m.classList.remove('visible');
+  setTimeout(() => m.classList.add('hidden'), 200);
+}
+
+async function handleDelete() {
+  const btn = document.getElementById('delete-confirm-btn');
+  const cancelBtn = document.getElementById('delete-cancel-btn');
+  
+  // 비밀번호 확인 (prompt로 간단하게 처리)
+  const password = prompt('회원 탈퇴를 위해 비밀번호를 입력해주세요:');
+  
+  if (!password) {
+    hideDeleteModal();
+    return;
+  }
+  
+  btn.disabled = true; 
+  cancelBtn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> 처리 중...';
+  lucide.createIcons({nodes:[btn]});
+  
+  await new Promise(r => setTimeout(r, 800));
+  
+  // 실제 회원 탈퇴 처리
+  const result = UserStore.delete(profile.userId, password);
+  
+  btn.disabled = false; 
+  cancelBtn.disabled = false;
+  
+  if (result.success) {
+    hideDeleteModal();
+    alert(result.message);
+    // 로그인 페이지로 이동
+    setTimeout(() => {
+      window.location.href = './login.html';
+    }, 300);
+  } else {
+    btn.innerHTML = '탈퇴하기';
+    hideDeleteModal();
+    alert(result.message);
+  }
+}
+</script>
+</body>
+</html>

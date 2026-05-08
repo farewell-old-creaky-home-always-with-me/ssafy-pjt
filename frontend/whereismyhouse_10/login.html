@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로그인 - SSAFY Home</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/auth.css" />
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="./index.html" class="navbar-logo">
+      <div class="navbar-logo-icon"><i data-lucide="home"></i></div>
+      <span class="navbar-logo-text">SSAFY <span class="blue">Home</span></span>
+    </a>
+    <div class="navbar-nav">
+      <a href="./index.html" class="nav-link"><i data-lucide="home"></i> 홈</a>
+      <a href="./search.html" class="nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+      <a href="./favorites.html" class="nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+      <a href="./commercial.html" class="nav-link"><i data-lucide="store"></i> 상권 정보</a>
+      <a href="./environment.html" class="nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+      <a href="./notices.html" class="nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    </div>
+    <div class="navbar-auth">
+      <div class="navbar-divider"></div>
+      <a href="./login.html" class="nav-link active"><i data-lucide="log-in"></i> 로그인</a>
+      <a href="./profile.html" class="nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+    </div>
+    <button class="navbar-hamburger" id="navbar-hamburger" aria-label="메뉴 열기">
+      <span id="menu-icon-open"><i data-lucide="menu"></i></span>
+      <span id="menu-icon-close" style="display:none"><i data-lucide="x"></i></span>
+      <span class="hamburger-dot" style="display:none"></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="./index.html" class="mobile-nav-link"><i data-lucide="home"></i> 홈</a>
+    <a href="./search.html" class="mobile-nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+    <a href="./favorites.html" class="mobile-nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+    <a href="./commercial.html" class="mobile-nav-link"><i data-lucide="store"></i> 상권 정보</a>
+    <a href="./environment.html" class="mobile-nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+    <a href="./notices.html" class="mobile-nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    <a href="./login.html" class="mobile-nav-link active"><i data-lucide="log-in"></i> 로그인</a>
+    <a href="./profile.html" class="mobile-nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+  </div>
+</nav>
+
+<div class="auth-page">
+  <div class="auth-wrap">
+    <div class="auth-card card-lg">
+      <div class="auth-card-header">
+        <div class="auth-logo-icon"><i data-lucide="home"></i></div>
+        <h1 style="color:#1A3C6E;font-size:1.5rem;font-weight:700;margin-bottom:0.25rem">로그인</h1>
+        <p style="color:#9ca3af;font-size:0.8125rem;margin:0">SSAFY Home에 오신 것을 환영합니다</p>
+      </div>
+
+      <form class="auth-card-form" id="login-form" novalidate>
+        <div id="general-error" class="general-error" style="display:none">
+          <i data-lucide="alert-circle"></i>
+          <span id="general-error-msg"></span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-userid">아이디</label>
+          <div class="input-icon-wrap">
+            <span class="input-icon"><i data-lucide="user"></i></span>
+            <input
+              id="login-userid"
+              type="text"
+              class="input-base"
+              placeholder="아이디를 입력하세요"
+              autocomplete="username"
+            />
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.5rem">
+          <label class="form-label" for="login-password">비밀번호</label>
+          <div class="input-icon-wrap" style="position:relative">
+            <span class="input-icon"><i data-lucide="lock"></i></span>
+            <input
+              id="login-password"
+              type="password"
+              class="input-base"
+              style="padding-right:3rem"
+              placeholder="비밀번호를 입력하세요"
+              autocomplete="current-password"
+            />
+            <button type="button" class="pw-toggle" id="pw-toggle" aria-label="비밀번호 보기">
+              <i data-lucide="eye" id="pw-icon"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="login-btn" style="font-size:0.9375rem">
+          로그인
+        </button>
+      </form>
+    </div>
+
+    <div class="auth-links">
+      <a href="./signup.html">회원가입</a>
+      <div class="auth-links-divider"></div>
+      <a href="./password-recovery.html">비밀번호 찾기</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-icon"><i data-lucide="home"></i></div>
+      <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">고객센터</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="./js/favorites-store.js"></script>
+<script src="./js/user-store.js"></script>
+<script src="./js/shared.js"></script>
+<script>
+lucide.createIcons();
+
+const form = document.getElementById('login-form');
+const userIdEl = document.getElementById('login-userid');
+const passwordEl = document.getElementById('login-password');
+const pwToggle = document.getElementById('pw-toggle');
+const pwIcon = document.getElementById('pw-icon');
+const loginBtn = document.getElementById('login-btn');
+const generalErr = document.getElementById('general-error');
+const generalErrMsg = document.getElementById('general-error-msg');
+
+let showPassword = false;
+let userIdTouched = false;
+let passwordTouched = false;
+
+pwToggle.addEventListener('click', () => {
+  showPassword = !showPassword;
+  passwordEl.type = showPassword ? 'text' : 'password';
+  pwIcon.setAttribute('data-lucide', showPassword ? 'eye-off' : 'eye');
+  lucide.createIcons({ nodes: [pwIcon] });
+});
+
+function validateUserId(v) {
+  if (!v.trim()) return '아이디를 입력해 주세요';
+  if (v.trim().length < 4) return '아이디는 4자 이상이어야 합니다';
+  return '';
+}
+function validatePassword(v) {
+  if (!v) return '비밀번호를 입력해 주세요';
+  if (v.length < 6) return '비밀번호는 6자 이상이어야 합니다';
+  return '';
+}
+
+userIdEl.addEventListener('blur', () => {
+  userIdTouched = true;
+  const err = validateUserId(userIdEl.value);
+  if (err) showFieldError(userIdEl, err);
+  else clearFieldError(userIdEl);
+});
+
+userIdEl.addEventListener('input', () => {
+  generalErr.style.display = 'none';
+  if (userIdTouched) {
+    const err = validateUserId(userIdEl.value);
+    if (err) showFieldError(userIdEl, err);
+    else clearFieldError(userIdEl);
+  }
+});
+
+passwordEl.addEventListener('blur', () => {
+  passwordTouched = true;
+  const err = validatePassword(passwordEl.value);
+  if (err) showFieldError(passwordEl, err);
+  else clearFieldError(passwordEl);
+});
+
+passwordEl.addEventListener('input', () => {
+  generalErr.style.display = 'none';
+  if (passwordTouched) {
+    const err = validatePassword(passwordEl.value);
+    if (err) showFieldError(passwordEl, err);
+    else clearFieldError(passwordEl);
+  }
+});
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  generalErr.style.display = 'none';
+  userIdTouched = true;
+  passwordTouched = true;
+
+  const uidErr = validateUserId(userIdEl.value);
+  const pwErr = validatePassword(passwordEl.value);
+
+  if (uidErr) showFieldError(userIdEl, uidErr);
+  else clearFieldError(userIdEl);
+
+  if (pwErr) showFieldError(passwordEl, pwErr);
+  else clearFieldError(passwordEl);
+
+  if (uidErr || pwErr) return;
+
+  loginBtn.disabled = true;
+  loginBtn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i> 로그인 중...';
+  lucide.createIcons({ nodes: [loginBtn] });
+
+  await new Promise(r => setTimeout(r, 800));
+
+  // 실제 로그인 처리
+  const result = UserStore.login(userIdEl.value.trim(), passwordEl.value);
+
+  loginBtn.disabled = false;
+  
+  if (result.success) {
+    loginBtn.innerHTML = '<i data-lucide="check-circle-2"></i> 로그인 성공';
+    lucide.createIcons({ nodes: [loginBtn] });
+    
+    // 로그인 성공 시 홈으로 이동
+    setTimeout(() => {
+      window.location.href = './index.html';
+    }, 500);
+  } else {
+    loginBtn.textContent = '로그인';
+    generalErrMsg.textContent = result.message;
+    generalErr.style.display = 'flex';
+    lucide.createIcons({ nodes: [generalErr] });
+  }
+});
+</script>
+</body>
+</html>

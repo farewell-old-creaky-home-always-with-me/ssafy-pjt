@@ -1,0 +1,123 @@
+.auth-wrap { max-width: 420px; width: 100%; }
+.auth-wrap-md { max-width: 480px; width: 100%; }
+.auth-wrap-sm { max-width: 440px; width: 100%; }
+
+.auth-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.auth-links a {
+  color: #6b7280;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.auth-links a:hover { color: #2D9CDB; }
+
+.auth-links-divider {
+  width: 1px;
+  height: 0.875rem;
+  background: #d1d5db;
+}
+
+.auth-bottom-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  color: #6b7280;
+  font-size: 0.8125rem;
+}
+
+.auth-bottom-text a {
+  color: #2D9CDB;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.auth-bottom-text a:hover { color: #2589C4; }
+
+/* Step indicator */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0 2rem 1rem;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.step-circle {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: background 0.2s, color 0.2s;
+  background: #F4F6F9;
+  color: #9ca3af;
+}
+
+.step-circle.active { background: #2D9CDB; color: #fff; }
+.step-circle.done { background: #27AE60; color: #fff; }
+.step-circle i[data-lucide] { width: 16px; height: 16px; }
+
+.step-label {
+  margin-left: 0.5rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  display: none;
+}
+
+@media (min-width: 640px) { .step-label { display: inline; } }
+
+.step-label.active, .step-label.done { color: #1A3C6E; }
+.step-label.active { font-weight: 600; }
+
+.step-line {
+  flex: 1;
+  height: 1px;
+  margin: 0 0.5rem;
+  background: #e5e7eb;
+  transition: background 0.2s;
+}
+
+.step-line.done { background: #27AE60; }
+
+/* Step 3 success */
+.step3-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  background: rgba(39,174,96,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+}
+
+.step3-icon i[data-lucide] { width: 32px; height: 32px; color: #27AE60; }
+
+.step3-email-badge {
+  display: inline-block;
+  background: rgba(45,156,219,0.1);
+  color: #2D9CDB;
+  border-radius: 0.75rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}

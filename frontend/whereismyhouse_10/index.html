@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSAFY Home - 부동산 실거래가 조회</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <link rel="stylesheet" href="./css/pages/home.css" />
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="./index.html" class="navbar-logo">
+      <div class="navbar-logo-icon"><i data-lucide="home"></i></div>
+      <span class="navbar-logo-text">SSAFY <span class="blue">Home</span></span>
+    </a>
+
+    <div class="navbar-nav">
+      <a href="./index.html" class="nav-link active"><i data-lucide="home"></i> 홈</a>
+      <a href="./search.html" class="nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+      <a href="./favorites.html" class="nav-link">
+        <i data-lucide="heart"></i> 관심지역
+        <span class="nav-badge fav-badge" style="display:none"></span>
+      </a>
+      <a href="./commercial.html" class="nav-link"><i data-lucide="store"></i> 상권 정보</a>
+      <a href="./environment.html" class="nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+      <a href="./notices.html" class="nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    </div>
+
+    <div class="navbar-auth">
+      <div class="navbar-divider"></div>
+      <a href="./login.html" class="nav-link"><i data-lucide="log-in"></i> 로그인</a>
+      <a href="./profile.html" class="nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+    </div>
+
+    <button class="navbar-hamburger" id="navbar-hamburger" aria-label="메뉴 열기">
+      <span id="menu-icon-open"><i data-lucide="menu"></i></span>
+      <span id="menu-icon-close" style="display:none"><i data-lucide="x"></i></span>
+      <span class="hamburger-dot" style="display:none"></span>
+    </button>
+  </div>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="./index.html" class="mobile-nav-link active"><i data-lucide="home"></i> 홈</a>
+    <a href="./search.html" class="mobile-nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+    <a href="./favorites.html" class="mobile-nav-link">
+      <i data-lucide="heart"></i> 관심지역
+      <span class="nav-badge fav-badge" style="display:none"></span>
+    </a>
+    <a href="./commercial.html" class="mobile-nav-link"><i data-lucide="store"></i> 상권 정보</a>
+    <a href="./environment.html" class="mobile-nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+    <a href="./notices.html" class="mobile-nav-link"><i data-lucide="file-text"></i> 공지사항</a>
+    <a href="./login.html" class="mobile-nav-link"><i data-lucide="log-in"></i> 로그인</a>
+    <a href="./profile.html" class="mobile-nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-bg" style="background-image:url('https://images.unsplash.com/photo-1768006241304-6b833ee11611?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMGNpdHlzY2FwZSUyMGFwYXJ0bWVudCUyMGJ1aWxkaW5ncyUyMHNreWxpbmV8ZW58MXx8fHwxNzcyNzY0NTQ2fDA&ixlib=rb-4.1.0&q=80&w=1080')"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      공공데이터 기반 실거래가 조회 서비스
+    </div>
+    <h1>구해줘! <span class="blue">SSAFY HOME</span></h1>
+    <p class="hero-sub">
+      원하는 지역의 부동산 실거래가를 간편하게 조회하세요.<br>
+      아파트, 다세대 등 다양한 거래유형을 지원합니다.
+    </p>
+
+    <div class="hero-search-wrap">
+      <div class="hero-search-box" id="hero-search-box">
+        <div class="hero-search-fields">
+          <div class="hero-search-input-wrap">
+            <i data-lucide="search"></i>
+            <input
+              type="text"
+              id="hero-dong-input"
+              class="hero-input"
+              placeholder="법정동을 입력하세요 (예: 역삼동)"
+              aria-label="법정동 입력"
+            />
+          </div>
+          <div class="hero-select-wrap">
+            <select id="hero-tx-type" class="hero-select" aria-label="거래유형 선택">
+              <option value="apt-sale">아파트 매매</option>
+              <option value="apt-rent">아파트 전월세</option>
+              <option value="multi-sale">다세대 매매</option>
+              <option value="multi-rent">다세대 전월세</option>
+            </select>
+            <i data-lucide="chevron-down"></i>
+          </div>
+          <button class="hero-search-btn" onclick="location.href='./search.html'">검색하기</button>
+        </div>
+      </div>
+      <div class="hero-tags">
+        <button class="hero-tag" onclick="document.getElementById('hero-dong-input').value='역삼동'">강남구 역삼동</button>
+        <button class="hero-tag" onclick="document.getElementById('hero-dong-input').value='서초동'">서초구 서초동</button>
+        <button class="hero-tag" onclick="document.getElementById('hero-dong-input').value='잠실동'">송파구 잠실동</button>
+        <button class="hero-tag" onclick="document.getElementById('hero-dong-input').value='합정동'">마포구 합정동</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats ── -->
+<section class="stats-section">
+  <div class="container">
+    <div class="section-header">
+      <h2>실시간 부동산 시장 현황</h2>
+      <p>공공데이터 기반 최신 거래 통계를 확인하세요</p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" style="background:rgba(45,156,219,0.1)">
+            <i data-lucide="bar-chart-3" style="color:#2D9CDB"></i>
+          </div>
+          <div class="stat-change up">
+            <i data-lucide="trending-up"></i> +12.5%
+          </div>
+        </div>
+        <p class="stat-label">오늘 거래량</p>
+        <div class="stat-value">
+          <span class="stat-number">1,247</span>
+          <span class="stat-unit">건</span>
+        </div>
+        <p class="stat-desc">전일 대비</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" style="background:rgba(26,60,110,0.1)">
+            <i data-lucide="building-2" style="color:#1A3C6E"></i>
+          </div>
+          <div class="stat-change up">
+            <i data-lucide="trending-up"></i> +3.2%
+          </div>
+        </div>
+        <p class="stat-label">평균 매매가</p>
+        <div class="stat-value">
+          <span class="stat-number">8억 4,200</span>
+          <span class="stat-unit">만원</span>
+        </div>
+        <p class="stat-desc">전월 대비</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-card-top">
+          <div class="stat-icon" style="background:rgba(16,185,129,0.1)">
+            <i data-lucide="landmark" style="color:#059669"></i>
+          </div>
+          <div class="stat-change down">
+            <i data-lucide="trending-down"></i> -1.8%
+          </div>
+        </div>
+        <p class="stat-label">평균 전세가</p>
+        <div class="stat-value">
+          <span class="stat-number">4억 1,800</span>
+          <span class="stat-unit">만원</span>
+        </div>
+        <p class="stat-desc">전월 대비</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-icon"><i data-lucide="home"></i></div>
+      <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">고객센터</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="./js/favorites-store.js"></script>
+<script src="./js/user-store.js"></script>
+<script src="./js/shared.js"></script>
+<script>
+  lucide.createIcons();
+
+  // Hero search box focus ring
+  const searchBox = document.getElementById('hero-search-box');
+  document.querySelectorAll('.hero-input, .hero-select').forEach(el => {
+    el.addEventListener('focus', () => searchBox.classList.add('focused'));
+    el.addEventListener('blur', () => searchBox.classList.remove('focused'));
+  });
+</script>
+</body>
+</html>

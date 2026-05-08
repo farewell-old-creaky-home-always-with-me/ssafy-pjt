@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>공지사항 - SSAFY Home</title>
+  <link rel="stylesheet" href="./css/reset.css" />
+  <link rel="stylesheet" href="./css/variables.css" />
+  <link rel="stylesheet" href="./css/base.css" />
+  <link rel="stylesheet" href="./css/layout.css" />
+  <link rel="stylesheet" href="./css/components.css" />
+  <style>
+    .notices-page { min-height:calc(100vh - 64px); background:#F4F6F9; padding:2rem 1rem; }
+    .notices-wrap { max-width:56rem; margin:0 auto; }
+    .notice-list-header { display:grid; grid-template-columns:60px 1fr 100px 80px; background:#F4F6F9; padding:0.75rem 1.25rem; gap:0.75rem; display:none; }
+    @media (min-width:640px) { .notice-list-header { display:grid; } }
+    .notice-row { width:100%; text-align:left; display:flex; flex-direction:column; padding:1rem 1.25rem; gap:0.25rem; border-bottom:1px solid #f9fafb; cursor:pointer; background:none; border-left:none; border-right:none; border-top:none; transition:background 0.15s; }
+    @media (min-width:640px) { .notice-row { display:grid; grid-template-columns:60px 1fr 100px 80px; align-items:center; gap:0.75rem; } }
+    .notice-row:hover { background:rgba(45,156,219,0.03); }
+    .notice-row:last-child { border-bottom:none; }
+    .notice-no { color:#9ca3af; font-size:0.8125rem; text-align:center; display:none; }
+    @media (min-width:640px) { .notice-no { display:block; } }
+    .notice-title { color:#1A3C6E; font-size:0.875rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .notice-date { color:#9ca3af; font-size:0.75rem; display:flex; align-items:center; gap:0.25rem; }
+    .notice-date i[data-lucide] { width:12px; height:12px; }
+    @media (min-width:640px) { .notice-date { justify-content:center; } .notice-date i[data-lucide] { display:none; } }
+    .notice-views { color:#9ca3af; font-size:0.75rem; display:flex; align-items:center; gap:0.25rem; }
+    .notice-views i[data-lucide] { width:12px; height:12px; }
+    @media (min-width:640px) { .notice-views { justify-content:center; } }
+    .notice-search { position:relative; margin-bottom:1rem; }
+    .notice-search i[data-lucide] { position:absolute; left:1rem; top:50%; transform:translateY(-50%); width:18px; height:18px; color:#9ca3af; pointer-events:none; }
+    .notice-search input { width:100%; padding:0.75rem 1rem 0.75rem 2.75rem; border-radius:0.75rem; background:#fff; border:1px solid #e5e7eb; color:#1A3C6E; font-size:0.875rem; outline:none; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:border-color 0.15s; }
+    .notice-search input:focus { border-color:#2D9CDB; box-shadow:0 0 0 3px rgba(45,156,219,0.15); }
+    .back-link { display:inline-flex; align-items:center; gap:0.375rem; color:#6b7280; font-size:0.8125rem; font-weight:500; cursor:pointer; background:none; border:none; margin-bottom:1rem; transition:color 0.15s; }
+    .back-link:hover { color:#2D9CDB; }
+    .back-link i[data-lucide] { width:16px; height:16px; }
+    .detail-meta { display:flex; align-items:center; gap:1rem; flex-wrap:wrap; }
+    .detail-meta span { color:#9ca3af; font-size:0.75rem; display:flex; align-items:center; gap:0.25rem; }
+    .detail-meta span i[data-lucide] { width:14px; height:14px; }
+    .content-body { white-space:pre-wrap; color:#4b5563; font-size:0.875rem; line-height:1.8; }
+  </style>
+</head>
+<body>
+
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a href="./index.html" class="navbar-logo">
+      <div class="navbar-logo-icon"><i data-lucide="home"></i></div>
+      <span class="navbar-logo-text">SSAFY <span class="blue">Home</span></span>
+    </a>
+    <div class="navbar-nav">
+      <a href="./index.html" class="nav-link"><i data-lucide="home"></i> 홈</a>
+      <a href="./search.html" class="nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+      <a href="./favorites.html" class="nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+      <a href="./commercial.html" class="nav-link"><i data-lucide="store"></i> 상권 정보</a>
+      <a href="./environment.html" class="nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+      <a href="./notices.html" class="nav-link active"><i data-lucide="file-text"></i> 공지사항</a>
+    </div>
+    <div class="navbar-auth">
+      <div class="navbar-divider"></div>
+      <a href="./login.html" class="nav-link"><i data-lucide="log-in"></i> 로그인</a>
+      <a href="./profile.html" class="nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+    </div>
+    <button class="navbar-hamburger" id="navbar-hamburger" aria-label="메뉴 열기">
+      <span id="menu-icon-open"><i data-lucide="menu"></i></span>
+      <span id="menu-icon-close" style="display:none"><i data-lucide="x"></i></span>
+      <span class="hamburger-dot" style="display:none"></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="./index.html" class="mobile-nav-link"><i data-lucide="home"></i> 홈</a>
+    <a href="./search.html" class="mobile-nav-link"><i data-lucide="bar-chart-3"></i> 실거래가 조회</a>
+    <a href="./favorites.html" class="mobile-nav-link"><i data-lucide="heart"></i> 관심지역<span class="nav-badge fav-badge" style="display:none"></span></a>
+    <a href="./commercial.html" class="mobile-nav-link"><i data-lucide="store"></i> 상권 정보</a>
+    <a href="./environment.html" class="mobile-nav-link"><i data-lucide="tree-pine"></i> 환경 정보</a>
+    <a href="./notices.html" class="mobile-nav-link active"><i data-lucide="file-text"></i> 공지사항</a>
+    <a href="./login.html" class="mobile-nav-link"><i data-lucide="log-in"></i> 로그인</a>
+    <a href="./profile.html" class="mobile-nav-link"><i data-lucide="user-circle"></i> 마이페이지</a>
+  </div>
+</nav>
+
+<div class="notices-page">
+  <div class="notices-wrap" id="main-content"></div>
+</div>
+
+<!-- Delete modal -->
+<div class="modal-overlay hidden" id="delete-modal">
+  <div class="modal-backdrop" onclick="cancelDelete()"></div>
+  <div class="modal-box">
+    <div style="padding:2rem 1.5rem 0.5rem;text-align:center">
+      <div class="confirm-modal-icon"><i data-lucide="alert-triangle"></i></div>
+      <h3 style="color:#1A3C6E;font-size:1.125rem;font-weight:700;margin-bottom:0.5rem">공지사항 삭제</h3>
+      <p id="delete-msg" style="color:#9ca3af;font-size:0.8125rem"></p>
+    </div>
+    <div style="display:flex;gap:0.75rem;padding:1.5rem">
+      <button class="btn btn-ghost btn-full" id="del-cancel" onclick="cancelDelete()">취소</button>
+      <button class="btn btn-danger btn-full" id="del-confirm" onclick="confirmDelete()">삭제</button>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <div class="footer-logo-icon"><i data-lucide="home"></i></div>
+      <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+    </div>
+    <div class="footer-links">
+      <a href="#">이용약관</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">고객센터</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="./js/favorites-store.js"></script>
+<script src="./js/user-store.js"></script>
+<script src="./js/shared.js"></script>
+<script>
+lucide.createIcons();
+
+let notices = [
+  { id:1, title:'SSAFY Home 서비스 오픈 안내', content:'안녕하세요, SSAFY Home 서비스가 정식 오픈되었습니다.\n\n본 플랫폼에서는 국토교통부 실거래가 공공데이터를 기반으로 아파트 실거래 내역을 조회하실 수 있습니다.\n\n주요 기능:\n- 지역별/기간별 실거래가 조회\n- 관심지역 등록 및 관리\n- 상권 및 환경 정보 확인\n\n많은 이용 부탁드립니다.', author:'관리자', date:'2026.03.01', views:342 },
+  { id:2, title:'2026년 3월 데이터 업데이트 완료', content:'2026년 3월 실거래가 데이터가 업데이트되었습니다.\n\n이번 업데이트에는 전국 약 15만 건의 신규 거래 데이터가 반영되었습니다.\n\n데이터 기준일: 2026년 2월 28일', author:'관리자', date:'2026.03.05', views:128 },
+  { id:3, title:'서비스 정기 점검 안내 (3/15)', content:'서비스 안정화를 위한 정기 점검이 예정되어 있습니다.\n\n점검 일시: 2026년 3월 15일 02:00 ~ 06:00 (약 4시간)\n점검 내용: 서버 인프라 업그레이드\n\n점검 시간 동안 서비스 이용이 제한됩니다. 이용에 불편을 드려 죄송합니다.', author:'관리자', date:'2026.03.04', views:89 },
+  { id:4, title:'개인정보처리방침 개정 안내', content:'개인정보처리방침이 일부 개정되었습니다.\n\n주요 변경사항:\n1. 수집하는 개인정보 항목 명확화\n2. 개인정보 보유기간 변경\n3. 제3자 제공 관련 내용 추가\n\n시행일: 2026년 4월 1일', author:'관리자', date:'2026.03.03', views:56 },
+  { id:5, title:'모바일 앱 출시 예정 안내', content:'SSAFY Home 모바일 앱이 곧 출시됩니다.\n\n출시 예정일: 2026년 4월 중\n지원 플랫폼: iOS, Android\n\n앱 출시 시 알림을 받고 싶으시다면 이메일을 등록해 주세요.', author:'관리자', date:'2026.03.02', views:201 },
+  { id:6, title:'관심지역 기능 업데이트 안내', content:'관심지역 기능이 업데이트되었습니다.\n\n변경사항:\n- 최대 등록 개수 20개 → 50개로 확대\n- 가격 변동 알림 기능 추가\n- 관심지역 그룹화 기능 지원', author:'관리자', date:'2026.02.28', views:167 },
+];
+
+let viewMode = 'list'; // list | detail | create | edit
+let selectedNotice = null;
+let pendingDeleteId = null;
+let formTitle = '', formContent = '';
+
+function esc(str) { return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function render() {
+  const c = document.getElementById('main-content');
+  if (viewMode === 'list') renderList(c);
+  else if (viewMode === 'detail') renderDetail(c);
+  else renderForm(c);
+  lucide.createIcons({nodes:[c]});
+}
+
+function renderList(c) {
+  const query = '';
+  const filtered = notices.filter(n => n.title.toLowerCase().includes((document._search||'').toLowerCase()));
+  c.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem">
+      <div>
+        <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">공지사항</h1>
+        <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">SSAFY Home 서비스 관련 공지사항입니다</p>
+      </div>
+      <button class="btn btn-primary btn-sm" onclick="openCreate()"><i data-lucide="plus"></i> 등록</button>
+    </div>
+    <div class="notice-search">
+      <i data-lucide="search"></i>
+      <input type="text" placeholder="제목으로 검색..." id="notice-search-input" oninput="onSearch(this.value)" value="${esc(document._search||'')}" />
+    </div>
+    <div class="card" style="overflow:hidden">
+      <div class="notice-list-header">
+        <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600;text-align:center">번호</span>
+        <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600">제목</span>
+        <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600;text-align:center">작성일</span>
+        <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600;text-align:center">조회수</span>
+      </div>
+      ${filtered.length === 0 ? `
+        <div style="padding:4rem 1rem;display:flex;flex-direction:column;align-items:center">
+          <i data-lucide="file-text" style="width:40px;height:40px;color:#d1d5db;margin-bottom:0.75rem"></i>
+          <p style="color:#9ca3af;font-size:0.875rem">공지사항이 없습니다</p>
+        </div>` :
+        filtered.map(n => `
+          <button class="notice-row" onclick="openDetail(${n.id})">
+            <span class="notice-no">${n.id}</span>
+            <span class="notice-title">${esc(n.title)}</span>
+            <span class="notice-date"><i data-lucide="calendar"></i>${n.date}</span>
+            <span class="notice-views"><i data-lucide="eye"></i>${n.views}</span>
+          </button>`).join('')
+      }
+    </div>`;
+}
+
+function onSearch(v) {
+  document._search = v;
+  render();
+}
+
+function renderDetail(c) {
+  const n = selectedNotice;
+  c.innerHTML = `
+    <button class="back-link" onclick="backToList()"><i data-lucide="arrow-left"></i> 목록으로</button>
+    <div class="card" style="overflow:hidden">
+      <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #f3f4f6">
+        <h2 style="color:#1A3C6E;font-size:1.25rem;font-weight:700;margin-bottom:0.75rem">${esc(n.title)}</h2>
+        <div class="detail-meta">
+          <span><i data-lucide="file-text"></i>${n.author}</span>
+          <span><i data-lucide="calendar"></i>${n.date}</span>
+          <span><i data-lucide="eye"></i>${n.views}</span>
+        </div>
+      </div>
+      <div style="padding:1.5rem">
+        <div class="content-body">${esc(n.content)}</div>
+      </div>
+      <div style="padding:1rem 1.5rem;border-top:1px solid #f3f4f6;background:#FAFBFC;display:flex;justify-content:flex-end;gap:0.75rem">
+        <button class="btn btn-primary btn-sm" onclick="openEdit(${n.id})"><i data-lucide="pencil"></i> 수정</button>
+        <button class="btn btn-outline-danger btn-sm" onclick="startDelete(${n.id}, '${esc(n.title)}')"><i data-lucide="trash-2"></i> 삭제</button>
+      </div>
+    </div>`;
+}
+
+function renderForm(c) {
+  const isCreate = viewMode === 'create';
+  c.innerHTML = `
+    <button class="back-link" onclick="backToList()"><i data-lucide="arrow-left"></i> 목록으로</button>
+    <div class="card" style="overflow:hidden">
+      <div style="padding:1rem 1.5rem;border-bottom:1px solid #f3f4f6">
+        <h2 style="color:#1A3C6E;font-size:1.125rem;font-weight:700">${isCreate ? '공지사항 등록' : '공지사항 수정'}</h2>
+      </div>
+      <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem">
+        <div>
+          <label class="form-label" for="form-title" style="display:block;margin-bottom:0.5rem">제목</label>
+          <input id="form-title" type="text" class="input-base" style="padding-left:1rem" placeholder="제목을 입력하세요" value="${esc(formTitle)}" oninput="formTitle=this.value" />
+        </div>
+        <div>
+          <label class="form-label" for="form-content" style="display:block;margin-bottom:0.5rem">내용</label>
+          <textarea id="form-content" class="input-base" style="padding-left:1rem;resize:vertical;min-height:15rem;line-height:1.7" placeholder="내용을 입력하세요" oninput="formContent=this.value">${esc(formContent)}</textarea>
+        </div>
+      </div>
+      <div style="padding:1rem 1.5rem;border-top:1px solid #f3f4f6;background:#FAFBFC;display:flex;justify-content:flex-end;gap:0.75rem">
+        <button class="btn btn-ghost btn-sm" onclick="backToList()">취소</button>
+        <button class="btn btn-primary btn-sm" id="save-notice-btn" onclick="handleSave()">${isCreate ? '등록' : '수정'}</button>
+      </div>
+    </div>`;
+}
+
+function backToList() { viewMode = 'list'; render(); }
+
+function openDetail(id) {
+  const n = notices.find(x => x.id === id);
+  notices = notices.map(x => x.id === id ? {...x, views: x.views+1} : x);
+  selectedNotice = {...n, views: n.views+1};
+  viewMode = 'detail';
+  render();
+}
+
+function openCreate() {
+  formTitle = ''; formContent = '';
+  viewMode = 'create';
+  render();
+}
+
+function openEdit(id) {
+  const n = notices.find(x => x.id === id);
+  selectedNotice = n;
+  formTitle = n.title; formContent = n.content;
+  viewMode = 'edit';
+  render();
+}
+
+async function handleSave() {
+  const title = document.getElementById('form-title')?.value.trim() || formTitle.trim();
+  const content = document.getElementById('form-content')?.value.trim() || formContent.trim();
+  if (!title || !content) return;
+
+  const btn = document.getElementById('save-notice-btn');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i>'; lucide.createIcons({nodes:[btn]}); }
+
+  await new Promise(r => setTimeout(r, 800));
+
+  if (viewMode === 'create') {
+    const maxId = Math.max(...notices.map(n => n.id));
+    notices.unshift({ id: maxId+1, title, content, author:'관리자', date:'2026.03.06', views:0 });
+  } else if (viewMode === 'edit' && selectedNotice) {
+    notices = notices.map(n => n.id === selectedNotice.id ? {...n, title, content} : n);
+  }
+  viewMode = 'list';
+  render();
+}
+
+function startDelete(id, title) {
+  pendingDeleteId = id;
+  document.getElementById('delete-msg').textContent = `"${title}" 을(를) 삭제하시겠습니까?`;
+  const m = document.getElementById('delete-modal');
+  m.classList.remove('hidden');
+  requestAnimationFrame(() => m.classList.add('visible'));
+  lucide.createIcons({nodes:[m]});
+}
+
+function cancelDelete() {
+  const m = document.getElementById('delete-modal');
+  m.classList.remove('visible');
+  setTimeout(() => m.classList.add('hidden'), 200);
+  pendingDeleteId = null;
+}
+
+async function confirmDelete() {
+  if (!pendingDeleteId) return;
+  const btn = document.getElementById('del-confirm');
+  const cancelBtn = document.getElementById('del-cancel');
+  btn.disabled = true; cancelBtn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" class="animate-spin"></i>';
+  lucide.createIcons({nodes:[btn]});
+  await new Promise(r => setTimeout(r, 600));
+  notices = notices.filter(n => n.id !== pendingDeleteId);
+  btn.disabled = false; cancelBtn.disabled = false;
+  btn.textContent = '삭제';
+  if (viewMode === 'detail') viewMode = 'list';
+  cancelDelete();
+  render();
+}
+
+document._search = '';
+render();
+</script>
+</body>
+</html>
