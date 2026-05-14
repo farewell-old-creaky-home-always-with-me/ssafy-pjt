@@ -33,7 +33,7 @@
 | house_id | BIGINT | O | | O | 주택 ID (AUTO_INCREMENT) |
 | region_code | VARCHAR(10) | | O | O | 행정구역 코드 (region_code 참조) |
 | apt_name | VARCHAR(100) | | | O | 단지명 |
-| jibun | VARCHAR(50) | | | | 지번 주소 |
+| jibun | VARCHAR(50) | | | O | 지번 주소. 동일 단지를 식별하는 기준 값으로 필수 저장 |
 | road_address | VARCHAR(100) | | | | 도로명 주소 (미정) |
 | build_year | INT | | | | 건축연도 |
 | house_type | VARCHAR(10) | | | O | 주택 유형 ('아파트', '다세대') |
@@ -53,13 +53,23 @@
 |--------|------|----|----|----------|------|
 | deal_id | BIGINT | O | | O | 거래 ID (AUTO_INCREMENT) |
 | house_id | BIGINT | | O | O | 주택 ID (house 참조) |
-| deal_amount | INT | | | O | 거래금액 (만 원) |
+| deal_type | VARCHAR(20) | | | O | 거래 유형 (`매매`, `전세`, `월세`) |
+| deal_amount | INT | | | | 매매 거래금액 (만 원). `매매`일 때 사용 |
+| deposit_amount | INT | | | | 보증금액 (만 원). `전세`, `월세`일 때 사용 |
+| monthly_rent | INT | | | | 월세금액 (만 원). `월세`일 때 사용하며 `전세`는 NULL로 저장 |
 | deal_date | DATE | | | O | 거래일 (연월일 조합) |
 | area | DECIMAL(6,2) | | | O | 전용면적 (㎡) |
 | floor | INT | | | | 층수 |
 | created_at | DATETIME | | | O | 데이터 등록일시 |
 
-**인덱스**: PRIMARY KEY (deal_id), INDEX (house_id), INDEX (deal_date), INDEX (deal_amount)
+거래 유형별 금액 사용 규칙:
+
+- `매매`: `deal_amount` 사용
+- `전세`: `deposit_amount` 사용, `monthly_rent`는 NULL
+- `월세`: `deposit_amount`, `monthly_rent`를 함께 사용
+- 거래 유형에 따라 필요한 금액 컬럼 조합을 만족해야 하며, 이 규칙은 애플리케이션 검증과 DB 제약으로 함께 강제한다.
+
+**인덱스**: PRIMARY KEY (deal_id), INDEX (house_id), INDEX (deal_type), INDEX (deal_date), INDEX (deal_amount)
 
 ---
 

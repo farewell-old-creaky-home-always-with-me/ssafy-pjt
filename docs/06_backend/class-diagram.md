@@ -15,8 +15,8 @@
 | 클래스명 | 유형 | 책임 |
 |---------|------|------|
 | RouteController | Controller | GET /api/routes 엔드포인트 처리. 쿼리 파라미터 수신 후 RouteService 호출 |
-| RouteService | Service | 출발·도착 좌표를 받아 가장 가까운 RouteNode를 찾고 AStarPathFinder를 호출해 경로 계산 |
-| RouteMapper | Mapper (MyBatis) | route_node, route_edge 테이블 조회 |
+| RouteService | Service | 출발·도착 좌표를 받아 가장 가까운 RouteNode를 찾고, 초기 구현에서는 전체 노드·엣지를 메모리에 적재한 뒤 AStarPathFinder를 호출해 경로 계산 |
+| RouteMapper | Mapper (MyBatis) | route_node, route_edge 테이블 조회. 초기 구현은 전체 그래프 로드, 인접 엣지 지연 조회는 향후 최적화 대상으로 둔다 |
 | AStarPathFinder | Algorithm | RouteNode·RouteEdge 그래프에서 A* 알고리즘으로 최단 경로 탐색 |
 | RouteNode | Domain | 그래프 노드. nodeId, latitude, longitude, nodeName 속성 보유 |
 | RouteEdge | Domain | 그래프 엣지. edgeId, fromNodeId, toNodeId, distance 속성 보유 |
@@ -85,8 +85,9 @@ classDiagram
 
     class RouteMapper {
         +findAllNodes() List~RouteNode~
-        +findEdgesByFromNodeId(fromNodeId) List~RouteEdge~
+        +findAllEdges() List~RouteEdge~
         +findNearestNode(lat, lng) RouteNode
+        +findEdgesByFromNodeId(fromNodeId) List~RouteEdge~
     }
 
     class AStarPathFinder {
@@ -125,6 +126,8 @@ classDiagram
     RouteMapper ..> RouteNode : 반환
     RouteMapper ..> RouteEdge : 반환
 ```
+
+초기 구현 기준 `RouteMapper`는 `findAllNodes()`, `findAllEdges()`, `findNearestNode(lat, lng)`를 사용한다. `findEdgesByFromNodeId(fromNodeId)`는 그래프 규모가 커질 때 적용할 수 있는 향후 최적화 메서드다.
 
 ---
 

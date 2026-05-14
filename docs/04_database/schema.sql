@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS house (
     house_id     BIGINT       NOT NULL AUTO_INCREMENT COMMENT '주택 ID',
     region_code  VARCHAR(10)  NOT NULL COMMENT '행정구역 코드',
     apt_name     VARCHAR(100) NOT NULL COMMENT '단지명',
-    jibun        VARCHAR(50)           COMMENT '지번 주소',
+    jibun        VARCHAR(50)  NOT NULL COMMENT '지번 주소',
     road_address VARCHAR(100)          COMMENT '도로명 주소 (미정)',
     build_year   INT                   COMMENT '건축연도',
     house_type   VARCHAR(10)  NOT NULL COMMENT '주택 유형: 아파트, 다세대',
@@ -47,7 +47,10 @@ CREATE TABLE IF NOT EXISTS house (
 CREATE TABLE IF NOT EXISTS house_deal (
     deal_id      BIGINT        NOT NULL AUTO_INCREMENT COMMENT '거래 ID',
     house_id     BIGINT        NOT NULL COMMENT '주택 ID',
-    deal_amount  INT           NOT NULL COMMENT '거래금액 (만원)',
+    deal_type    VARCHAR(20)   NOT NULL COMMENT '거래 유형: 매매, 전세, 월세',
+    deal_amount  INT                    COMMENT '매매 거래금액 (만원)',
+    deposit_amount INT                  COMMENT '보증금액 (만원)',
+    monthly_rent INT                    COMMENT '월세금액 (만원, 전세는 NULL)',
     deal_date    DATE          NOT NULL COMMENT '거래일',
     area         DECIMAL(6,2)  NOT NULL COMMENT '전용면적 (㎡)',
     floor        INT                    COMMENT '층수',
@@ -55,7 +58,14 @@ CREATE TABLE IF NOT EXISTS house_deal (
 
     PRIMARY KEY (deal_id),
     FOREIGN KEY (house_id) REFERENCES house(house_id) ON DELETE CASCADE,
+    CONSTRAINT chk_house_deal_type_values CHECK (deal_type IN ('매매', '전세', '월세')),
+    CONSTRAINT chk_house_deal_amounts CHECK (
+        (deal_type = '매매' AND deal_amount IS NOT NULL AND deposit_amount IS NULL AND monthly_rent IS NULL) OR
+        (deal_type = '전세' AND deal_amount IS NULL AND deposit_amount IS NOT NULL AND monthly_rent IS NULL) OR
+        (deal_type = '월세' AND deal_amount IS NULL AND deposit_amount IS NOT NULL AND monthly_rent IS NOT NULL)
+    ),
     INDEX idx_deal_house (house_id),
+    INDEX idx_deal_type (deal_type),
     INDEX idx_deal_date (deal_date),
     INDEX idx_deal_amount (deal_amount)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='주택 거래 이력';

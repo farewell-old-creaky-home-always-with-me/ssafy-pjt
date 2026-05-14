@@ -187,6 +187,43 @@
 
 ## 주택 API
 
+### POST /api/admin/house/collect — 주택 거래 데이터 수집
+
+| 항목 | 내용 |
+|------|------|
+| 관련 요구사항 | REQ-HOUSE-001 |
+| 인증 필요 | 예 (관리자 전용) |
+| 설명 | 국토교통부 실거래가 데이터를 수집하고 DB에 저장하는 관리자용 API |
+
+**요청 본문**
+```json
+{
+  "regionCode": "1111000000",
+  "yearMonth": "202605",
+  "houseType": "아파트",
+  "dealType": "매매"
+}
+```
+
+**응답 (200)**
+```json
+{
+  "success": true,
+  "data": {
+    "collectedCount": 120,
+    "skippedCount": 8,
+    "failedCount": 2
+  }
+}
+```
+
+**오류 케이스**
+- 400: 유효하지 않은 수집 조건
+- 403: 관리자 권한 필요
+- 502: 외부 공공 데이터 API 호출 실패
+
+---
+
 ### GET /api/houses — 주택 거래 목록 검색
 
 | 항목 | 내용 |

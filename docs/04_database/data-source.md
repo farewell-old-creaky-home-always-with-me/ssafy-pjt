@@ -25,21 +25,21 @@
 | 공공 API 필드명 | 설명 | DB 컬럼 매핑 |
 |----------------|------|-------------|
 | 아파트 | 아파트 단지명 | house.apt_name |
-| 법정동 | 법정동명 | house.dong_name |
+| 법정동코드 | 행정구역 코드 | house.region_code |
 | 지번 | 지번 주소 | house.jibun |
 | 거래금액 | 실거래 금액 (만 원) | house_deal.deal_amount |
-| 거래연도 | 거래 연도 | house_deal.deal_year |
-| 거래월 | 거래 월 | house_deal.deal_month |
-| 거래일 | 거래 일 | house_deal.deal_day |
+| 거래연도/거래월/거래일 | 거래 일자 구성 값 | house_deal.deal_date |
 | 전용면적 | 전용 면적 (㎡) | house_deal.area |
 | 층 | 층수 | house_deal.floor |
 | 건축연도 | 건축 연도 | house.build_year |
-| 법정동코드 | 행정구역 코드 | region_code 참조 |
+| 거래구분 | 아파트 실거래 수집 시 기본값 | house_deal.deal_type = `매매` |
 
 **데이터 전처리:**
 - 금액 필드의 쉼표 제거 후 정수 변환
+- 아파트 실거래 수집 건은 `house_deal.deal_type`을 `매매`로 저장
+- 매매 수집 건은 `deposit_amount`, `monthly_rent`를 모두 `NULL`로 저장해 DB 제약을 만족시킨다.
 - 거래연도·월·일을 DATE 형식으로 조합
-- 중복 단지 처리: 단지명 + 법정동 조합으로 중복 확인
+- 중복 단지 처리: `region_code + apt_name + jibun` 조합으로 중복 확인
 
 ---
 
@@ -53,7 +53,7 @@
 | 업데이트 주기 | 월 단위 |
 | 저장 테이블 | `house`, `house_deal` |
 
-DS-001과 동일한 필드 구조. `house.house_type` 컬럼으로 아파트/다세대 구분.
+DS-001과 동일한 필드 구조를 사용한다. `house.house_type` 컬럼으로 아파트/다세대를 구분하고, 매매 수집 건은 `house_deal.deal_type`을 `매매`로 저장하며 `deposit_amount`, `monthly_rent`는 `NULL`로 저장한다.
 
 ---
 
