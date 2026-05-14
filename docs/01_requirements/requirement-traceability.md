@@ -12,7 +12,7 @@
 
 | 요구사항 ID | 화면 | API | DB 테이블 | 백엔드 클래스 | 알고리즘 | 문서 링크 |
 |------------|------|-----|-----------|--------------|----------|-----------|
-| REQ-HOUSE-001 | 없음 (배치) | POST /api/admin/house/collect | house, house_deal, region_code | HouseCollectService | 없음 | [기능 요구사항](functional-requirements.md) |
+| REQ-HOUSE-001 | 없음 (배치) | POST /api/admin/batch/house-deals | house, house_deal, region_code, batch_collection_log | AdminBatchController, BatchJobService, HouseDealCollectJob, BatchCollectionLogListener | 없음 | [기능 요구사항](functional-requirements.md), [배치 개요](../10_batch/batch-overview.md), [주택 거래 수집 Job](../10_batch/house-deal-collect-job.md) |
 | REQ-HOUSE-002 | SCR-SEARCH, SCR-RESULT | GET /api/houses | house, house_deal, region_code | HouseController, HouseService, HouseMapper | 없음 | [기능 요구사항](functional-requirements.md) |
 | REQ-HOUSE-003 | SCR-DETAIL | GET /api/houses/{houseId} | house, house_deal | HouseController, HouseService, HouseMapper | 없음 | [기능 요구사항](functional-requirements.md) |
 | REQ-HOUSE-004 | SCR-RESULT | GET /api/houses | house_deal | HouseMapper | 없음 | [기능 요구사항](functional-requirements.md) |
@@ -36,6 +36,21 @@
 | REQ-NOTICE-003 | SCR-NOTICE-FORM | POST /api/notices | notice | NoticeController, NoticeService, NoticeMapper | 없음 | [기능 요구사항](functional-requirements.md) |
 | REQ-NOTICE-004 | SCR-NOTICE-FORM | PUT /api/notices/{noticeId} | notice | NoticeController, NoticeService, NoticeMapper | 없음 | [기능 요구사항](functional-requirements.md) |
 | REQ-NOTICE-005 | SCR-NOTICE-LIST | DELETE /api/notices/{noticeId} | notice | NoticeController, NoticeService, NoticeMapper | 없음 | [기능 요구사항](functional-requirements.md) |
+
+---
+
+## REQ-HOUSE-001 상세 추적
+
+| 추적 항목 | 연결 내용 |
+|-----------|-----------|
+| 실행 API | POST /api/admin/batch/house-deals |
+| 실행 이력 API | GET /api/admin/batch/jobs, GET /api/admin/batch/jobs/{jobExecutionId}, POST /api/admin/batch/jobs/{jobExecutionId}/restart |
+| 배치 Job | houseDealCollectJob |
+| Step | 공공 데이터 조회 → 검증·정규화 → house/house_deal 저장 → 수집 로그 기록 |
+| DB 테이블 | house, house_deal, region_code, batch_collection_log |
+| Spring Batch 메타데이터 | Spring Batch 기본 `schema-mysql.sql` 사용 |
+| 백엔드 구성 | AdminBatchController, BatchJobService, HouseDealCollectJob, HouseDealCollectStep, MolitHouseDealReader, HouseDealProcessor, HouseDealWriter, BatchCollectionLogListener |
+| 배치 문서 | [batch-overview.md](../10_batch/batch-overview.md), [house-deal-collect-job.md](../10_batch/house-deal-collect-job.md), [batch-operation.md](../10_batch/batch-operation.md) |
 
 ---
 

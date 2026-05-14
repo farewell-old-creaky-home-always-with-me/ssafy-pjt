@@ -23,6 +23,7 @@
 
 - [ ] ERD 이미지 파일이 `docs/assets/diagrams/` 또는 `docs/04_database/erd.md`에 포함되어 있다
 - [ ] DB 스키마 파일 `docs/04_database/schema.sql`이 실행 가능한 상태다
+- [ ] Spring Batch 기본 메타데이터 스키마 적용 방법이 문서화되어 있다
 - [ ] 최소 테스트 데이터(더미 데이터)가 포함된 SQL 또는 수집 방법이 명시되어 있다 (미정)
 
 ---
@@ -32,6 +33,8 @@
 - [ ] 유스케이스 다이어그램 (`docs/02_domain/usecase-diagram.md` + 이미지)
 - [ ] 클래스 다이어그램 (`docs/06_backend/class-diagram.md` + 이미지)
   - RouteController, RouteService, RouteMapper, AStarPathFinder, RouteNode, RouteEdge, RouteResult 포함 확인
+- [ ] 배치 설계 문서 (`docs/10_batch/batch-overview.md`, `house-deal-collect-job.md`, `batch-operation.md`)
+- [ ] Vue 전환 로드맵 문서 (`docs/11_frontend-roadmap/vue-transition-plan.md`, `frontend-api-contract.md`)
 - [ ] WBS (`docs/08_schedule/wbs.md`)
 - [ ] 간트 차트 (`docs/08_schedule/gantt-chart.md` + 이미지 또는 Mermaid)
 - [ ] A* 알고리즘 기획 문서 (`docs/07_algorithm/astar-route-planning.md`)
@@ -64,6 +67,7 @@
 - [ ] DB 설정 방법이 포함되어 있다
 - [ ] API 요약 또는 링크가 있다
 - [ ] 알고리즘 요약(A*)이 포함되어 있다
+- [ ] 배치 운영 요약이 포함되어 있다
 - [ ] 팀원 역할이 명시되어 있다
 
 ---
@@ -76,6 +80,8 @@
 | 주택 검색 결과가 정확한 데이터를 반환하는가 | [ ] |
 | 로그인·로그아웃이 정상 동작하는가 | [ ] |
 | 관심 지역 등록·삭제가 정상 동작하는가 | [ ] |
+| 배치 실행 API가 Job 실행 정보를 반환하는가 | [ ] |
+| 배치 실행 상태 조회 및 재시작 API가 정상 동작하는가 | [ ] |
 | A* 경로 탐색이 결과를 반환하는가 | [ ] |
 | 공지사항 CRUD가 정상 동작하는가 | [ ] |
 | 비회원이 회원 전용 기능 접근 시 401이 반환되는가 | [ ] |
@@ -88,10 +94,10 @@
 
 ## 미정 항목 (제출 전 확정 필요)
 
-- [ ] 지도 API 선택 및 키 발급 완료
+- [ ] Kakao Maps API 키 발급 완료
 - [ ] 공공 상권 데이터 API 출처 확정
 - [ ] 서울 환경 데이터 API 키 발급 완료
-- [ ] ERD 도구 선택 및 다이어그램 이미지 생성
+- [ ] Mermaid 기준 ERD 정제 이미지 생성
 - [ ] 클래스 다이어그램 이미지 생성
 - [ ] 유스케이스 다이어그램 이미지 생성
 - [ ] 와이어프레임 Figma 파일 완성 및 이미지 내보내기

@@ -60,6 +60,8 @@ docs/
 ├── 07_algorithm/     — 알고리즘 기획 (A* 경로 탐색)
 ├── 08_schedule/      — 일정 (WBS, 간트 차트)
 ├── 09_submission/    — 제출 (체크리스트, 최종 README 계획)
+├── 10_batch/         — 배치 설계 (개요, Job, 운영)
+├── 11_frontend-roadmap/ — 프론트엔드 전환 로드맵 및 API 계약
 └── assets/           — 이미지 및 다이어그램 파일
     ├── diagrams/     — ERD, 클래스, 유스케이스 다이어그램 이미지
     ├── wireframes/   — 와이어프레임 이미지
@@ -139,3 +141,11 @@ docs/
 ```
 
 - 외부 공공 데이터 링크는 URL 전체를 표기한다.
+
+---
+
+## 다이어그램 문서화 원칙
+
+- ERD, 클래스 다이어그램, 유스케이스 다이어그램의 1차 문서화는 Markdown 안의 Mermaid를 기준으로 한다.
+- `docs/assets/diagrams/` 아래 PNG 이미지는 Mermaid 내용을 시각적으로 정제해 내보낸 결과물로 관리한다.
+- ERDCloud, draw.io 같은 도구는 후속 시각 정제에 사용할 수 있으나, 문서의 기준 소스는 Mermaid다.

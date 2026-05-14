@@ -10,9 +10,9 @@
 
 ## 아키텍처 개요
 
-SSAFY HOME 백엔드는 Spring Boot 기반의 3-레이어 아키텍처로 구성된다.
+SSAFY HOME 백엔드는 Java 17, Spring Boot 3.x, MyBatis 3.x, Spring Batch 5.x, MySQL 8.x를 기준으로 설계한다. 사용자 요청을 처리하는 API 계층과 공공 데이터 수집을 처리하는 배치 계층을 함께 둔다.
 
-```
+```text
 [HTTP 요청]
     │
     ▼
@@ -28,7 +28,24 @@ Mapper (SQL 실행, MyBatis)
 MySQL
 ```
 
-외부 공공 데이터 API는 별도 `collector` 또는 `client` 클래스에서 HTTP 호출을 담당하고, Service에서 호출한다.
+```text
+[관리자 배치 API]
+    │
+    ▼
+AdminBatchController
+    │
+    ▼
+BatchJobService
+    │
+    ▼
+Spring Batch Job / Step
+Reader → Processor → Writer → Listener
+    │
+    ▼
+MySQL
+```
+
+백엔드는 API-first 구조를 유지한다. 현재 HTML/CSS/JavaScript 화면과 향후 Vue.js 프론트엔드 모두 같은 REST API를 사용하도록 설계한다.
 
 ---
 
@@ -39,14 +56,15 @@ MySQL
 - HTTP 요청을 수신하고 요청 파라미터·본문을 검증한다.
 - Service를 호출하고 결과를 공통 응답 포맷으로 변환해 반환한다.
 - 예외 처리는 Controller에서 직접 하지 않는다. `@ControllerAdvice`로 통합한다.
-- 인증 체크는 Interceptor 또는 AOP에서 처리하고, Controller는 인증이 완료된 요청만 받는다.
+- 인증 체크는 Interceptor에서 처리하고, Controller는 인증이 완료된 요청만 받는다.
 
 ### Service
 
 - 비즈니스 로직을 처리하는 레이어다.
-- 여러 Mapper 호출을 조합하거나 외부 API 클라이언트를 호출한다.
+- 여러 Mapper 호출을 조합한다.
 - 트랜잭션은 Service 레이어에서 `@Transactional`로 관리한다.
 - 도메인 규칙(중복 확인, 권한 검사 등)을 이 레이어에서 처리한다.
+- 공공 데이터 수집 자체는 일반 Service에서 직접 수행하지 않고 Spring Batch Job 내부에서 처리한다.
 
 ### Mapper
 
@@ -74,6 +92,30 @@ MySQL
 - SQL은 `src/main/resources/mapper/{domain}Mapper.xml`에 작성한다.
 - 동적 쿼리는 `<if>`, `<choose>`, `<foreach>` 태그를 사용한다.
 - ResultMap을 사용해 컬럼명과 Java 필드명 차이를 명시적으로 매핑한다.
+
+---
+
+## Spring Batch 아키텍처 원칙
+
+- 공공 데이터 수집은 Spring Batch로 시작부터 분리 설계한다.
+- 관리자 API는 Job 실행, 실행 상태 조회, 재시작 요청만 담당한다.
+- 실제 수집, 검증, 정규화, DB 적재는 Job/Step/Reader/Processor/Writer에서 처리한다.
+- 초기 핵심 Job은 `houseDealCollectJob`이다.
+- 향후 `regionCodeCollectJob`, `commercialCollectJob`, `environmentCollectJob`을 같은 구조로 확장할 수 있다.
+
+### 초기 배치 흐름
+
+```text
+POST /api/admin/batch/house-deals
+    → AdminBatchController
+    → BatchJobService
+    → JobLauncher
+    → houseDealCollectJob
+        → Reader: 국토교통부 API 조회
+        → Processor: 데이터 검증·정규화
+        → Writer: house, house_deal 저장
+        → Listener: batch_collection_log 기록
+```
 
 ---
 
@@ -116,24 +158,32 @@ Controller에서 직접 `ApiResponse`를 생성하거나, `ResponseEntity<ApiRes
 
 Spring MVC Interceptor를 사용해 인증이 필요한 API에 대해 세션 유효성을 검사한다.
 
-```
+```text
 요청 → DispatcherServlet → HandlerInterceptor (세션 검사) → Controller
 ```
 
 - `HandlerInterceptor.preHandle()`에서 세션 존재 여부를 확인한다.
 - 세션이 없으면 `UnauthorizedException`을 던진다.
 - `@LoginRequired` 어노테이션(커스텀)으로 인증 필요 여부를 Controller 메서드에 표시한다 (미정).
+- 세션 기반 인증을 유지하며 JWT로 전환하지 않는다.
+
+향후 Vue.js 전환으로 프론트엔드와 API가 교차 출처로 분리될 경우 아래 항목을 함께 설정한다.
+
+- CORS 허용 출처 지정
+- `allowCredentials` 활성화
+- 프론트엔드의 credentials 포함 요청
+- 세션 쿠키 SameSite 정책 검토
 
 ---
 
 ## 외부 API 클라이언트
 
-공공 데이터 API 호출은 별도 클라이언트 클래스에서 담당한다.
+공공 데이터 API 호출은 `external` 패키지의 전용 클라이언트가 담당한다.
 
-```
-HouseCollectService → MolitApiClient → 국토교통부 API
-CommercialService → CommercialApiClient → 공공 상권 API
-EnvironmentService → SeoulOpenApiClient → 서울 열린데이터 API
+```text
+batch.reader / batch.processor → external.molit → 국토교통부 API
+batch.reader / batch.processor → external.vworld → VWorld API
+EnvironmentService → external.seoul → 서울 열린데이터 API
 ```
 
-외부 API 장애 시 Service에서 catch해 기본값 또는 DB 캐시 데이터를 반환한다.
+외부 API 장애 시 조회성 기능은 기 수집 DB 또는 빈 결과를 반환하고, 배치 수집 기능은 Job 실패·재시도 정책으로 처리한다.

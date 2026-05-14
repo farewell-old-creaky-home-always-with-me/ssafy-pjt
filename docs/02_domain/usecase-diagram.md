@@ -76,7 +76,7 @@
 
 ## Mermaid 유스케이스 표현
 
-UML 표준 유스케이스 다이어그램은 Mermaid가 직접 지원하지 않는다. 아래는 관계 구조를 나타내는 flowchart 형태로 표현한 것이다. 실제 다이어그램은 ERDCloud, draw.io, StarUML 등 UML 도구로 작성한다.
+유스케이스 다이어그램의 1차 문서화는 Mermaid를 기준으로 한다. 아래는 관계 구조를 나타내는 flowchart 형태의 문서 기준본이다. 이후 필요하면 draw.io 등으로 시각 정제한 PNG를 추가한다.
 
 ```mermaid
 flowchart LR
@@ -117,8 +117,8 @@ flowchart LR
 
 ## 다이어그램 작성 가이드
 
-1. **도구**: draw.io, StarUML, PlantUML 중 하나를 선택한다 (미정).
-2. **저장 위치**: `assets/diagrams/usecase-YYYYMMDD.png`
+1. **문서 기준**: Markdown 내 Mermaid 다이어그램을 기준 소스로 유지한다.
+2. **저장 위치**: 정제된 이미지는 `assets/diagrams/usecase-YYYYMMDD.png`에 저장한다.
 3. **포함 관계 (include)**: 점선 화살표에 `<<include>>` 스테레오타입을 표시한다.
 4. **확장 관계 (extend)**: 점선 화살표에 `<<extend>>` 스테레오타입을 표시한다.
 5. **액터 상속**: 비회원 → 회원 → 관리자 순으로 권한이 누적됨을 상속 화살표로 표현한다.

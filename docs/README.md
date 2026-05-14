@@ -10,7 +10,7 @@
 
 ## 문서 목적
 
-이 디렉토리는 SSAFY HOME 프로젝트의 전체 설계 및 개발 문서를 관리한다. 요구사항 정의부터 DB 설계, API 명세, 알고리즘 설명, 제출 체크리스트까지 하나의 흐름으로 연결되도록 구성했다.
+이 디렉토리는 SSAFY HOME 프로젝트의 전체 설계 및 개발 문서를 관리한다. 요구사항 정의부터 DB 설계, API 명세, 배치 설계, 알고리즘 설명, 프론트엔드 전환 준비, 제출 체크리스트까지 하나의 흐름으로 연결되도록 구성했다.
 
 ---
 
@@ -27,10 +27,12 @@
 9. `04_database/erd.md` → `table-spec.md` → `schema.sql` — DB 설계
 10. `05_api/api-overview.md` → `api-spec.md` — API 설계
 11. `06_backend/backend-architecture.md` → `package-structure.md` — 백엔드 구조
-12. `07_algorithm/astar-route-planning.md` — A* 경로 탐색 알고리즘
-13. `08_schedule/wbs.md` → `gantt-chart.md` — 일정 관리
-14. `01_requirements/requirement-traceability.md` — 요구사항 추적 매트릭스
-15. `09_submission/submission-checklist.md` — 최종 제출 점검
+12. `10_batch/batch-overview.md` → `house-deal-collect-job.md` → `batch-operation.md` — 배치 설계
+13. `07_algorithm/astar-route-planning.md` — A* 경로 탐색 알고리즘
+14. `11_frontend-roadmap/vue-transition-plan.md` → `frontend-api-contract.md` — 향후 Vue 전환 준비
+15. `08_schedule/wbs.md` → `gantt-chart.md` — 일정 관리
+16. `01_requirements/requirement-traceability.md` — 요구사항 추적 매트릭스
+17. `09_submission/submission-checklist.md` — 최종 제출 점검
 
 ---
 
@@ -65,12 +67,17 @@
 | 08-2 | [gantt-chart.md](08_schedule/gantt-chart.md) | 간트 차트 | 초안 |
 | 09-1 | [submission-checklist.md](09_submission/submission-checklist.md) | 제출 체크리스트 | 초안 |
 | 09-2 | [final-readme-plan.md](09_submission/final-readme-plan.md) | 최종 README 계획 | 초안 |
+| 10-1 | [batch-overview.md](10_batch/batch-overview.md) | 배치 개요 | 초안 |
+| 10-2 | [house-deal-collect-job.md](10_batch/house-deal-collect-job.md) | 주택 거래 수집 Job | 초안 |
+| 10-3 | [batch-operation.md](10_batch/batch-operation.md) | 배치 운영 | 초안 |
+| 11-1 | [vue-transition-plan.md](11_frontend-roadmap/vue-transition-plan.md) | Vue 전환 계획 | 초안 |
+| 11-2 | [frontend-api-contract.md](11_frontend-roadmap/frontend-api-contract.md) | 프론트엔드 API 계약 | 초안 |
 
 ---
 
 ## 문서 의존성 흐름
 
-```
+```text
 프로젝트 개요
     │
     ├─► 기술 스택
@@ -84,15 +91,16 @@
     ├─► 도메인 개요 ──► 사용자 시나리오 ──► 유스케이스 다이어그램
     │
     ├─► 화면 목록 ──► 화면 흐름 ──► 와이어프레임
+    │                              │
+    │                              └─► Vue 전환 계획 ──► 프론트엔드 API 계약
     │
     ├─► 데이터 소스 ──► ERD ──► 테이블 명세 ──► schema.sql
     │
     ├─► API 설계 원칙 ──► API 명세
     │
     ├─► 백엔드 아키텍처 ──► 패키지 구조 ──► 클래스 다이어그램
-    │                                           │
-    │                                           ▼
-    │                                     에러 처리
+    │                              │
+    │                              └─► 배치 개요 ──► 주택 거래 수집 Job ──► 배치 운영
     │
     ├─► A* 경로 탐색 알고리즘
     │
@@ -105,7 +113,7 @@
 
 ## 요구사항 추적 설명
 
-모든 기능 요구사항은 `REQ-{도메인}-{번호}` 형식의 ID를 부여한다. 동일 ID가 요구사항 문서, UI 화면 목록, API 명세, DB 테이블, 백엔드 클래스, 알고리즘 문서에 걸쳐 참조된다. 요구사항 추적 매트릭스(`01_requirements/requirement-traceability.md`)에서 각 요구사항이 어느 문서, 화면, API, 테이블, 클래스와 연결되는지 한눈에 확인할 수 있다.
+모든 기능 요구사항은 `REQ-{도메인}-{번호}` 형식의 ID를 부여한다. 동일 ID가 요구사항 문서, UI 화면 목록, API 명세, DB 테이블, 백엔드 클래스, 알고리즘 문서, 배치 문서에 걸쳐 참조된다.
 
 | ID 접두어 | 도메인 |
 |-----------|--------|
@@ -130,6 +138,8 @@
 - [ ] DB 스키마 (`04_database/schema.sql`)
 - [ ] 유스케이스 다이어그램 (`02_domain/usecase-diagram.md`)
 - [ ] 클래스 다이어그램 (`06_backend/class-diagram.md`)
+- [ ] 배치 설계 문서 (`10_batch/`)
+- [ ] Vue 전환 문서 (`11_frontend-roadmap/`)
 - [ ] WBS (`08_schedule/wbs.md`)
 - [ ] 간트 차트 (`08_schedule/gantt-chart.md`)
 - [ ] 화면 설계 캡처 (`assets/wireframes/`, `assets/screenshots/`)

@@ -201,7 +201,7 @@ GET /api/routes?startLat={}&startLng={}&endLat={}&endLng={}
 |--------|------|
 | `RouteController` | API 파라미터 수신 및 응답 반환 |
 | `RouteService` | 가장 가까운 노드 찾기, AStarPathFinder 호출, 결과 변환 |
-| `RouteMapper` | route_node 및 route_edge 조회 |
+| `RouteMapper` | 초기 구현에서 route_node 및 route_edge 전체 조회 |
 | `AStarPathFinder` | A* 알고리즘 구현. RouteNode·RouteEdge 입력, RouteResult 반환 |
 | `RouteNode` | 노드 도메인 클래스 |
 | `RouteEdge` | 엣지 도메인 클래스 |

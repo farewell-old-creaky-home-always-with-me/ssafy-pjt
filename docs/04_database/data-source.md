@@ -37,9 +37,9 @@
 **데이터 전처리:**
 - 금액 필드의 쉼표 제거 후 정수 변환
 - 아파트 실거래 수집 건은 `house_deal.deal_type`을 `매매`로 저장
-- 매매 수집 건은 `deposit_amount`, `monthly_rent`를 모두 `NULL`로 저장해 DB 제약을 만족시킨다.
+- 매매 수집 건은 `deposit_amount`를 `NULL`, `monthly_rent`를 `0`으로 저장한다.
 - 거래연도·월·일을 DATE 형식으로 조합
-- 중복 단지 처리: `region_code + apt_name + jibun` 조합으로 중복 확인
+- 중복 단지 처리: `region_code + apt_name + jibun + house_type` 조합으로 중복 확인
 
 ---
 
@@ -53,7 +53,7 @@
 | 업데이트 주기 | 월 단위 |
 | 저장 테이블 | `house`, `house_deal` |
 
-DS-001과 동일한 필드 구조를 사용한다. `house.house_type` 컬럼으로 아파트/다세대를 구분하고, 매매 수집 건은 `house_deal.deal_type`을 `매매`로 저장하며 `deposit_amount`, `monthly_rent`는 `NULL`로 저장한다.
+DS-001과 동일한 필드 구조를 사용한다. `house.house_type` 컬럼으로 아파트/다세대를 구분하고, 매매 수집 건은 `house_deal.deal_type`을 `매매`로 저장하며 `deposit_amount`는 `NULL`, `monthly_rent`는 `0`으로 저장한다.
 
 ---
 

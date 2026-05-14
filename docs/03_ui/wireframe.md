@@ -52,7 +52,7 @@
 ### SCR-DETAIL (매물 상세)
 
 - 상단: 주택 기본 정보 (이름, 주소, 건축연도)
-- 중앙 좌: 지도 컴포넌트 (매물 위치 핀)
+- 중앙 좌: Kakao Maps API 기반 지도 컴포넌트 (매물 위치 핀)
 - 중앙 우: 거래 이력 테이블
 - 하단 탭: 상권 정보 / 환경 정보 / 경로 탐색 패널 (탭 전환)
 - 경로 탐색 패널: 목적지 입력 필드 + 탐색 버튼 + 결과 표시 영역
@@ -83,7 +83,7 @@
 | SearchForm | 시도·시군구·읍면동 드롭다운 선택 | SCR-MAIN, SCR-SEARCH |
 | HouseCard | 주택 거래 요약 정보 카드 | SCR-RESULT |
 | DealTable | 거래 이력 테이블 | SCR-DETAIL |
-| MapViewer | 외부 지도 API 렌더링 영역 | SCR-DETAIL, SCR-COMMERCIAL |
+| MapViewer | Kakao Maps API 렌더링 영역 | SCR-DETAIL, SCR-COMMERCIAL |
 | RoutePanel | 목적지 입력 + 경로 결과 패널 | SCR-DETAIL |
 | FavoriteList | 관심 지역 목록 및 삭제 버튼 | SCR-FAVORITE |
 | NoticeTable | 공지사항 목록 테이블 | SCR-NOTICE-LIST |

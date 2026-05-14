@@ -181,27 +181,29 @@
   }
 }
 ```
-로그인하지 않은 경우 `isAuthenticated: false`, 나머지 필드 null.
+
+로그인하지 않은 경우 `isAuthenticated: false`, 나머지 필드는 `null`이다.
 
 ---
 
-## 주택 API
+## 관리자 배치 API
 
-### POST /api/admin/house/collect — 주택 거래 데이터 수집
+### POST /api/admin/batch/house-deals — 주택 거래 수집 Job 실행
 
 | 항목 | 내용 |
 |------|------|
 | 관련 요구사항 | REQ-HOUSE-001 |
 | 인증 필요 | 예 (관리자 전용) |
-| 설명 | 국토교통부 실거래가 데이터를 수집하고 DB에 저장하는 관리자용 API |
+| 설명 | `houseDealCollectJob` 실행을 요청한다. 실제 수집·변환·저장은 Spring Batch 내부에서 처리한다 |
 
 **요청 본문**
 ```json
 {
-  "regionCode": "1111000000",
+  "regionCode": "11110",
   "yearMonth": "202605",
-  "houseType": "아파트",
-  "dealType": "매매"
+  "houseType": "APARTMENT",
+  "dealType": "SALE",
+  "requestedBy": "admin@example.com"
 }
 ```
 
@@ -210,9 +212,15 @@
 {
   "success": true,
   "data": {
-    "collectedCount": 120,
-    "skippedCount": 8,
-    "failedCount": 2
+    "jobExecutionId": 101,
+    "jobName": "houseDealCollectJob",
+    "status": "STARTED",
+    "parameters": {
+      "regionCode": "11110",
+      "yearMonth": "202605",
+      "houseType": "APARTMENT",
+      "dealType": "SALE"
+    }
   }
 }
 ```
@@ -220,9 +228,108 @@
 **오류 케이스**
 - 400: 유효하지 않은 수집 조건
 - 403: 관리자 권한 필요
-- 502: 외부 공공 데이터 API 호출 실패
+- 409: 동일 파라미터 Job이 이미 실행 중임
+- 500: Job 실행 준비 실패
 
 ---
+
+### GET /api/admin/batch/jobs — 최근 배치 실행 목록 조회
+
+| 항목 | 내용 |
+|------|------|
+| 관련 요구사항 | REQ-HOUSE-001 |
+| 인증 필요 | 예 (관리자 전용) |
+
+**응답 (200)**
+```json
+{
+  "success": true,
+  "data": {
+    "items": [
+      {
+        "jobExecutionId": 101,
+        "jobName": "houseDealCollectJob",
+        "status": "COMPLETED",
+        "startedAt": "2026-05-14T10:00:00",
+        "endedAt": "2026-05-14T10:03:20"
+      }
+    ]
+  }
+}
+```
+
+**오류 케이스**
+- 403: 관리자 권한 필요
+
+---
+
+### GET /api/admin/batch/jobs/{jobExecutionId} — 배치 실행 상세 조회
+
+| 항목 | 내용 |
+|------|------|
+| 관련 요구사항 | REQ-HOUSE-001 |
+| 인증 필요 | 예 (관리자 전용) |
+
+**응답 (200)**
+```json
+{
+  "success": true,
+  "data": {
+    "jobExecutionId": 101,
+    "jobName": "houseDealCollectJob",
+    "status": "FAILED",
+    "parameters": {
+      "regionCode": "11110",
+      "yearMonth": "202605",
+      "houseType": "APARTMENT",
+      "dealType": "SALE"
+    },
+    "stepExecutions": [
+      {
+        "stepName": "houseDealCollectStep",
+        "readCount": 120,
+        "writeCount": 118,
+        "skipCount": 2
+      }
+    ]
+  }
+}
+```
+
+**오류 케이스**
+- 403: 관리자 권한 필요
+- 404: 해당 Job 실행 이력 없음
+
+---
+
+### POST /api/admin/batch/jobs/{jobExecutionId}/restart — 실패 Job 재시작
+
+| 항목 | 내용 |
+|------|------|
+| 관련 요구사항 | REQ-HOUSE-001 |
+| 인증 필요 | 예 (관리자 전용) |
+
+**응답 (200)**
+```json
+{
+  "success": true,
+  "data": {
+    "previousJobExecutionId": 101,
+    "jobExecutionId": 102,
+    "jobName": "houseDealCollectJob",
+    "status": "STARTED"
+  }
+}
+```
+
+**오류 케이스**
+- 403: 관리자 권한 필요
+- 404: 해당 Job 실행 이력 없음
+- 409: 재시작 불가능한 Job 상태
+
+---
+
+## 주택 API
 
 ### GET /api/houses — 주택 거래 목록 검색
 
@@ -236,7 +343,7 @@
 | 파라미터 | 필수 | 설명 |
 |---------|------|------|
 | regionCode | O | 행정구역 코드 |
-| houseType | | 주택 유형 (아파트, 다세대) |
+| houseType | | 주택 유형 (`아파트`, `다세대`) |
 | minAmount | | 최소 거래금액 (만 원) |
 | maxAmount | | 최대 거래금액 (만 원) |
 | page | | 페이지 번호 (기본 1) |
@@ -255,7 +362,10 @@
         "buildYear": 2005,
         "houseType": "아파트",
         "latestDeal": {
+          "dealType": "매매",
           "dealAmount": 80000,
+          "depositAmount": null,
+          "monthlyRent": 0,
           "dealDate": "2026-04-15",
           "area": 84.5,
           "floor": 10
@@ -270,7 +380,7 @@
 ```
 
 **오류 케이스**
-- 400: regionCode 누락 또는 형식 오류
+- 400: `regionCode` 누락 또는 형식 오류
 
 ---
 
@@ -295,11 +405,14 @@
     "buildYear": 2005,
     "houseType": "아파트",
     "latitude": 37.5665,
-    "longitude": 126.9780,
+    "longitude": 126.978,
     "deals": [
       {
         "dealId": 10,
+        "dealType": "매매",
         "dealAmount": 80000,
+        "depositAmount": null,
+        "monthlyRent": 0,
         "dealDate": "2026-04-15",
         "area": 84.5,
         "floor": 10
@@ -310,7 +423,7 @@
 ```
 
 **오류 케이스**
-- 404: houseId 존재하지 않음 (`HOUSE_NOT_FOUND`)
+- 404: `houseId` 존재하지 않음 (`HOUSE_NOT_FOUND`)
 
 ---
 
@@ -365,7 +478,7 @@
 ```
 
 **오류 케이스**
-- 400: 유효하지 않은 regionCode
+- 400: 유효하지 않은 `regionCode`
 - 409: 이미 등록된 관심 지역 (`DUPLICATE_FAVORITE`)
 
 ---
@@ -381,7 +494,7 @@
 
 **오류 케이스**
 - 403: 본인 관심 지역이 아님
-- 404: favoriteId 없음
+- 404: `favoriteId` 없음
 
 ---
 
@@ -414,8 +527,8 @@
         "bizName": "스타벅스 종로점",
         "categoryLarge": "음식점",
         "categoryMedium": "커피/음료",
-        "latitude": 37.5700,
-        "longitude": 126.9800,
+        "latitude": 37.57,
+        "longitude": 126.98,
         "distance": 230
       }
     ]
@@ -455,7 +568,7 @@
         "unit": "μg/m³",
         "measuredDate": "2026-05-13",
         "latitude": 37.5665,
-        "longitude": 126.9780
+        "longitude": 126.978
       }
     ]
   }
@@ -463,7 +576,7 @@
 ```
 
 **오류 케이스**
-- 400: lat 또는 lng 누락
+- 400: `lat` 또는 `lng` 누락
 - 404: 서비스 범위 외 지역 (`UNSUPPORTED_REGION`)
 
 ---
@@ -476,6 +589,7 @@
 |------|------|
 | 관련 요구사항 | REQ-ROUTE-001 |
 | 인증 필요 | 예 |
+| 비고 | 매물 상세 페이지 자체는 비회원도 접근 가능하지만, 경로 탐색 패널과 이 API 호출은 로그인한 사용자만 사용할 수 있다 |
 
 **쿼리 파라미터**
 
@@ -495,9 +609,9 @@
     "estimatedTime": 15,
     "searchedNodeCount": 340,
     "path": [
-      { "nodeId": 10, "latitude": 37.5665, "longitude": 126.9780 },
-      { "nodeId": 15, "latitude": 37.5670, "longitude": 126.9790 },
-      { "nodeId": 22, "latitude": 37.5680, "longitude": 126.9800 }
+      { "nodeId": 10, "latitude": 37.5665, "longitude": 126.978 },
+      { "nodeId": 15, "latitude": 37.567, "longitude": 126.979 },
+      { "nodeId": 22, "latitude": 37.568, "longitude": 126.98 }
     ]
   }
 }
@@ -516,7 +630,7 @@
 - 400: 필수 파라미터 누락
 - 401: 로그인하지 않은 상태 (`UNAUTHORIZED`)
 - 404: 출발지 또는 목적지 주변에 그래프 노드 없음 (`NODE_NOT_FOUND`)
-- 422: 경로 없음 (그래프 연결 끊김) (`ROUTE_NOT_FOUND`)
+- 422: 경로 없음 (`ROUTE_NOT_FOUND`)
 
 ---
 
@@ -529,7 +643,7 @@
 | 관련 요구사항 | REQ-NOTICE-001 |
 | 인증 필요 | 아니오 |
 
-**쿼리 파라미터**: page, size (선택)
+**쿼리 파라미터**: `page`, `size` (선택)
 
 **응답 (200)**
 ```json
@@ -567,16 +681,15 @@
   "data": {
     "noticeId": 1,
     "title": "서비스 점검 안내",
-    "content": "5월 15일 오전 2시~4시 서비스 점검이 있습니다.",
+    "content": "2026-05-20 오전 2시에 점검이 진행됩니다.",
     "authorName": "관리자",
-    "createdAt": "2026-05-10T10:00:00",
-    "updatedAt": null
+    "createdAt": "2026-05-10T10:00:00"
   }
 }
 ```
 
 **오류 케이스**
-- 404: 공지사항 없음 (`NOTICE_NOT_FOUND`)
+- 404: `noticeId` 없음
 
 ---
 
@@ -585,23 +698,25 @@
 | 항목 | 내용 |
 |------|------|
 | 관련 요구사항 | REQ-NOTICE-003 |
-| 인증 필요 | 예 (관리자) |
+| 인증 필요 | 예 (관리자 전용) |
 
 **요청 본문**
 ```json
-{ "title": "점검 안내", "content": "내용입니다." }
+{
+  "title": "서비스 점검 안내",
+  "content": "2026-05-20 오전 2시에 점검이 진행됩니다."
+}
 ```
 
 **응답 (201)**
 ```json
 {
   "success": true,
-  "data": { "noticeId": 2 }
+  "data": {
+    "noticeId": 1
+  }
 }
 ```
-
-**오류 케이스**
-- 403: 관리자 권한 없음 (`FORBIDDEN`)
 
 ---
 
@@ -610,16 +725,16 @@
 | 항목 | 내용 |
 |------|------|
 | 관련 요구사항 | REQ-NOTICE-004 |
-| 인증 필요 | 예 (관리자) |
-
-**요청 본문**
-```json
-{ "title": "수정된 제목", "content": "수정된 내용" }
-```
+| 인증 필요 | 예 (관리자 전용) |
 
 **응답 (200)**
 ```json
-{ "success": true, "data": { "noticeId": 2 } }
+{
+  "success": true,
+  "data": {
+    "noticeId": 1
+  }
+}
 ```
 
 ---
@@ -629,10 +744,6 @@
 | 항목 | 내용 |
 |------|------|
 | 관련 요구사항 | REQ-NOTICE-005 |
-| 인증 필요 | 예 (관리자) |
+| 인증 필요 | 예 (관리자 전용) |
 
 **응답 (204)**: 본문 없음
-
-**오류 케이스**
-- 403: 권한 없음
-- 404: 공지사항 없음

@@ -19,6 +19,7 @@
 | 관심 지역 | favorite_area | 회원이 등록한 관심 행정구역 |
 | 상권 정보 | commercial_area | 위치 주변 상업 시설 정보 |
 | 환경 정보 | environment_info | 위치 주변 환경 점검 데이터 |
+| 배치 수집 로그 | batch_collection_log | 배치 실행별 수집 요약 결과 |
 | 공지사항 | notice | 서비스 공지 정보 |
 | 경로 노드 | route_node | A* 탐색용 그래프 노드 (위치 지점) |
 | 경로 엣지 | route_edge | A* 탐색용 그래프 간선 (노드 간 연결) |
@@ -34,10 +35,13 @@
 | member — favorite_area | 1 : N | 한 회원이 여러 관심 지역 등록 가능 |
 | region_code — favorite_area | 1 : N | 한 행정구역이 여러 회원의 관심 지역으로 등록 가능 |
 | member — notice | 1 : N | 한 회원(관리자)이 여러 공지사항 작성 가능 |
+| region_code — batch_collection_log | 1 : N | 한 행정구역 기준으로 여러 수집 로그가 기록될 수 있음 |
 | route_node — route_edge | 1 : N (출발) | 한 노드에서 여러 엣지 출발 가능 |
 | route_node — route_edge | 1 : N (도착) | 한 노드로 여러 엣지 도착 가능 |
 
 `commercial_area`, `environment_info`는 외부 API에서 조회하는 데이터로, 회원·주택 테이블과 직접 FK 관계를 갖지 않는다. 위도·경도 기반으로 서비스 레이어에서 연계한다.
+
+Spring Batch의 Job/Step 실행 메타데이터 테이블은 프레임워크 기본 `schema-mysql.sql`을 사용해 생성한다. 이 문서에는 서비스 전용 테이블인 `batch_collection_log`만 포함한다.
 
 ---
 
@@ -66,10 +70,28 @@ erDiagram
     house_deal {
         bigint deal_id PK "거래 ID"
         bigint house_id FK "주택 ID"
+        varchar deal_type "거래 유형"
         int deal_amount "거래금액 (만원)"
+        int deposit_amount "보증금액 (만원)"
+        int monthly_rent "월세금액 (만원)"
         date deal_date "거래일"
         decimal area "전용면적 (㎡)"
         int floor "층"
+    }
+
+    batch_collection_log {
+        bigint collection_log_id PK "수집 로그 ID"
+        bigint job_execution_id "Job 실행 ID"
+        varchar job_name "Job 이름"
+        varchar data_type "수집 데이터 유형"
+        varchar region_code FK "행정구역 코드"
+        varchar year_month "수집 연월"
+        varchar house_type "주택 유형"
+        varchar deal_type "거래 유형"
+        int collected_count "수집 반영 건수"
+        int skipped_count "스킵 건수"
+        int failed_count "실패 건수"
+        varchar status "실행 상태"
     }
 
     member {
@@ -136,6 +158,7 @@ erDiagram
     member ||--o{ favorite_area : "등록"
     region_code ||--o{ favorite_area : "지정"
     member ||--o{ notice : "작성"
+    region_code ||--o{ batch_collection_log : "기준"
     route_node ||--o{ route_edge : "출발"
     route_node ||--o{ route_edge : "도착"
 ```
@@ -144,8 +167,8 @@ erDiagram
 
 ## ERD 작성 가이드
 
-1. **도구**: ERDCloud, draw.io, dbdiagram.io 중 하나를 선택한다 (미정).
-2. **저장 위치**: `assets/diagrams/erd-YYYYMMDD.png`
+1. **문서 기준**: Markdown 내 Mermaid ER 다이어그램을 기준 소스로 유지한다.
+2. **저장 위치**: 정제된 이미지는 `assets/diagrams/erd-YYYYMMDD.png`에 저장한다.
 3. **표기법**: Crow's Foot 표기법으로 카디널리티를 표시한다.
 4. **컬럼 표기**: PK, FK, NOT NULL, 데이터 타입을 명시한다.
 5. **확정 전 컬럼**: 미정 항목은 표시하되 주석으로 미정 표기한다.
