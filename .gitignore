@@ -1,6 +1,8 @@
-# Claude
+# Claude & Codex
 .claude/
 CLAUDE.md
+./codex/
+AGENTS.md
 
 # Node
 node_modules/
