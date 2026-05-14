@@ -1,3 +1,5 @@
+![alt text](docs/raw/image.png)
+
 # WhereIsMyHouse AI Navigator - DB 설계 README
 
 ## 1. 프로젝트 개요
