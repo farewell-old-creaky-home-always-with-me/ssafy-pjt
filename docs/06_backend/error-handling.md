@@ -2,7 +2,7 @@
 
 - 상태: 초안
 - 작성자:
-- 마지막 수정일: 2026-05-14
+- 마지막 수정일: 2026-05-15
 - 관련 요구사항: 전체
 - 관련 문서: [backend-architecture.md](backend-architecture.md), [../05_api/api-overview.md](../05_api/api-overview.md)
 
@@ -27,6 +27,7 @@
 | success | boolean | 항상 false |
 | error.code | String | 도메인 기반 에러 코드 |
 | error.message | String | 사용자 친화적 오류 메시지 (한국어) |
+| error.fields | Array | 필드별 유효성 오류 목록. 필요한 경우에만 포함 |
 
 ---
 
@@ -81,6 +82,18 @@
 | FAVORITE_NOT_FOUND | 404 | 해당 관심 지역 없음 |
 | FAVORITE_DUPLICATE | 409 | 이미 등록된 관심 지역 |
 | FAVORITE_FORBIDDEN | 403 | 본인 관심 지역이 아님 |
+
+### 상권 (COMMERCIAL)
+
+| 에러 코드 | HTTP 상태 | 설명 |
+|----------|-----------|------|
+| COMMERCIAL_INVALID_COORDINATE | 400 | 유효하지 않은 위도 또는 경도 |
+
+### 환경 (ENV)
+
+| 에러 코드 | HTTP 상태 | 설명 |
+|----------|-----------|------|
+| ENV_INVALID_COORDINATE | 400 | 유효하지 않은 위도 또는 경도 |
 
 ### 경로 탐색 (ROUTE)
 
@@ -193,3 +206,14 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleGeneral(Exception ex) { ... }
 }
 ```
+
+---
+
+## 권한 적용 규칙
+
+| 구분 | 처리 규칙 |
+|------|-----------|
+| 인증이 필요한 API에 비회원 요청 | `AUTH_UNAUTHORIZED` + 401 |
+| 관리자 전용 API에 일반 회원 요청 | `AUTH_FORBIDDEN` 또는 `NOTICE_FORBIDDEN` + 403 |
+| 본인 소유 리소스가 아닌 관심 지역 조작 | `FAVORITE_FORBIDDEN` + 403 |
+| 경로 탐색 API 비회원 요청 | `AUTH_UNAUTHORIZED` + 401 |
