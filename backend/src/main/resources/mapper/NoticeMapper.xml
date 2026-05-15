@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.notice.mapper.NoticeMapper">
+
+    <resultMap id="noticeResultMap" type="com.ssafy.home.notice.dto.NoticeEntity">
+        <id property="noticeId" column="notice_id"/>
+        <result property="memberId" column="member_id"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="authorName" column="author_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="countNotices" resultType="long">
+        SELECT COUNT(*)
+        FROM notice
+    </select>
+
+    <select id="findNotices" resultMap="noticeResultMap">
+        SELECT
+            n.notice_id,
+            n.member_id,
+            n.title,
+            n.content,
+            m.name AS author_name,
+            n.created_at,
+            n.updated_at
+        FROM notice n
+        INNER JOIN member m ON m.member_id = n.member_id
+        ORDER BY n.created_at DESC, n.notice_id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="findNoticeById" resultMap="noticeResultMap">
+        SELECT
+            n.notice_id,
+            n.member_id,
+            n.title,
+            n.content,
+            m.name AS author_name,
+            n.created_at,
+            n.updated_at
+        FROM notice n
+        INNER JOIN member m ON m.member_id = n.member_id
+        WHERE n.notice_id = #{noticeId}
+    </select>
+
+    <insert id="insertNotice" parameterType="com.ssafy.home.notice.dto.NoticeEntity" useGeneratedKeys="true" keyProperty="noticeId">
+        INSERT INTO notice (
+            member_id,
+            title,
+            content
+        ) VALUES (
+            #{memberId},
+            #{title},
+            #{content}
+        )
+    </insert>
+
+    <update id="updateNotice" parameterType="com.ssafy.home.notice.dto.NoticeEntity">
+        UPDATE notice
+        SET
+            title = #{title},
+            content = #{content},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE notice_id = #{noticeId}
+    </update>
+
+    <delete id="deleteNoticeById">
+        DELETE FROM notice
+        WHERE notice_id = #{noticeId}
+    </delete>
+</mapper>

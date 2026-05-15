@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.environment.mapper.EnvironmentMapper">
+
+    <select id="findEnvironmentInfos" resultType="com.ssafy.home.environment.dto.EnvironmentEntity">
+        SELECT
+            env_id AS envId,
+            item_name AS itemName,
+            value,
+            unit,
+            measured_date AS measuredDate,
+            latitude,
+            longitude,
+            SQRT(
+                POW((latitude - #{lat}) * 111320, 2)
+                + POW((longitude - #{lng}) * 111320 * COS(RADIANS(#{lat})), 2)
+            ) AS distance
+        FROM environment_info
+        HAVING distance &lt;= #{radius}
+        ORDER BY distance ASC, env_id ASC
+    </select>
+</mapper>

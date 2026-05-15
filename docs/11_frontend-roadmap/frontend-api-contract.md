@@ -26,6 +26,8 @@
 
 배치 관리자 화면은 향후 관리자 전용 확장 범위이며, 현재 사용자 UI 필수 범위에는 포함하지 않는다.
 
+`GET /api/houses`는 `regionCode`를 필수로 받고, 선택 필터로 `houseType`, `dealType`, `minAmount`, `maxAmount`, `page`, `size`를 사용한다.
+
 ---
 
 ## 프론트가 의존하는 응답 필드
