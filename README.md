@@ -1,4 +1,4 @@
-[![Enter with BGM](./static/raw/image.png)](https://farewell-old-creaky-home-always-with-me.github.io/ssafy-pjt/)
+![Enter with BGM](./static/raw/image.png)
 
 # WhereIsMyHouse AI Navigator - DB 설계 README
 
