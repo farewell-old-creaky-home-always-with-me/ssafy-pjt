@@ -1,8 +1,8 @@
 # 테이블 명세
 
-- 상태: 초안
+- 상태: 완료
 - 작성자:
-- 마지막 수정일: 2026-05-14
+- 마지막 수정일: 2026-05-15
 - 관련 요구사항: REQ-HOUSE-001, REQ-HOUSE-002, REQ-MEMBER-001, REQ-AUTH-001, REQ-FAVORITE-001, REQ-COMMERCIAL-001, REQ-ENV-001, REQ-ROUTE-001, REQ-NOTICE-001
 - 관련 문서: [erd.md](erd.md), [schema.sql](schema.sql)
 
