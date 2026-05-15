@@ -2,7 +2,7 @@
 
 - 상태: 초안
 - 작성자:
-- 마지막 수정일: 2026-05-14
+- 마지막 수정일: 2026-05-15
 - 관련 요구사항: REQ-HOUSE-002, REQ-AUTH-001, REQ-ROUTE-001
 - 관련 문서: [vue-transition-plan.md](vue-transition-plan.md), [../05_api/api-spec.md](../05_api/api-spec.md), [../03_ui/screen-list.md](../03_ui/screen-list.md)
 
@@ -43,6 +43,7 @@
 
 - 성공 여부는 `success` 필드로 판단한다.
 - 실패 시 `error.code`, `error.message`를 우선 사용한다.
+- 필드 단위 검증 오류가 있으면 `error.fields[]`를 함께 사용한다.
 - 401은 로그인 필요 상태로 처리한다.
 - 403은 권한 부족 안내로 처리한다.
 - 404는 대상 리소스가 없음을 표시한다.

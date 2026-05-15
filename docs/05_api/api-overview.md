@@ -2,7 +2,7 @@
 
 - 상태: 초안
 - 작성자:
-- 마지막 수정일: 2026-05-14
+- 마지막 수정일: 2026-05-15
 - 관련 요구사항: 전체
 - 관련 문서: [api-spec.md](api-spec.md), [../06_backend/backend-architecture.md](../06_backend/backend-architecture.md)
 
@@ -73,6 +73,8 @@
 }
 ```
 
+필드 유효성 검사 오류처럼 세부 오류가 필요한 경우에만 `error.fields`를 선택적으로 포함한다.
+
 ---
 
 ## HTTP 상태 코드 사용
@@ -87,6 +89,7 @@
 | 403 Forbidden | 권한 없음 (로그인은 됐으나 권한 부족) |
 | 404 Not Found | 리소스 없음 |
 | 409 Conflict | 중복 리소스 (이미 등록된 이메일, 중복 관심 지역 등) |
+| 422 Unprocessable Entity | 요청 형식은 유효하지만 처리 결과가 없음 (예: 경로 탐색 실패) |
 | 500 Internal Server Error | 서버 내부 오류 |
 
 `204 No Content` 응답은 공통 응답 포맷을 적용하지 않으며, 응답 본문을 반환하지 않는다.
@@ -115,12 +118,12 @@
 
 | 항목 | 규칙 | 예시 |
 |------|------|------|
-| URL 경로 | 소문자 케밥케이스 | `/api/favorite-areas` |
+| URL 경로 | 소문자 케밥케이스 또는 복수 명사 경로 | `/api/favorites` |
 | URL 리소스 | 복수 명사 | `/api/houses`, `/api/members` |
 | 쿼리 파라미터 | 카멜케이스 | `?startLat=37.5&endLng=126.9` |
 | 요청 본문 필드 | 카멜케이스 | `{"dealAmount": 50000}` |
 | 응답 필드 | 카멜케이스 | `{"totalDistance": 1200}` |
-| 에러 코드 | 대문자 스네이크케이스 | `HOUSE_NOT_FOUND`, `DUPLICATE_EMAIL` |
+| 에러 코드 | 대문자 스네이크케이스 | `HOUSE_NOT_FOUND`, `MEMBER_DUPLICATE_EMAIL` |
 
 ---
 
@@ -132,6 +135,16 @@
 |---------|--------|------|
 | page | 1 | 페이지 번호 (1부터 시작) |
 | size | 20 | 페이지당 항목 수 |
+
+---
+
+## 권한 적용 기준
+
+| 구분 | 설명 | 대표 API |
+|------|------|-----------|
+| 비회원 접근 가능 | 조회성 기능. 로그인 없이 사용 가능 | `GET /api/houses`, `GET /api/houses/{houseId}`, `GET /api/commercial`, `GET /api/environment`, `GET /api/notices`, `GET /api/notices/{noticeId}` |
+| 로그인 필요 | 개인화 정보 또는 세션 사용 기능 | `POST /api/auth/logout`, `GET /api/auth/me`, `GET/PUT/DELETE /api/members/me`, `POST/GET/DELETE /api/favorites`, `GET /api/routes` |
+| 관리자만 가능 | 운영 또는 관리 기능 | `POST /api/notices`, `PUT /api/notices/{noticeId}`, `DELETE /api/notices/{noticeId}`, `POST /api/admin/batch/house-deals` |
 
 ---
 
