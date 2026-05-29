@@ -4,9 +4,9 @@ import com.ssafy.home.environment.dto.EnvironmentResponse;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import com.ssafy.home.global.response.ItemsResponse;
 import java.math.BigDecimal;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,14 +15,14 @@ public class EnvironmentService {
 
     private final EnvironmentMapper environmentMapper;
 
-    public ItemsResponse<EnvironmentResponse> getEnvironmentInfos(BigDecimal lat, BigDecimal lng, Integer radius) {
+    public List<EnvironmentResponse> getEnvironmentInfos(BigDecimal lat, BigDecimal lng, Integer radius) {
         validateCoordinate(lat, lng);
         int normalizedRadius = radius == null ? 1000 : radius;
         if (normalizedRadius <= 0) {
             throw new CustomException(ErrorCode.ENV_INVALID_RADIUS);
         }
 
-        return new ItemsResponse<>(environmentMapper.findEnvironmentInfos(lat, lng, normalizedRadius)
+        return environmentMapper.findEnvironmentInfos(lat, lng, normalizedRadius)
                 .stream()
                 .map(entity -> new EnvironmentResponse(
                         entity.getEnvId(),
@@ -34,7 +34,7 @@ public class EnvironmentService {
                         entity.getLongitude(),
                         entity.getDistance()
                 ))
-                .toList());
+                .toList();
     }
 
     private void validateCoordinate(BigDecimal lat, BigDecimal lng) {

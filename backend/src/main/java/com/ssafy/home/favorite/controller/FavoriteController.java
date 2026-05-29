@@ -5,9 +5,9 @@ import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.service.FavoriteService;
 import com.ssafy.home.global.interceptor.LoginRequired;
-import com.ssafy.home.global.response.ItemsResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +28,7 @@ public class FavoriteController {
     private final FavoriteService favoriteService;
 
     @GetMapping
-    public ItemsResponse<FavoriteResponse> getFavorites(HttpSession session) {
+    public List<FavoriteResponse> getFavorites(HttpSession session) {
         return favoriteService.getFavorites(getMemberId(session));
     }
 

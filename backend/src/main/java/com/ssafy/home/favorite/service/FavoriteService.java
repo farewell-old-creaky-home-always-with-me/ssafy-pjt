@@ -7,9 +7,8 @@ import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import com.ssafy.home.global.response.ItemsResponse;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +18,11 @@ public class FavoriteService {
 
     private final FavoriteMapper favoriteMapper;
 
-    public ItemsResponse<FavoriteResponse> getFavorites(Long memberId) {
-        List<FavoriteResponse> items = favoriteMapper.findByMemberId(memberId)
+    public List<FavoriteResponse> getFavorites(Long memberId) {
+        return favoriteMapper.findByMemberId(memberId)
                 .stream()
                 .map(this::toResponse)
                 .toList();
-        return new ItemsResponse<>(items);
     }
 
     public FavoriteCreateResponse createFavorite(Long memberId, CreateFavoriteRequest request) {

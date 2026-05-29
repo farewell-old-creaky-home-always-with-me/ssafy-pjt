@@ -4,9 +4,9 @@ import com.ssafy.home.commercial.dto.CommercialResponse;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import com.ssafy.home.global.response.ItemsResponse;
 import java.math.BigDecimal;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,7 +15,7 @@ public class CommercialService {
 
     private final CommercialMapper commercialMapper;
 
-    public ItemsResponse<CommercialResponse> getCommercials(
+    public List<CommercialResponse> getCommercials(
             BigDecimal lat,
             BigDecimal lng,
             Integer radius,
@@ -27,7 +27,7 @@ public class CommercialService {
             throw new CustomException(ErrorCode.COMMERCIAL_INVALID_RADIUS);
         }
 
-        return new ItemsResponse<>(commercialMapper.findCommercials(lat, lng, normalizedRadius, normalizeNullable(category))
+        return commercialMapper.findCommercials(lat, lng, normalizedRadius, normalizeNullable(category))
                 .stream()
                 .map(entity -> new CommercialResponse(
                         entity.getCommercialId(),
@@ -38,7 +38,7 @@ public class CommercialService {
                         entity.getLongitude(),
                         entity.getDistance()
                 ))
-                .toList());
+                .toList();
     }
 
     private void validateCoordinate(BigDecimal lat, BigDecimal lng) {
