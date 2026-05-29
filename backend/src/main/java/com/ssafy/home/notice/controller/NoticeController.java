@@ -1,7 +1,6 @@
 package com.ssafy.home.notice.controller;
 
 import com.ssafy.home.global.interceptor.AdminOnly;
-import com.ssafy.home.global.response.ApiResponse;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
 import com.ssafy.home.notice.dto.NoticeIdResponse;
@@ -33,35 +32,35 @@ public class NoticeController {
     }
 
     @GetMapping
-    public ApiResponse<PageResponse<NoticeListItemResponse>> getNotices(
+    public PageResponse<NoticeListItemResponse> getNotices(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        return ApiResponse.success(noticeService.getNotices(page, size));
+        return noticeService.getNotices(page, size);
     }
 
     @GetMapping("/{noticeId}")
-    public ApiResponse<NoticeDetailResponse> getNotice(@PathVariable Long noticeId) {
-        return ApiResponse.success(noticeService.getNotice(noticeId));
+    public NoticeDetailResponse getNotice(@PathVariable Long noticeId) {
+        return noticeService.getNotice(noticeId);
     }
 
     @AdminOnly
     @PostMapping
-    public ResponseEntity<ApiResponse<NoticeIdResponse>> createNotice(
+    public ResponseEntity<NoticeIdResponse> createNotice(
             @Valid @RequestBody NoticeRequest request,
             HttpSession session
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(noticeService.createNotice(getMemberId(session), request)));
+                .body(noticeService.createNotice(getMemberId(session), request));
     }
 
     @AdminOnly
     @PutMapping("/{noticeId}")
-    public ApiResponse<NoticeIdResponse> updateNotice(
+    public NoticeIdResponse updateNotice(
             @PathVariable Long noticeId,
             @Valid @RequestBody NoticeRequest request
     ) {
-        return ApiResponse.success(noticeService.updateNotice(noticeId, request));
+        return noticeService.updateNotice(noticeId, request);
     }
 
     @AdminOnly

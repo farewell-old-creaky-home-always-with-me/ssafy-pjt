@@ -1,7 +1,6 @@
 package com.ssafy.home.member.controller;
 
 import com.ssafy.home.global.interceptor.LoginRequired;
-import com.ssafy.home.global.response.ApiResponse;
 import com.ssafy.home.member.dto.CreateMemberRequest;
 import com.ssafy.home.member.dto.MemberResponse;
 import com.ssafy.home.member.dto.MemberUpdateResponse;
@@ -30,24 +29,24 @@ public class MemberController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<MemberResponse>> createMember(@Valid @RequestBody CreateMemberRequest request) {
+    public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody CreateMemberRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(memberService.createMember(request)));
+                .body(memberService.createMember(request));
     }
 
     @LoginRequired
     @GetMapping("/me")
-    public ApiResponse<MemberResponse> getMyMember(HttpSession session) {
-        return ApiResponse.success(memberService.getMyMember(getMemberId(session)));
+    public MemberResponse getMyMember(HttpSession session) {
+        return memberService.getMyMember(getMemberId(session));
     }
 
     @LoginRequired
     @PutMapping("/me")
-    public ApiResponse<MemberUpdateResponse> updateMyMember(
+    public MemberUpdateResponse updateMyMember(
             @Valid @RequestBody UpdateMemberRequest request,
             HttpSession session
     ) {
-        return ApiResponse.success(memberService.updateMyMember(getMemberId(session), request));
+        return memberService.updateMyMember(getMemberId(session), request);
     }
 
     @LoginRequired

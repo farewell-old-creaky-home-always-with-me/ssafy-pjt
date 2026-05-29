@@ -5,10 +5,10 @@ import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.auth.service.AuthService;
 import com.ssafy.home.global.interceptor.LoginRequired;
-import com.ssafy.home.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,22 +26,22 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ApiResponse<LoginResponse> login(
+    public LoginResponse login(
             @Valid @RequestBody LoginRequest request,
             HttpServletRequest httpServletRequest
     ) {
-        return ApiResponse.success(authService.login(request, httpServletRequest));
+        return authService.login(request, httpServletRequest);
     }
 
     @LoginRequired
     @PostMapping("/logout")
-    public ApiResponse<Void> logout(HttpSession session) {
+    public ResponseEntity<Void> logout(HttpSession session) {
         authService.logout(session);
-        return ApiResponse.success(null, "로그아웃되었습니다");
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")
-    public ApiResponse<AuthMeResponse> getAuthMe(HttpServletRequest request) {
-        return ApiResponse.success(authService.getAuthMe(request.getSession(false)));
+    public AuthMeResponse getAuthMe(HttpServletRequest request) {
+        return authService.getAuthMe(request.getSession(false));
     }
 }

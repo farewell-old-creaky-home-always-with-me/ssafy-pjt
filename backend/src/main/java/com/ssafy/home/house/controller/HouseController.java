@@ -1,6 +1,5 @@
 package com.ssafy.home.house.controller;
 
-import com.ssafy.home.global.response.ApiResponse;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.house.dto.HouseDetailResponse;
 import com.ssafy.home.house.dto.HouseSummaryResponse;
@@ -22,7 +21,7 @@ public class HouseController {
     }
 
     @GetMapping
-    public ApiResponse<PageResponse<HouseSummaryResponse>> searchHouses(
+    public PageResponse<HouseSummaryResponse> searchHouses(
             @RequestParam String regionCode,
             @RequestParam(required = false) String houseType,
             @RequestParam(required = false) String dealType,
@@ -31,11 +30,11 @@ public class HouseController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        return ApiResponse.success(houseService.searchHouses(regionCode, houseType, dealType, minAmount, maxAmount, page, size));
+        return houseService.searchHouses(regionCode, houseType, dealType, minAmount, maxAmount, page, size);
     }
 
     @GetMapping("/{houseId}")
-    public ApiResponse<HouseDetailResponse> getHouseDetail(@PathVariable Long houseId) {
-        return ApiResponse.success(houseService.getHouseDetail(houseId));
+    public HouseDetailResponse getHouseDetail(@PathVariable Long houseId) {
+        return houseService.getHouseDetail(houseId);
     }
 }

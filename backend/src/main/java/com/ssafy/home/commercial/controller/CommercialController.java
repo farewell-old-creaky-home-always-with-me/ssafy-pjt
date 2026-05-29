@@ -2,7 +2,6 @@ package com.ssafy.home.commercial.controller;
 
 import com.ssafy.home.commercial.dto.CommercialResponse;
 import com.ssafy.home.commercial.service.CommercialService;
-import com.ssafy.home.global.response.ApiResponse;
 import com.ssafy.home.global.response.ItemsResponse;
 import java.math.BigDecimal;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,12 +20,12 @@ public class CommercialController {
     }
 
     @GetMapping
-    public ApiResponse<ItemsResponse<CommercialResponse>> getCommercials(
+    public ItemsResponse<CommercialResponse> getCommercials(
             @RequestParam BigDecimal lat,
             @RequestParam BigDecimal lng,
             @RequestParam(required = false) Integer radius,
             @RequestParam(required = false) String category
     ) {
-        return ApiResponse.success(commercialService.getCommercials(lat, lng, radius, category));
+        return commercialService.getCommercials(lat, lng, radius, category);
     }
 }

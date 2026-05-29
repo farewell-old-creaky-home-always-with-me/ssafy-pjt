@@ -5,7 +5,6 @@ import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.service.FavoriteService;
 import com.ssafy.home.global.interceptor.LoginRequired;
-import com.ssafy.home.global.response.ApiResponse;
 import com.ssafy.home.global.response.ItemsResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -31,17 +30,17 @@ public class FavoriteController {
     }
 
     @GetMapping
-    public ApiResponse<ItemsResponse<FavoriteResponse>> getFavorites(HttpSession session) {
-        return ApiResponse.success(favoriteService.getFavorites(getMemberId(session)));
+    public ItemsResponse<FavoriteResponse> getFavorites(HttpSession session) {
+        return favoriteService.getFavorites(getMemberId(session));
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<FavoriteCreateResponse>> createFavorite(
+    public ResponseEntity<FavoriteCreateResponse> createFavorite(
             @Valid @RequestBody CreateFavoriteRequest request,
             HttpSession session
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(favoriteService.createFavorite(getMemberId(session), request)));
+                .body(favoriteService.createFavorite(getMemberId(session), request));
     }
 
     @DeleteMapping("/{favoriteId}")
