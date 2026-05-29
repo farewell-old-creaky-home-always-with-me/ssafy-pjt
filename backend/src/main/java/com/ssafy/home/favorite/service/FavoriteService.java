@@ -5,10 +5,8 @@ import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteEntity;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
-import com.ssafy.home.global.exception.DuplicateResourceException;
-import com.ssafy.home.global.exception.ForbiddenException;
-import com.ssafy.home.global.exception.ResourceNotFoundException;
-import com.ssafy.home.global.exception.ValidationException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.global.response.ItemsResponse;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,10 +32,10 @@ public class FavoriteService {
     public FavoriteCreateResponse createFavorite(Long memberId, CreateFavoriteRequest request) {
         String regionCode = request.regionCode().trim();
         if (!favoriteMapper.existsRegionCode(regionCode)) {
-            throw new ValidationException("HOUSE_INVALID_REGION", "유효하지 않은 행정구역 코드입니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_REGION);
         }
         if (favoriteMapper.existsByMemberIdAndRegionCode(memberId, regionCode)) {
-            throw new DuplicateResourceException("FAVORITE_DUPLICATE", "이미 등록된 관심 지역입니다");
+            throw new CustomException(ErrorCode.FAVORITE_DUPLICATE);
         }
 
         FavoriteEntity favorite = new FavoriteEntity();
@@ -47,7 +45,7 @@ public class FavoriteService {
         try {
             favoriteMapper.insertFavorite(favorite);
         } catch (DataIntegrityViolationException ex) {
-            throw new DuplicateResourceException("FAVORITE_DUPLICATE", "이미 등록된 관심 지역입니다");
+            throw new CustomException(ErrorCode.FAVORITE_DUPLICATE);
         }
 
         return new FavoriteCreateResponse(favorite.getFavoriteId(), regionCode);
@@ -56,10 +54,10 @@ public class FavoriteService {
     public void deleteFavorite(Long memberId, Long favoriteId) {
         Long ownerMemberId = favoriteMapper.findOwnerMemberIdByFavoriteId(favoriteId);
         if (ownerMemberId == null) {
-            throw new ResourceNotFoundException("FAVORITE_NOT_FOUND", "해당 관심 지역을 찾을 수 없습니다");
+            throw new CustomException(ErrorCode.FAVORITE_NOT_FOUND);
         }
         if (!ownerMemberId.equals(memberId)) {
-            throw new ForbiddenException("FAVORITE_FORBIDDEN", "본인 관심 지역만 삭제할 수 있습니다");
+            throw new CustomException(ErrorCode.FAVORITE_FORBIDDEN);
         }
         favoriteMapper.deleteByFavoriteIdAndMemberId(favoriteId, memberId);
     }

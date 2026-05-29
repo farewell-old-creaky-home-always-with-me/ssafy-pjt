@@ -1,7 +1,7 @@
 package com.ssafy.home.notice.service;
 
-import com.ssafy.home.global.exception.ResourceNotFoundException;
-import com.ssafy.home.global.exception.ValidationException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
 import com.ssafy.home.notice.dto.NoticeEntity;
@@ -59,14 +59,14 @@ public class NoticeService {
 
     private void validatePage(int page, int size) {
         if (page < 1 || size < 1 || size > 100) {
-            throw new ValidationException("COMMON_INVALID_INPUT", "페이지 조건이 올바르지 않습니다");
+            throw new CustomException(ErrorCode.COMMON_INVALID_PAGE);
         }
     }
 
     private NoticeEntity requireNotice(Long noticeId) {
         NoticeEntity notice = noticeMapper.findNoticeById(noticeId);
         if (notice == null) {
-            throw new ResourceNotFoundException("NOTICE_NOT_FOUND", "해당 공지사항을 찾을 수 없습니다");
+            throw new CustomException(ErrorCode.NOTICE_NOT_FOUND);
         }
         return notice;
     }

@@ -3,7 +3,8 @@ package com.ssafy.home.auth.service;
 import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
-import com.ssafy.home.global.exception.UnauthorizedException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.global.interceptor.AuthInterceptor;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.mapper.MemberMapper;
@@ -26,7 +27,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {
         MemberEntity member = memberMapper.findByEmail(request.email().trim());
         if (member == null || !passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new UnauthorizedException("AUTH_INVALID_CREDENTIALS", "이메일 또는 비밀번호가 올바르지 않습니다");
+            throw new CustomException(ErrorCode.AUTH_INVALID_CREDENTIALS);
         }
 
         HttpSession existingSession = httpServletRequest.getSession(false);

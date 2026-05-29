@@ -1,7 +1,7 @@
 package com.ssafy.home.global.interceptor;
 
-import com.ssafy.home.global.exception.ForbiddenException;
-import com.ssafy.home.global.exception.UnauthorizedException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
@@ -30,13 +30,13 @@ public class AuthInterceptor implements HandlerInterceptor {
                 : request.getSession(false).getAttribute(SESSION_MEMBER_ID);
 
         if ((loginRequired || adminOnly) && memberId == null) {
-            throw new UnauthorizedException("AUTH_UNAUTHORIZED", "로그인이 필요합니다");
+            throw new CustomException(ErrorCode.AUTH_UNAUTHORIZED);
         }
 
         if (adminOnly) {
             Object isAdmin = request.getSession(false).getAttribute(SESSION_IS_ADMIN);
             if (!(isAdmin instanceof Boolean admin) || !admin) {
-                throw new ForbiddenException("AUTH_FORBIDDEN", "접근 권한이 없습니다");
+                throw new CustomException(ErrorCode.AUTH_FORBIDDEN);
             }
         }
 

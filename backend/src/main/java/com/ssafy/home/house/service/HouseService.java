@@ -1,7 +1,7 @@
 package com.ssafy.home.house.service;
 
-import com.ssafy.home.global.exception.ResourceNotFoundException;
-import com.ssafy.home.global.exception.ValidationException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.house.dto.HouseDealRow;
 import com.ssafy.home.house.dto.HouseDetailResponse;
@@ -64,7 +64,7 @@ public class HouseService {
     public HouseDetailResponse getHouseDetail(Long houseId) {
         HouseDetailRow house = houseMapper.findHouseById(houseId);
         if (house == null) {
-            throw new ResourceNotFoundException("HOUSE_NOT_FOUND", "해당 주택을 찾을 수 없습니다");
+            throw new CustomException(ErrorCode.HOUSE_NOT_FOUND);
         }
 
         List<HouseDetailResponse.HouseDealResponse> deals = houseMapper.findHouseDealsByHouseId(houseId)
@@ -87,47 +87,47 @@ public class HouseService {
 
     private void validateRegionCode(String regionCode) {
         if (!houseMapper.existsRegionCode(regionCode)) {
-            throw new ValidationException("HOUSE_INVALID_REGION", "유효하지 않은 행정구역 코드입니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_REGION);
         }
     }
 
     private void validateHouseType(String houseType) {
         if (houseType != null && !ALLOWED_HOUSE_TYPES.contains(houseType.trim())) {
-            throw new ValidationException("COMMON_INVALID_INPUT", "유효하지 않은 주택 유형입니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_TYPE);
         }
     }
 
     private void validateDealType(String dealType) {
         if (dealType != null && !ALLOWED_DEAL_TYPES.contains(dealType.trim())) {
-            throw new ValidationException("COMMON_INVALID_INPUT", "유효하지 않은 거래 유형입니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_DEAL_TYPE);
         }
     }
 
     private void validateAmounts(Integer minAmount, Integer maxAmount) {
         if (minAmount != null && minAmount < 0) {
-            throw new ValidationException("COMMON_INVALID_INPUT", "최소 금액은 0 이상이어야 합니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_AMOUNT_MIN);
         }
         if (maxAmount != null && maxAmount < 0) {
-            throw new ValidationException("COMMON_INVALID_INPUT", "최대 금액은 0 이상이어야 합니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_AMOUNT_MAX);
         }
         if (minAmount != null && maxAmount != null && minAmount > maxAmount) {
-            throw new ValidationException("COMMON_INVALID_INPUT", "최소 금액은 최대 금액보다 클 수 없습니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_AMOUNT_RANGE);
         }
     }
 
     private void validatePage(int page, int size) {
         if (page < 1 || size < 1 || size > 100) {
-            throw new ValidationException("COMMON_INVALID_INPUT", "페이지 조건이 올바르지 않습니다");
+            throw new CustomException(ErrorCode.COMMON_INVALID_PAGE);
         }
     }
 
     private String normalizeRegionCode(String regionCode) {
         if (regionCode == null || regionCode.trim().isEmpty()) {
-            throw new ValidationException("HOUSE_INVALID_REGION", "행정구역 코드는 필수입니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_REGION_REQUIRED);
         }
         String normalized = regionCode.trim();
         if (normalized.length() != 10) {
-            throw new ValidationException("HOUSE_INVALID_REGION", "행정구역 코드는 10자리여야 합니다");
+            throw new CustomException(ErrorCode.HOUSE_INVALID_REGION_LENGTH);
         }
         return normalized;
     }

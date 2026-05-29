@@ -2,7 +2,8 @@ package com.ssafy.home.commercial.service;
 
 import com.ssafy.home.commercial.dto.CommercialResponse;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
-import com.ssafy.home.global.exception.ValidationException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.global.response.ItemsResponse;
 import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
@@ -25,7 +26,7 @@ public class CommercialService {
         validateCoordinate(lat, lng);
         int normalizedRadius = radius == null ? 500 : radius;
         if (normalizedRadius <= 0) {
-            throw new ValidationException("COMMERCIAL_INVALID_COORDINATE", "반경은 0보다 커야 합니다");
+            throw new CustomException(ErrorCode.COMMERCIAL_INVALID_RADIUS);
         }
 
         return new ItemsResponse<>(commercialMapper.findCommercials(lat, lng, normalizedRadius, normalizeNullable(category))
@@ -48,7 +49,7 @@ public class CommercialService {
                 || lat.compareTo(BigDecimal.valueOf(90)) > 0
                 || lng.compareTo(BigDecimal.valueOf(-180)) < 0
                 || lng.compareTo(BigDecimal.valueOf(180)) > 0) {
-            throw new ValidationException("COMMERCIAL_INVALID_COORDINATE", "유효하지 않은 좌표입니다");
+            throw new CustomException(ErrorCode.COMMERCIAL_INVALID_COORDINATE);
         }
     }
 

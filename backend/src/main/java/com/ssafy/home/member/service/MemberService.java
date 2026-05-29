@@ -1,7 +1,7 @@
 package com.ssafy.home.member.service;
 
-import com.ssafy.home.global.exception.DuplicateResourceException;
-import com.ssafy.home.global.exception.ResourceNotFoundException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.member.dto.CreateMemberRequest;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.dto.MemberResponse;
@@ -24,7 +24,7 @@ public class MemberService {
 
     public MemberResponse createMember(CreateMemberRequest request) {
         if (memberMapper.existsByEmail(request.email())) {
-            throw new DuplicateResourceException("MEMBER_DUPLICATE_EMAIL", "이미 사용 중인 이메일입니다");
+            throw new CustomException(ErrorCode.MEMBER_DUPLICATE_EMAIL);
         }
 
         MemberEntity member = new MemberEntity();
@@ -61,7 +61,7 @@ public class MemberService {
 
     private MemberEntity requireMember(MemberEntity member, Long memberId) {
         if (member == null) {
-            throw new ResourceNotFoundException("MEMBER_NOT_FOUND", "해당 회원을 찾을 수 없습니다");
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
         return member;
     }

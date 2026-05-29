@@ -4,7 +4,6 @@ import com.ssafy.home.global.response.ErrorDetail;
 import com.ssafy.home.global.response.FieldErrorDetail;
 import java.util.List;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -17,10 +16,11 @@ import jakarta.validation.ConstraintViolationException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorDetail> handleBusiness(BusinessException ex) {
-        return ResponseEntity.status(ex.getStatus())
-                .body(ErrorDetail.of(ex.getCode(), ex.getMessage()));
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorDetail> handleCustom(CustomException ex) {
+        ErrorCode code = ex.getErrorCode();
+        return ResponseEntity.status(code.getStatus())
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -31,31 +31,34 @@ public class GlobalExceptionHandler {
                 .map(this::toFieldErrorDetail)
                 .toList();
 
-        return ResponseEntity.badRequest()
-                .body(ErrorDetail.of("COMMON_INVALID_INPUT", "입력값이 올바르지 않습니다", fields));
+        ErrorCode code = ErrorCode.COMMON_INVALID_INPUT;
+        return ResponseEntity.status(code.getStatus())
+                .body(ErrorDetail.of(code.name(), code.getMessage(), fields));
     }
 
     @ExceptionHandler({
-            ValidationException.class,
             ConstraintViolationException.class,
             MissingServletRequestParameterException.class,
             MethodArgumentTypeMismatchException.class
     })
     public ResponseEntity<ErrorDetail> handleBadRequest(Exception ex) {
-        return ResponseEntity.badRequest()
-                .body(ErrorDetail.of("COMMON_INVALID_INPUT", "입력값이 올바르지 않습니다"));
+        ErrorCode code = ErrorCode.COMMON_INVALID_INPUT;
+        return ResponseEntity.status(code.getStatus())
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorDetail> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(ErrorDetail.of("COMMON_INVALID_INPUT", "요청을 처리할 수 없습니다"));
+        ErrorCode code = ErrorCode.COMMON_DATA_CONFLICT;
+        return ResponseEntity.status(code.getStatus())
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorDetail> handleGeneral(Exception ex) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(ErrorDetail.of("COMMON_INTERNAL_ERROR", "서버 내부 오류가 발생했습니다"));
+        ErrorCode code = ErrorCode.COMMON_INTERNAL_ERROR;
+        return ResponseEntity.status(code.getStatus())
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     private FieldErrorDetail toFieldErrorDetail(FieldError fieldError) {
