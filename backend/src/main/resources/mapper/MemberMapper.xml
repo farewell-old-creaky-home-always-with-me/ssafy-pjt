@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.member.mapper.MemberMapper">
+
+    <resultMap id="memberResultMap" type="com.ssafy.home.member.dto.MemberEntity">
+        <id property="memberId" column="member_id"/>
+        <result property="email" column="email"/>
+        <result property="password" column="password"/>
+        <result property="name" column="name"/>
+        <result property="admin" column="is_admin"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="existsByEmail" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM member
+            WHERE email = #{email}
+        )
+    </select>
+
+    <insert id="insertMember" parameterType="com.ssafy.home.member.dto.MemberEntity" useGeneratedKeys="true" keyProperty="memberId">
+        INSERT INTO member (
+            email,
+            password,
+            name,
+            is_admin
+        ) VALUES (
+            #{email},
+            #{password},
+            #{name},
+            #{admin}
+        )
+    </insert>
+
+    <select id="findById" resultMap="memberResultMap">
+        SELECT
+            member_id,
+            email,
+            password,
+            name,
+            is_admin,
+            created_at,
+            updated_at
+        FROM member
+        WHERE member_id = #{memberId}
+    </select>
+
+    <select id="findByEmail" resultMap="memberResultMap">
+        SELECT
+            member_id,
+            email,
+            password,
+            name,
+            is_admin,
+            created_at,
+            updated_at
+        FROM member
+        WHERE email = #{email}
+    </select>
+
+    <update id="updateMember" parameterType="com.ssafy.home.member.dto.MemberEntity">
+        UPDATE member
+        SET
+            name = #{name},
+            password = #{password},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE member_id = #{memberId}
+    </update>
+
+    <delete id="deleteMember">
+        DELETE FROM member
+        WHERE member_id = #{memberId}
+    </delete>
+</mapper>

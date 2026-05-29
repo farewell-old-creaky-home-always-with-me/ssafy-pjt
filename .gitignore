@@ -29,3 +29,25 @@ pnpm-debug.log*
 
 # Config
 js/config.js
+
+# Backend
+backend/HELP.md
+backend/.gradle/
+backend/build/
+backend/.apt_generated
+backend/.classpath
+backend/.factorypath
+backend/.project
+backend/.settings/
+backend/.springBeans
+backend/.sts4-cache
+backend/bin/
+backend/out/
+backend/nbproject/private/
+backend/nbbuild/
+backend/nbdist/
+backend/.nb-gradle/
+backend/.vscode/
+backend/*.iws
+backend/*.iml
+backend/*.ipr
