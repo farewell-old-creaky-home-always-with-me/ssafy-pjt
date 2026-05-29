@@ -9,6 +9,7 @@ import com.ssafy.home.notice.dto.NoticeRequest;
 import com.ssafy.home.notice.service.NoticeService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,13 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/notices")
+@RequiredArgsConstructor
 public class NoticeController {
 
     private final NoticeService noticeService;
-
-    public NoticeController(NoticeService noticeService) {
-        this.noticeService = noticeService;
-    }
 
     @GetMapping
     public PageResponse<NoticeListItemResponse> getNotices(

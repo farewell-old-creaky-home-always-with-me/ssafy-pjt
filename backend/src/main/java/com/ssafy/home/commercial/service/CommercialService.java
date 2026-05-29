@@ -4,18 +4,16 @@ import com.ssafy.home.commercial.dto.CommercialResponse;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import com.ssafy.home.global.response.ItemsResponse;
 import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CommercialService {
 
     private final CommercialMapper commercialMapper;
-
-    public CommercialService(CommercialMapper commercialMapper) {
-        this.commercialMapper = commercialMapper;
-    }
 
     public ItemsResponse<CommercialResponse> getCommercials(
             BigDecimal lat,

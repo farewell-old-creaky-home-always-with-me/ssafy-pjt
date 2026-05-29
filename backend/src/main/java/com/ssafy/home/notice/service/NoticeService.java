@@ -2,6 +2,7 @@ package com.ssafy.home.notice.service;
 
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
 import com.ssafy.home.notice.dto.NoticeEntity;
@@ -13,13 +14,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class NoticeService {
 
     private final NoticeMapper noticeMapper;
-
-    public NoticeService(NoticeMapper noticeMapper) {
-        this.noticeMapper = noticeMapper;
-    }
 
     public PageResponse<NoticeListItemResponse> getNotices(int page, int size) {
         validatePage(page, size);

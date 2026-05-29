@@ -2,6 +2,7 @@ package com.ssafy.home.house.service;
 
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.house.dto.HouseDealRow;
 import com.ssafy.home.house.dto.HouseDetailResponse;
@@ -15,16 +16,13 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class HouseService {
 
     private static final Set<String> ALLOWED_HOUSE_TYPES = Set.of("아파트", "다세대");
     private static final Set<String> ALLOWED_DEAL_TYPES = Set.of("매매", "전세", "월세");
 
     private final HouseMapper houseMapper;
-
-    public HouseService(HouseMapper houseMapper) {
-        this.houseMapper = houseMapper;
-    }
 
     public PageResponse<HouseSummaryResponse> searchHouses(
             String regionCode,

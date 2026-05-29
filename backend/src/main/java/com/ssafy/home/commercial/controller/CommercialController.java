@@ -4,6 +4,7 @@ import com.ssafy.home.commercial.dto.CommercialResponse;
 import com.ssafy.home.commercial.service.CommercialService;
 import com.ssafy.home.global.response.ItemsResponse;
 import java.math.BigDecimal;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,13 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/commercial")
+@RequiredArgsConstructor
 public class CommercialController {
 
     private final CommercialService commercialService;
-
-    public CommercialController(CommercialService commercialService) {
-        this.commercialService = commercialService;
-    }
 
     @GetMapping
     public ItemsResponse<CommercialResponse> getCommercials(

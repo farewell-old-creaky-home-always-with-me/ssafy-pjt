@@ -2,6 +2,7 @@ package com.ssafy.home.member.service;
 
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import com.ssafy.home.member.dto.CreateMemberRequest;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.dto.MemberResponse;
@@ -12,15 +13,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class MemberService {
 
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public MemberService(MemberMapper memberMapper, PasswordEncoder passwordEncoder) {
-        this.memberMapper = memberMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public MemberResponse createMember(CreateMemberRequest request) {
         if (memberMapper.existsByEmail(request.email())) {

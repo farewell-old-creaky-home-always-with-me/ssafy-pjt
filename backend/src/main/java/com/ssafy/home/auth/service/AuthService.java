@@ -5,6 +5,7 @@ import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import com.ssafy.home.global.interceptor.AuthInterceptor;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.mapper.MemberMapper;
@@ -14,15 +15,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
-
-    public AuthService(MemberMapper memberMapper, PasswordEncoder passwordEncoder) {
-        this.memberMapper = memberMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     public LoginResponse login(LoginRequest request, HttpServletRequest httpServletRequest) {
         MemberEntity member = memberMapper.findByEmail(request.email().trim());

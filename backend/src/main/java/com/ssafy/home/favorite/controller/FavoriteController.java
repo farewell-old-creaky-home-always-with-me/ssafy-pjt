@@ -8,6 +8,7 @@ import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.global.response.ItemsResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,13 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 @LoginRequired
 @RestController
 @RequestMapping("/api/favorites")
+@RequiredArgsConstructor
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
-
-    public FavoriteController(FavoriteService favoriteService) {
-        this.favoriteService = favoriteService;
-    }
 
     @GetMapping
     public ItemsResponse<FavoriteResponse> getFavorites(HttpSession session) {

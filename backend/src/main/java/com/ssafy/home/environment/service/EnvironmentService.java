@@ -4,18 +4,16 @@ import com.ssafy.home.environment.dto.EnvironmentResponse;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
+import lombok.RequiredArgsConstructor;
 import com.ssafy.home.global.response.ItemsResponse;
 import java.math.BigDecimal;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class EnvironmentService {
 
     private final EnvironmentMapper environmentMapper;
-
-    public EnvironmentService(EnvironmentMapper environmentMapper) {
-        this.environmentMapper = environmentMapper;
-    }
 
     public ItemsResponse<EnvironmentResponse> getEnvironmentInfos(BigDecimal lat, BigDecimal lng, Integer radius) {
         validateCoordinate(lat, lng);
