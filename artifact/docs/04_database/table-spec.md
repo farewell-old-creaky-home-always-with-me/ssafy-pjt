@@ -132,6 +132,29 @@
 
 ---
 
+## member_place (회원 장소)
+
+**목적**: 회원이 저장한 집, 회사, 기타 장소를 관리한다. 관심 지역과 별도 기능이다.
+
+| 컬럼명 | 타입 | PK | FK | NOT NULL | 설명 |
+|--------|------|----|----|----------|------|
+| place_id | BIGINT | O | | O | 장소 ID (AUTO_INCREMENT) |
+| member_id | BIGINT | | O | O | 회원 ID (member 참조) |
+| place_type | VARCHAR(10) | | | O | 장소 유형: HOME, WORK, OTHER |
+| name | VARCHAR(50) | | | O | 장소 표시 이름 |
+| address | VARCHAR(150) | | | O | 주소 |
+| region_code | VARCHAR(10) | | O | | 행정구역 코드 (region_code 참조) |
+| latitude | DECIMAL(10,7) | | | O | 위도 |
+| longitude | DECIMAL(10,7) | | | O | 경도 |
+| created_at | DATETIME | | | O | 등록일시 |
+| updated_at | DATETIME | | | | 수정일시 |
+
+**인덱스**: PRIMARY KEY (place_id), INDEX (member_id), INDEX (member_id, place_type)
+
+**업무 규칙**: 회원별 HOME 1개, WORK 1개, OTHER 최대 5개까지 저장한다. 제한은 서비스 계층에서 검증한다.
+
+---
+
 ## commercial_area (상권 정보)
 
 **목적**: 위치 주변 상업 시설 정보를 저장한다. 실시간 API 조회 또는 향후 배치 수집 방식으로 확장할 수 있다.

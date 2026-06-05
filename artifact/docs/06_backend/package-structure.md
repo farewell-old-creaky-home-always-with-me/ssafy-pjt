@@ -45,6 +45,7 @@ com.ssafy.home
 │   └── seoul/
 │
 ├── favorite/
+├── place/
 ├── commercial/
 ├── environment/
 ├── route/
@@ -105,6 +106,7 @@ com.ssafy.home.external
 | `external.vworld` | VWorld 행정구역 API 클라이언트 |
 | `external.seoul` | 서울 열린데이터 API 클라이언트 |
 | `favorite` | 관심 지역 등록·조회·삭제 |
+| `place` | 회원의 집, 회사, 기타 장소 저장·조회·수정·삭제 |
 | `commercial` | 위치 기반 주변 상권 정보 제공 |
 | `environment` | 위치 기반 주변 환경 정보 제공 |
 | `route` | A* 알고리즘 경로 탐색. 초기 구현은 전체 RouteNode·RouteEdge 그래프 메모리 로드 후 탐색 |
@@ -122,6 +124,7 @@ src/main/resources/
 │   ├── HouseMapper.xml
 │   ├── BatchCollectionLogMapper.xml
 │   ├── FavoriteMapper.xml
+│   ├── PlaceMapper.xml
 │   ├── CommercialMapper.xml
 │   ├── EnvironmentMapper.xml
 │   ├── RouteMapper.xml

@@ -17,6 +17,7 @@
 | 주택 거래 | house_deal | 주택별 실거래 이력 |
 | 회원 | member | 서비스 사용자 계정 |
 | 관심 지역 | favorite_area | 회원이 등록한 관심 행정구역 |
+| 회원 장소 | member_place | 회원이 저장한 집, 회사, 기타 장소 |
 | 상권 정보 | commercial_area | 위치 주변 상업 시설 정보 |
 | 환경 정보 | environment_info | 위치 주변 환경 점검 데이터 |
 | 배치 수집 로그 | batch_collection_log | 배치 실행별 수집 요약 결과 |
@@ -34,6 +35,8 @@
 | house — house_deal | 1 : N | 한 주택에 여러 거래 이력 존재 |
 | member — favorite_area | 1 : N | 한 회원이 여러 관심 지역 등록 가능 |
 | region_code — favorite_area | 1 : N | 한 행정구역이 여러 회원의 관심 지역으로 등록 가능 |
+| member — member_place | 1 : N | 한 회원이 집, 회사, 기타 장소 등록 가능 |
+| region_code — member_place | 1 : N | 한 행정구역이 여러 회원 장소의 기준 지역이 될 수 있음 |
 | member — notice | 1 : N | 한 회원(관리자)이 여러 공지사항 작성 가능 |
 | region_code — batch_collection_log | 1 : N | 한 행정구역 기준으로 여러 수집 로그가 기록될 수 있음 |
 | route_node — route_edge | 1 : N (출발) | 한 노드에서 여러 엣지 출발 가능 |
@@ -110,6 +113,19 @@ erDiagram
         datetime created_at "등록일시"
     }
 
+    member_place {
+        bigint place_id PK "장소 ID"
+        bigint member_id FK "회원 ID"
+        varchar place_type "장소 유형 (HOME/WORK/OTHER)"
+        varchar name "장소 표시 이름"
+        varchar address "주소"
+        varchar region_code FK "행정구역 코드"
+        decimal latitude "위도"
+        decimal longitude "경도"
+        datetime created_at "등록일시"
+        datetime updated_at "수정일시"
+    }
+
     notice {
         bigint notice_id PK "공지사항 ID"
         bigint member_id FK "작성자 회원 ID"
@@ -157,6 +173,8 @@ erDiagram
     house ||--o{ house_deal : "보유"
     member ||--o{ favorite_area : "등록"
     region_code ||--o{ favorite_area : "지정"
+    member ||--o{ member_place : "저장"
+    region_code ||--o{ member_place : "기준"
     member ||--o{ notice : "작성"
     region_code ||--o{ batch_collection_log : "기준"
     route_node ||--o{ route_edge : "출발"

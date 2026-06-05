@@ -126,6 +126,28 @@ CREATE TABLE IF NOT EXISTS favorite_area (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='관심 지역';
 
 -- ============================================================
+-- 회원 장소
+-- ============================================================
+CREATE TABLE IF NOT EXISTS member_place (
+    place_id    BIGINT        NOT NULL AUTO_INCREMENT COMMENT '장소 ID',
+    member_id   BIGINT        NOT NULL COMMENT '회원 ID',
+    place_type  VARCHAR(10)   NOT NULL COMMENT '장소 유형: HOME, WORK, OTHER',
+    name        VARCHAR(50)   NOT NULL COMMENT '장소 표시 이름',
+    address     VARCHAR(150)  NOT NULL COMMENT '주소',
+    region_code VARCHAR(10)            COMMENT '행정구역 코드',
+    latitude    DECIMAL(10,7) NOT NULL COMMENT '위도',
+    longitude   DECIMAL(10,7) NOT NULL COMMENT '경도',
+    created_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
+    updated_at  DATETIME               COMMENT '수정일시',
+
+    PRIMARY KEY (place_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE,
+    INDEX idx_member_place_member (member_id),
+    INDEX idx_member_place_member_type (member_id, place_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='회원 장소';
+
+-- ============================================================
 -- 공지사항
 -- ============================================================
 CREATE TABLE IF NOT EXISTS notice (

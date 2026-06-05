@@ -29,6 +29,16 @@ public enum ErrorCode {
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 관심 지역을 찾을 수 없습니다"),
     FAVORITE_FORBIDDEN(HttpStatus.FORBIDDEN, "본인 관심 지역만 삭제할 수 있습니다"),
 
+    PLACE_INVALID_TYPE(HttpStatus.BAD_REQUEST, "유효하지 않은 장소 유형입니다"),
+    PLACE_INVALID_NAME(HttpStatus.BAD_REQUEST, "장소 이름은 필수입니다"),
+    PLACE_INVALID_ADDRESS(HttpStatus.BAD_REQUEST, "주소는 필수입니다"),
+    PLACE_INVALID_COORDINATE(HttpStatus.BAD_REQUEST, "유효하지 않은 좌표입니다"),
+    PLACE_INVALID_REGION(HttpStatus.BAD_REQUEST, "유효하지 않은 행정구역 코드입니다"),
+    PLACE_DUPLICATE_TYPE(HttpStatus.CONFLICT, "이미 등록된 장소 유형입니다"),
+    PLACE_OTHER_LIMIT_EXCEEDED(HttpStatus.CONFLICT, "기타 장소는 최대 5개까지 등록할 수 있습니다"),
+    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장소를 찾을 수 없습니다"),
+    PLACE_FORBIDDEN(HttpStatus.FORBIDDEN, "본인 장소만 수정하거나 삭제할 수 있습니다"),
+
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 공지사항을 찾을 수 없습니다"),
 
     COMMERCIAL_INVALID_COORDINATE(HttpStatus.BAD_REQUEST, "유효하지 않은 좌표입니다"),
