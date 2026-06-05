@@ -1,13 +1,18 @@
 package com.ssafy.home.global.config;
 
 import com.ssafy.home.global.response.ErrorDetail;
+import com.ssafy.home.global.response.FieldErrorDetail;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.media.Content;
 import io.swagger.v3.oas.models.media.MediaType;
 import io.swagger.v3.oas.models.media.Schema;
 import io.swagger.v3.oas.models.responses.ApiResponse;
 import io.swagger.v3.oas.models.responses.ApiResponses;
+import io.swagger.v3.core.converter.ModelConverters;
+import java.util.Map;
 import org.springdoc.core.customizers.OperationCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +26,13 @@ import org.springframework.context.annotation.Configuration;
         )
 )
 public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .components(new Components()
+                        .schemas(registerSchemas(ErrorDetail.class, FieldErrorDetail.class)));
+    }
 
     @Bean
     public OperationCustomizer commonResponseCustomizer() {
@@ -47,5 +59,13 @@ public class OpenApiConfig {
                         .addMediaType("application/json", new MediaType()
                                 .schema(new Schema<ErrorDetail>()
                                         .$ref("#/components/schemas/ErrorDetail"))));
+    }
+
+    private Map<String, Schema> registerSchemas(Class<?>... classes) {
+        Map<String, Schema> schemas = new java.util.LinkedHashMap<>();
+        for (Class<?> clazz : classes) {
+            schemas.putAll(ModelConverters.getInstance().read(clazz));
+        }
+        return schemas;
     }
 }
