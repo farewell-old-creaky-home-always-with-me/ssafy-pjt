@@ -1,0 +1,19 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+*.bak
+
+# Generated artifact scratch space
+.cache/
+tmp/
+temp/
+generated/
+exports/
+rendered/

@@ -1,0 +1,31 @@
+# Package managers and builds
+node_modules/
+dist/
+build/
+coverage/
+.parcel-cache/
+.vite/
+.turbo/
+.pnpm-store/
+
+# Environment and local config
+.env
+.env.*
+js/config.js
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/settings.json
+*.swp
+*.swo
+
+# Logs and temporary files
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+tmp/
+temp/

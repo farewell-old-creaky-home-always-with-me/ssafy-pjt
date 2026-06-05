@@ -1,0 +1,41 @@
+# Gradle
+.gradle/
+build/
+out/
+bin/
+
+# Spring Boot generated helper
+HELP.md
+
+# Local application configuration
+.env
+.env.*
+application-local.yml
+application-local.yaml
+application-*.local.yml
+application-*.local.yaml
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+nbproject/private/
+nbbuild/
+nbdist/
+.nb-gradle/
+
+# Logs and runtime files
+*.log
+logs/
+tmp/
+temp/
+uploads/
