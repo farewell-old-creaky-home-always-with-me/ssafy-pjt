@@ -33,6 +33,7 @@
 15. `08_schedule/wbs.md` → `gantt-chart.md` — 일정 관리
 16. `01_requirements/requirement-traceability.md` — 요구사항 추적 매트릭스
 17. `09_submission/submission-checklist.md` — 최종 제출 점검
+18. `09_submission/raw-pdf-requirements-checklist.md` — 원본 PDF 기준 요구사항 점검
 
 ---
 
@@ -67,6 +68,7 @@
 | 08-2 | [gantt-chart.md](08_schedule/gantt-chart.md) | 간트 차트 | 초안 |
 | 09-1 | [submission-checklist.md](09_submission/submission-checklist.md) | 제출 체크리스트 | 초안 |
 | 09-2 | [final-readme-plan.md](09_submission/final-readme-plan.md) | 최종 README 계획 | 초안 |
+| 09-3 | [raw-pdf-requirements-checklist.md](09_submission/raw-pdf-requirements-checklist.md) | 원본 PDF 요구사항 체크리스트 | 초안 |
 | 10-1 | [batch-overview.md](10_batch/batch-overview.md) | 배치 개요 | 초안 |
 | 10-2 | [house-deal-collect-job.md](10_batch/house-deal-collect-job.md) | 주택 거래 수집 Job | 초안 |
 | 10-3 | [batch-operation.md](10_batch/batch-operation.md) | 배치 운영 | 초안 |
@@ -106,7 +108,7 @@
     │
     ├─► WBS ──► 간트 차트
     │
-    └─► 제출 체크리스트 ──► 최종 README 계획
+    └─► 제출 체크리스트 ──► 원본 PDF 요구사항 체크리스트 ──► 최종 README 계획
 ```
 
 ---
@@ -144,3 +146,4 @@
 - [ ] 간트 차트 (`08_schedule/gantt-chart.md`)
 - [ ] 화면 설계 캡처 (`assets/wireframes/`, `assets/screenshots/`)
 - [ ] 알고리즘 기획 문서 (`07_algorithm/astar-route-planning.md`)
+- [ ] 원본 PDF 요구사항 체크리스트 (`09_submission/raw-pdf-requirements-checklist.md`)
