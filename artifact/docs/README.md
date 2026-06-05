@@ -2,7 +2,7 @@
 
 - 상태: 초안
 - 작성자:
-- 마지막 수정일: 2026-05-14
+- 마지막 수정일: 2026-06-05
 - 관련 요구사항: 전체
 - 관련 문서: 모든 하위 문서
 
@@ -10,7 +10,7 @@
 
 ## 문서 목적
 
-이 디렉토리는 SSAFY HOME 프로젝트의 전체 설계 및 개발 문서를 관리한다. 요구사항 정의부터 DB 설계, API 명세, 배치 설계, 알고리즘 설명, 프론트엔드 전환 준비, 제출 체크리스트까지 하나의 흐름으로 연결되도록 구성했다.
+이 디렉토리는 SSAFY HOME 프로젝트의 전체 설계 및 개발 문서를 관리한다. 요구사항 정의부터 DB 설계, API 명세, 배치 설계, 알고리즘 설명, 제출 체크리스트까지 하나의 흐름으로 연결되도록 구성했다.
 
 ---
 
@@ -18,22 +18,18 @@
 
 1. `00_project/project-overview.md` — 프로젝트 전체 개요 파악
 2. `00_project/tech-stack.md` — 기술 스택 확인
-3. `00_project/document-convention.md` — 문서 작성 규칙 숙지
-4. `01_requirements/functional-requirements.md` — 기능 요구사항 확인
-5. `01_requirements/non-functional-requirements.md` — 비기능 요구사항 확인
-6. `02_domain/domain-overview.md` — 도메인 개념 파악
-7. `02_domain/user-scenarios.md` — 주요 사용자 시나리오 확인
-8. `03_ui/screen-list.md` → `screen-flow.md` — 화면 목록 및 흐름
-9. `04_database/erd.md` → `table-spec.md` → `schema.sql` — DB 설계
-10. `05_api/api-overview.md` → `api-spec.md` — API 설계
-11. `06_backend/backend-architecture.md` → `package-structure.md` — 백엔드 구조
-12. `10_batch/batch-overview.md` → `house-deal-collect-job.md` → `batch-operation.md` — 배치 설계
-13. `07_algorithm/astar-route-planning.md` — A* 경로 탐색 알고리즘
-14. `11_frontend-roadmap/vue-transition-plan.md` → `frontend-api-contract.md` — 향후 Vue 전환 준비
-15. `08_schedule/wbs.md` → `gantt-chart.md` — 일정 관리
-16. `01_requirements/requirement-traceability.md` — 요구사항 추적 매트릭스
-17. `09_submission/submission-checklist.md` — 최종 제출 점검
-18. `09_submission/raw-pdf-requirements-checklist.md` — 원본 PDF 기준 요구사항 점검
+3. `01_requirements/functional-requirements.md` — 기능 요구사항 확인
+4. `01_requirements/non-functional-requirements.md` — 비기능 요구사항 확인
+5. `02_domain/domain-overview.md` — 도메인 개념 파악
+6. `03_ui/screen-list.md` → `screen-flow.md` — 화면 목록 및 흐름
+7. `04_database/erd.md` → `table-spec.md` → `schema.sql` — DB 설계
+8. `05_api/api-overview.md` → `api-spec.md` — API 설계
+9. `06_backend/backend-architecture.md` → `package-structure.md` — 백엔드 구조
+10. `10_batch/batch-overview.md` → `house-deal-collect-job.md` → `batch-operation.md` — 배치 설계
+11. `07_algorithm/astar-route-planning.md` — A* 경로 탐색 알고리즘
+12. `11_frontend-roadmap/frontend-api-contract.md` — 프론트엔드 API 계약
+13. `08_schedule/wbs.md` → `gantt-chart.md` — 일정 관리
+14. `09_submission/submission-checklist.md` — 최종 제출 점검
 
 ---
 
@@ -43,20 +39,16 @@
 |------|------|------|------|
 | 00-1 | [project-overview.md](00_project/project-overview.md) | 프로젝트 개요 | 초안 |
 | 00-2 | [tech-stack.md](00_project/tech-stack.md) | 기술 스택 | 초안 |
-| 00-3 | [document-convention.md](00_project/document-convention.md) | 문서 작성 규칙 | 초안 |
 | 01-1 | [functional-requirements.md](01_requirements/functional-requirements.md) | 기능 요구사항 | 초안 |
 | 01-2 | [non-functional-requirements.md](01_requirements/non-functional-requirements.md) | 비기능 요구사항 | 초안 |
-| 01-3 | [requirement-traceability.md](01_requirements/requirement-traceability.md) | 요구사항 추적 매트릭스 | 초안 |
 | 02-1 | [domain-overview.md](02_domain/domain-overview.md) | 도메인 개요 | 초안 |
-| 02-2 | [user-scenarios.md](02_domain/user-scenarios.md) | 사용자 시나리오 | 초안 |
-| 02-3 | [usecase-diagram.md](02_domain/usecase-diagram.md) | 유스케이스 다이어그램 | 초안 |
+| 02-2 | [usecase-diagram.md](02_domain/usecase-diagram.md) | 유스케이스 다이어그램 | 초안 |
 | 03-1 | [screen-list.md](03_ui/screen-list.md) | 화면 목록 | 초안 |
 | 03-2 | [screen-flow.md](03_ui/screen-flow.md) | 화면 흐름 | 초안 |
-| 03-3 | [wireframe.md](03_ui/wireframe.md) | 와이어프레임 계획 | 작성 예정 |
 | 04-1 | [data-source.md](04_database/data-source.md) | 데이터 소스 | 초안 |
 | 04-2 | [erd.md](04_database/erd.md) | ERD | 초안 |
 | 04-3 | [table-spec.md](04_database/table-spec.md) | 테이블 명세 | 초안 |
-| 04-4 | [schema.sql](04_database/schema.sql) | DDL 스크립트 | 초안 |
+| 04-4 | [schema.sql](04_database/schema.sql) | DDL 스크립트 | 완료 |
 | 05-1 | [api-overview.md](05_api/api-overview.md) | API 설계 원칙 | 초안 |
 | 05-2 | [api-spec.md](05_api/api-spec.md) | API 명세 | 초안 |
 | 06-1 | [backend-architecture.md](06_backend/backend-architecture.md) | 백엔드 아키텍처 | 초안 |
@@ -67,8 +59,6 @@
 | 08-1 | [wbs.md](08_schedule/wbs.md) | WBS | 초안 |
 | 08-2 | [gantt-chart.md](08_schedule/gantt-chart.md) | 간트 차트 | 초안 |
 | 09-1 | [submission-checklist.md](09_submission/submission-checklist.md) | 제출 체크리스트 | 초안 |
-| 09-2 | [final-readme-plan.md](09_submission/final-readme-plan.md) | 최종 README 계획 | 초안 |
-| 09-3 | [raw-pdf-requirements-checklist.md](09_submission/raw-pdf-requirements-checklist.md) | 원본 PDF 요구사항 체크리스트 | 초안 |
 | 10-1 | [batch-overview.md](10_batch/batch-overview.md) | 배치 개요 | 초안 |
 | 10-2 | [house-deal-collect-job.md](10_batch/house-deal-collect-job.md) | 주택 거래 수집 Job | 초안 |
 | 10-3 | [batch-operation.md](10_batch/batch-operation.md) | 배치 운영 | 초안 |
@@ -84,17 +74,14 @@
     │
     ├─► 기술 스택
     │
-    ├─► 기능 요구사항 ──────────────────────────────┐
-    │       │                                       │
-    │       ▼                                       ▼
-    │   비기능 요구사항               요구사항 추적 매트릭스
-    │       │                           (모든 문서 연결)
+    ├─► 기능 요구사항
+    │       │
+    │       ▼
+    │   비기능 요구사항
     │
-    ├─► 도메인 개요 ──► 사용자 시나리오 ──► 유스케이스 다이어그램
+    ├─► 도메인 개요 ──► 유스케이스 다이어그램
     │
-    ├─► 화면 목록 ──► 화면 흐름 ──► 와이어프레임
-    │                              │
-    │                              └─► Vue 전환 계획 ──► 프론트엔드 API 계약
+    ├─► 화면 목록 ──► 화면 흐름 ──► 프론트엔드 API 계약
     │
     ├─► 데이터 소스 ──► ERD ──► 테이블 명세 ──► schema.sql
     │
@@ -108,7 +95,7 @@
     │
     ├─► WBS ──► 간트 차트
     │
-    └─► 제출 체크리스트 ──► 원본 PDF 요구사항 체크리스트 ──► 최종 README 계획
+    └─► 제출 체크리스트
 ```
 
 ---
@@ -144,6 +131,5 @@
 - [ ] Vue 전환 문서 (`11_frontend-roadmap/`)
 - [ ] WBS (`08_schedule/wbs.md`)
 - [ ] 간트 차트 (`08_schedule/gantt-chart.md`)
-- [ ] 화면 설계 캡처 (`assets/wireframes/`, `assets/screenshots/`)
+- [ ] 화면 설계 캡처 (`assets/screenshots/`)
 - [ ] 알고리즘 기획 문서 (`07_algorithm/astar-route-planning.md`)
-- [ ] 원본 PDF 요구사항 체크리스트 (`09_submission/raw-pdf-requirements-checklist.md`)
