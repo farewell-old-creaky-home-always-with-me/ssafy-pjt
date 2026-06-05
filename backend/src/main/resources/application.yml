@@ -1,6 +1,8 @@
 spring:
   application:
     name: ssafy-home-backend
+  config:
+    import: optional:classpath:secret/application-secret.yml
   sql:
     init:
       mode: ${SQL_INIT_MODE:always}

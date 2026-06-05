@@ -1,0 +1,3 @@
+[submodule "src/main/resources/secret"]
+	path = src/main/resources/secret
+	url = https://lab.ssafy.com/s15/a10/project/finalproject/9jo/backend-secret.git
