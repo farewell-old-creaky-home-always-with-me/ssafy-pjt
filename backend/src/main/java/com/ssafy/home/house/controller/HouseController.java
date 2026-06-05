@@ -14,11 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/houses")
 @RequiredArgsConstructor
-public class HouseController {
+public class HouseController implements HouseApiDocs {
 
     private final HouseService houseService;
 
     @GetMapping
+    @Override
     public PageResponse<HouseSummaryResponse> searchHouses(
             @RequestParam String regionCode,
             @RequestParam(required = false) String houseType,
@@ -32,6 +33,7 @@ public class HouseController {
     }
 
     @GetMapping("/{houseId}")
+    @Override
     public HouseDetailResponse getHouseDetail(@PathVariable Long houseId) {
         return houseService.getHouseDetail(houseId);
     }

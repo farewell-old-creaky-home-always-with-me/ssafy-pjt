@@ -26,6 +26,10 @@ public class OpenApiConfig {
     public OperationCustomizer commonResponseCustomizer() {
         return (operation, handlerMethod) -> {
             ApiResponses responses = operation.getResponses();
+            if (responses == null) {
+                responses = new ApiResponses();
+                operation.setResponses(responses);
+            }
 
             responses.addApiResponse("400", errorResponse("잘못된 요청"));
             responses.addApiResponse("401", errorResponse("인증 실패"));

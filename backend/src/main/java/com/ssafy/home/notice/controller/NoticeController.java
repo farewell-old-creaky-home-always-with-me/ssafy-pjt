@@ -25,11 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/notices")
 @RequiredArgsConstructor
-public class NoticeController {
+public class NoticeController implements NoticeApiDocs {
 
     private final NoticeService noticeService;
 
     @GetMapping
+    @Override
     public PageResponse<NoticeListItemResponse> getNotices(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
@@ -38,12 +39,14 @@ public class NoticeController {
     }
 
     @GetMapping("/{noticeId}")
+    @Override
     public NoticeDetailResponse getNotice(@PathVariable Long noticeId) {
         return noticeService.getNotice(noticeId);
     }
 
     @AdminOnly
     @PostMapping
+    @Override
     public ResponseEntity<NoticeIdResponse> createNotice(
             @Valid @RequestBody NoticeRequest request,
             HttpSession session
@@ -54,6 +57,7 @@ public class NoticeController {
 
     @AdminOnly
     @PutMapping("/{noticeId}")
+    @Override
     public NoticeIdResponse updateNotice(
             @PathVariable Long noticeId,
             @Valid @RequestBody NoticeRequest request
@@ -63,6 +67,7 @@ public class NoticeController {
 
     @AdminOnly
     @DeleteMapping("/{noticeId}")
+    @Override
     public ResponseEntity<Void> deleteNotice(@PathVariable Long noticeId) {
         noticeService.deleteNotice(noticeId);
         return ResponseEntity.noContent().build();

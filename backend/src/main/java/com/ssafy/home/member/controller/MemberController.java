@@ -22,11 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
-public class MemberController {
+public class MemberController implements MemberApiDocs {
 
     private final MemberService memberService;
 
     @PostMapping
+    @Override
     public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody CreateMemberRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(memberService.createMember(request));
@@ -34,12 +35,14 @@ public class MemberController {
 
     @LoginRequired
     @GetMapping("/me")
+    @Override
     public MemberResponse getMyMember(HttpSession session) {
         return memberService.getMyMember(getMemberId(session));
     }
 
     @LoginRequired
     @PutMapping("/me")
+    @Override
     public MemberUpdateResponse updateMyMember(
             @Valid @RequestBody UpdateMemberRequest request,
             HttpSession session
@@ -49,6 +52,7 @@ public class MemberController {
 
     @LoginRequired
     @DeleteMapping("/me")
+    @Override
     public ResponseEntity<Void> deleteMyMember(HttpSession session) {
         memberService.deleteMyMember(getMemberId(session));
         session.invalidate();

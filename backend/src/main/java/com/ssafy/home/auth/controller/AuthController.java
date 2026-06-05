@@ -19,11 +19,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthApiDocs {
 
     private final AuthService authService;
 
     @PostMapping("/login")
+    @Override
     public LoginResponse login(
             @Valid @RequestBody LoginRequest request,
             HttpServletRequest httpServletRequest
@@ -33,12 +34,14 @@ public class AuthController {
 
     @LoginRequired
     @PostMapping("/logout")
+    @Override
     public ResponseEntity<Void> logout(HttpSession session) {
         authService.logout(session);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/me")
+    @Override
     public AuthMeResponse getAuthMe(HttpServletRequest request) {
         return authService.getAuthMe(request.getSession(false));
     }

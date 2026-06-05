@@ -23,16 +23,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/favorites")
 @RequiredArgsConstructor
-public class FavoriteController {
+public class FavoriteController implements FavoriteApiDocs {
 
     private final FavoriteService favoriteService;
 
     @GetMapping
+    @Override
     public List<FavoriteResponse> getFavorites(HttpSession session) {
         return favoriteService.getFavorites(getMemberId(session));
     }
 
     @PostMapping
+    @Override
     public ResponseEntity<FavoriteCreateResponse> createFavorite(
             @Valid @RequestBody CreateFavoriteRequest request,
             HttpSession session
@@ -42,6 +44,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/{favoriteId}")
+    @Override
     public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteId, HttpSession session) {
         favoriteService.deleteFavorite(getMemberId(session), favoriteId);
         return ResponseEntity.noContent().build();

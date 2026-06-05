@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/commercial")
 @RequiredArgsConstructor
-public class CommercialController {
+public class CommercialController implements CommercialApiDocs {
 
     private final CommercialService commercialService;
 
     @GetMapping
+    @Override
     public List<CommercialResponse> getCommercials(
             @RequestParam BigDecimal lat,
             @RequestParam BigDecimal lng,

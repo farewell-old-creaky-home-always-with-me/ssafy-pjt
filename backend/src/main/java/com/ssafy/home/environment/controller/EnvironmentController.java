@@ -13,11 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/environment")
 @RequiredArgsConstructor
-public class EnvironmentController {
+public class EnvironmentController implements EnvironmentApiDocs {
 
     private final EnvironmentService environmentService;
 
     @GetMapping
+    @Override
     public List<EnvironmentResponse> getEnvironmentInfos(
             @RequestParam BigDecimal lat,
             @RequestParam BigDecimal lng,
