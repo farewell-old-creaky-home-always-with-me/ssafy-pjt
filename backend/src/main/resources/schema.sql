@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS batch_collection_log (
     job_name          VARCHAR(100) NOT NULL COMMENT 'Job 이름',
     data_type         VARCHAR(30)  NOT NULL COMMENT '수집 데이터 유형',
     region_code       VARCHAR(10)           COMMENT '행정구역 코드',
-    year_month        VARCHAR(6)            COMMENT '수집 기준 연월',
+    `year_month`      VARCHAR(6)            COMMENT '수집 기준 연월',
     house_type        VARCHAR(20)           COMMENT '주택 유형',
     deal_type         VARCHAR(20)           COMMENT '거래 유형',
     collected_count   INT          NOT NULL DEFAULT 0 COMMENT '수집 반영 건수',
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS batch_collection_log (
     PRIMARY KEY (collection_log_id),
     FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE,
     INDEX idx_collection_job_execution (job_execution_id),
-    INDEX idx_collection_condition (region_code, year_month, house_type, deal_type),
+    INDEX idx_collection_condition (region_code, `year_month`, house_type, deal_type),
     INDEX idx_collection_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='배치 수집 로그';
 
