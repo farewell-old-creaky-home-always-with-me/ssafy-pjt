@@ -8,7 +8,8 @@ import static org.mockito.Mockito.when;
 import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
-import com.ssafy.home.global.exception.UnauthorizedException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.mapper.MemberMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -69,7 +70,9 @@ class AuthServiceTest {
         when(passwordEncoder.matches("wrong", "encoded")).thenReturn(false);
 
         assertThatThrownBy(() -> authService.login(new LoginRequest("user@example.com", "wrong"), new MockHttpServletRequest()))
-                .isInstanceOf(UnauthorizedException.class)
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(ErrorCode.AUTH_INVALID_CREDENTIALS))
                 .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다");
     }
 
