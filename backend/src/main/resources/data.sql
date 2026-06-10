@@ -16,7 +16,7 @@ sido_name = VALUES(sido_name),
 sigungu_name = VALUES(sigungu_name),
 dong_name = VALUES(dong_name);
 
-INSERT INTO house (house_id, region_code, apt_name, jibun, road_address, build_year, house_type, latitude, longitude) VALUES
+INSERT INTO house (id, region_code, apt_name, jibun, road_address, build_year, house_type, latitude, longitude) VALUES
 (1, '1168010100', '역삼래미안', '757', '서울특별시 강남구 역삼로 306', 2005, '아파트', 37.5006130, 127.0364310),
 (2, '1168010100', '강남센트럴아이파크', '712-3', '서울특별시 강남구 테헤란로 152', 2022, '아파트', 37.5008750, 127.0354020),
 (3, '1168010300', '개포자이프레지던스', '189', '서울특별시 강남구 삼성로 14', 2023, '아파트', 37.4886330, 127.0665640),
@@ -33,7 +33,7 @@ house_type = VALUES(house_type),
 latitude = VALUES(latitude),
 longitude = VALUES(longitude);
 
-INSERT INTO house_deal (deal_id, house_id, deal_type, deal_amount, deposit_amount, monthly_rent, deal_date, area, floor) VALUES
+INSERT INTO house_deal (id, house_id, deal_type, deal_amount, deposit_amount, monthly_rent, deal_date, area, floor) VALUES
 (1, 1, '매매', 178000, NULL, 0, '2026-05-10', 84.93, 12),
 (2, 1, '전세', NULL, 92000, 0, '2026-04-18', 84.93, 9),
 (3, 2, '매매', 221000, NULL, 0, '2026-05-21', 59.97, 18),
@@ -57,7 +57,7 @@ area = VALUES(area),
 floor = VALUES(floor);
 
 INSERT INTO batch_collection_log (
-    collection_log_id,
+    id,
     job_execution_id,
     job_name,
     data_type,
@@ -88,7 +88,7 @@ status = VALUES(status),
 started_at = VALUES(started_at),
 ended_at = VALUES(ended_at);
 
-INSERT INTO member (member_id, email, password, name, is_admin) VALUES
+INSERT INTO member (id, email, password, name, is_admin) VALUES
 (1, 'admin@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '관리자', 1),
 (2, 'user@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '김싸피', 0),
 (3, 'agent@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '박중개', 0)
@@ -98,7 +98,7 @@ password = VALUES(password),
 name = VALUES(name),
 is_admin = VALUES(is_admin);
 
-INSERT INTO favorite_area (favorite_id, member_id, region_code) VALUES
+INSERT INTO favorite_area (id, member_id, region_code) VALUES
 (1, 2, '1168010100'),
 (2, 2, '1171010100'),
 (3, 3, '1111010100')
@@ -106,7 +106,7 @@ ON DUPLICATE KEY UPDATE
 member_id = VALUES(member_id),
 region_code = VALUES(region_code);
 
-INSERT INTO member_place (place_id, member_id, place_type, name, address, region_code, latitude, longitude) VALUES
+INSERT INTO member_place (id, member_id, place_type, name, address, region_code, latitude, longitude) VALUES
 (1, 2, 'HOME', '우리집', '서울특별시 강남구 역삼로 306', '1168010100', 37.5006130, 127.0364310),
 (2, 2, 'WORK', '회사', '서울특별시 강남구 테헤란로 152', '1168010100', 37.5008750, 127.0354020),
 (3, 3, 'OTHER', '상담 예정지', '서울특별시 종로구 자하문로 125', '1111010100', 37.5897430, 126.9698290)
@@ -119,7 +119,7 @@ region_code = VALUES(region_code),
 latitude = VALUES(latitude),
 longitude = VALUES(longitude);
 
-INSERT INTO notice (notice_id, member_id, title, content, created_at) VALUES
+INSERT INTO notice (id, member_id, title, content, created_at) VALUES
 (1, 1, 'SSAFY HOME 서비스 안내', '관심 지역과 실거래가 정보를 한 화면에서 확인할 수 있습니다.', '2026-05-20 09:00:00'),
 (2, 1, '목데이터 계정 안내', '데모 계정 비밀번호는 password 입니다.', '2026-05-21 10:30:00'),
 (3, 1, '주택 거래 데이터 갱신', '2026년 5월 기준 목데이터가 반영되었습니다.', '2026-06-01 08:15:00')
@@ -130,7 +130,7 @@ content = VALUES(content),
 created_at = VALUES(created_at);
 
 INSERT INTO commercial_area (
-    commercial_id,
+    id,
     biz_name,
     category_large,
     category_medium,
@@ -153,7 +153,7 @@ latitude = VALUES(latitude),
 longitude = VALUES(longitude),
 address = VALUES(address);
 
-INSERT INTO environment_info (env_id, item_name, `value`, unit, measured_date, latitude, longitude) VALUES
+INSERT INTO environment_info (id, item_name, `value`, unit, measured_date, latitude, longitude) VALUES
 (1, '초미세먼지', 18.0000, 'ug/m3', '2026-05-30', 37.5006130, 127.0364310),
 (2, '소음도', 54.2000, 'dB', '2026-05-30', 37.5008750, 127.0354020),
 (3, '녹지 접근성', 82.5000, 'score', '2026-05-30', 37.4886330, 127.0665640),
@@ -167,7 +167,7 @@ measured_date = VALUES(measured_date),
 latitude = VALUES(latitude),
 longitude = VALUES(longitude);
 
-INSERT INTO route_node (node_id, latitude, longitude, node_name) VALUES
+INSERT INTO route_node (id, latitude, longitude, node_name) VALUES
 (1, 37.5006130, 127.0364310, '역삼래미안 앞'),
 (2, 37.5008750, 127.0354020, '테헤란로 교차로'),
 (3, 37.5011220, 127.0347210, '역삼역 방면'),
@@ -178,7 +178,7 @@ latitude = VALUES(latitude),
 longitude = VALUES(longitude),
 node_name = VALUES(node_name);
 
-INSERT INTO route_edge (edge_id, from_node_id, to_node_id, distance) VALUES
+INSERT INTO route_edge (id, from_node_id, to_node_id, distance) VALUES
 (1, 1, 2, 96.5),
 (2, 2, 1, 96.5),
 (3, 2, 3, 71.8),

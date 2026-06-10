@@ -31,8 +31,8 @@ public class MemberService {
         member.setAdmin(false);
 
         memberMapper.insertMember(member);
-        MemberEntity savedMember = memberMapper.findById(member.getMemberId());
-        return toMemberResponse(requireMember(savedMember, member.getMemberId()));
+        MemberEntity savedMember = memberMapper.findById(member.getId());
+        return toMemberResponse(requireMember(savedMember, member.getId()));
     }
 
     public MemberResponse getMyMember(Long memberId) {
@@ -65,7 +65,7 @@ public class MemberService {
 
     private MemberResponse toMemberResponse(MemberEntity member) {
         return new MemberResponse(
-                member.getMemberId(),
+                member.getId(),
                 member.getEmail(),
                 member.getName(),
                 member.getCreatedAt()

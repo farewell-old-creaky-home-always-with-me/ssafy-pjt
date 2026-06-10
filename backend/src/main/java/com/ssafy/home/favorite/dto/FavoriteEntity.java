@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class FavoriteEntity {
 
-    private Long favoriteId;
+    private Long id;
     private Long memberId;
     private String regionCode;
     private String sidoName;

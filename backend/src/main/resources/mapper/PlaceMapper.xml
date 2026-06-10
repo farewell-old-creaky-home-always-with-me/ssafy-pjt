@@ -5,7 +5,7 @@
 <mapper namespace="com.ssafy.home.place.mapper.PlaceMapper">
 
     <resultMap id="placeResultMap" type="com.ssafy.home.place.dto.PlaceEntity">
-        <id property="placeId" column="place_id"/>
+        <id property="id" column="id"/>
         <result property="memberId" column="member_id"/>
         <result property="placeType" column="place_type"/>
         <result property="name" column="name"/>
@@ -32,7 +32,7 @@
           AND place_type = #{placeType}
     </select>
 
-    <insert id="insertPlace" parameterType="com.ssafy.home.place.dto.PlaceEntity" useGeneratedKeys="true" keyProperty="placeId">
+    <insert id="insertPlace" parameterType="com.ssafy.home.place.dto.PlaceEntity" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO member_place (
             member_id,
             place_type,
@@ -54,7 +54,7 @@
 
     <select id="findByMemberId" resultMap="placeResultMap">
         SELECT
-            place_id,
+            id,
             member_id,
             place_type,
             name,
@@ -66,12 +66,12 @@
             updated_at
         FROM member_place
         WHERE member_id = #{memberId}
-        ORDER BY created_at DESC, place_id DESC
+        ORDER BY created_at DESC, id DESC
     </select>
 
     <select id="findById" resultMap="placeResultMap">
         SELECT
-            place_id,
+            id,
             member_id,
             place_type,
             name,
@@ -82,7 +82,7 @@
             created_at,
             updated_at
         FROM member_place
-        WHERE place_id = #{placeId}
+        WHERE id = #{placeId}
     </select>
 
     <update id="updatePlace" parameterType="com.ssafy.home.place.dto.PlaceEntity">
@@ -94,13 +94,13 @@
             latitude = #{latitude},
             longitude = #{longitude},
             updated_at = CURRENT_TIMESTAMP
-        WHERE place_id = #{placeId}
+        WHERE id = #{id}
           AND member_id = #{memberId}
     </update>
 
     <delete id="deleteByIdAndMemberId">
         DELETE FROM member_place
-        WHERE place_id = #{placeId}
+        WHERE id = #{placeId}
           AND member_id = #{memberId}
     </delete>
 </mapper>

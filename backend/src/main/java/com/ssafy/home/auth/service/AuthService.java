@@ -33,10 +33,10 @@ public class AuthService {
         }
 
         HttpSession session = httpServletRequest.getSession(true);
-        session.setAttribute(AuthInterceptor.SESSION_MEMBER_ID, member.getMemberId());
+        session.setAttribute(AuthInterceptor.SESSION_MEMBER_ID, member.getId());
         session.setAttribute(AuthInterceptor.SESSION_IS_ADMIN, member.isAdmin());
 
-        return new LoginResponse(member.getMemberId(), member.getName(), member.isAdmin());
+        return new LoginResponse(member.getId(), member.getName(), member.isAdmin());
     }
 
     public void logout(HttpSession session) {
@@ -59,6 +59,6 @@ public class AuthService {
             return new AuthMeResponse(false, null, null, null);
         }
 
-        return new AuthMeResponse(true, member.getMemberId(), member.getName(), member.isAdmin());
+        return new AuthMeResponse(true, member.getId(), member.getName(), member.isAdmin());
     }
 }

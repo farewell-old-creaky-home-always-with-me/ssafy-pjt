@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class CommercialEntity {
 
-    private Long commercialId;
+    private Long id;
     private String bizName;
     private String categoryLarge;
     private String categoryMedium;
