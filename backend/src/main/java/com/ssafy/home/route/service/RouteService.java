@@ -128,12 +128,12 @@ public class RouteService {
     }
 
     private int calculateTotalDistM(List<Node> path) {
-        int total = 0;
+        double total = 0.0;
         for (int i = 0; i < path.size() - 1; i++) {
-            total += (int) Haversine.distance(
+            total += Haversine.distance(
                     path.get(i).getLat(), path.get(i).getLng(),
                     path.get(i + 1).getLat(), path.get(i + 1).getLng());
         }
-        return total;
+        return (int) Math.round(total);
     }
 }
