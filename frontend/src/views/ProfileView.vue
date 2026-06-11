@@ -144,7 +144,7 @@ async function handleDelete() {
   deleting.value = true
   try {
     await api.delete('/api/members/me')
-    authStore.clearUser()
+    await authStore.logout()
     router.push('/login')
   } catch (err) {
     alert(err.data?.message ?? '탈퇴에 실패했습니다')
