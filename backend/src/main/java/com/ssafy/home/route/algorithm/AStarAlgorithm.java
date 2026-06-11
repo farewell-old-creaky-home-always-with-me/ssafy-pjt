@@ -19,7 +19,7 @@ public class AStarAlgorithm {
 
     public List<Node> search(FacilityGraph graph, Node start, Node end) {
         if (start.getId() == end.getId()) {
-            return List.of();
+            return List.of(start);
         }
 
         record OpenNode(long id, double f) {}

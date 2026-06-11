@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,6 +38,7 @@ public class RouteService {
     private final RouteMapper routeMapper;
     private final AStarAlgorithm aStarAlgorithm;
 
+    @Transactional
     public RouteResponse calculateRoute(Long memberId, RouteRequest request) {
         HouseDetailRow house = houseMapper.findHouseById(request.houseId());
         if (house == null) {

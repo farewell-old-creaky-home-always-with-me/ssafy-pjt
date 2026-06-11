@@ -248,7 +248,8 @@ CREATE TABLE IF NOT EXISTS route_path (
 
     PRIMARY KEY (route_path_id),
     FOREIGN KEY (route_request_id) REFERENCES route_request(route_request_id) ON DELETE CASCADE,
-    INDEX idx_route_path_request (route_request_id)
+    INDEX idx_route_path_request (route_request_id),
+    UNIQUE KEY uq_route_path_order (route_request_id, seq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='A* 경로 좌표 목록';
 
 SET FOREIGN_KEY_CHECKS = 1;

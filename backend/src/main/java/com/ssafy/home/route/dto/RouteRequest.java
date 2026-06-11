@@ -1,8 +1,9 @@
 package com.ssafy.home.route.dto;
 
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 public record RouteRequest(
-        @NotNull Long houseId,
-        @NotNull Long placeId
+        @NotNull @Positive Long houseId,
+        @NotNull @Positive Long placeId
 ) {}
