@@ -30,7 +30,7 @@ public class CommercialService {
         return commercialMapper.findCommercials(lat, lng, normalizedRadius, normalizeNullable(category))
                 .stream()
                 .map(entity -> new CommercialResponse(
-                        entity.getCommercialId(),
+                        entity.getId(),
                         entity.getBizName(),
                         entity.getCategoryLarge(),
                         entity.getCategoryMedium(),
