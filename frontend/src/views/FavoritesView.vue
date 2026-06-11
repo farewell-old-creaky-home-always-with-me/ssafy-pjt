@@ -96,6 +96,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { Plus, X, Search, Heart, MapPin, Calendar, Trash2, AlertTriangle, Loader2 } from 'lucide-vue-next'
 import { useFavoritesStore } from '../stores/favorites.js'
+import { formatDate } from '../utils/date.js'
 import '../../css/pages/favorites.css'
 
 const favoritesStore = useFavoritesStore()
@@ -114,10 +115,6 @@ const filtered = computed(() => {
   )
 })
 
-function formatDate(iso) {
-  const d = new Date(iso)
-  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
-}
 
 async function handleAdd() {
   if (!newRegionCode.value.trim() || newRegionCode.value.length !== 10) {

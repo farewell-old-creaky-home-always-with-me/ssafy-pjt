@@ -48,6 +48,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { api } from '../api/index.js'
+import { formatDate } from '../utils/date.js'
 
 const router = useRouter()
 const notices = ref([])
@@ -56,10 +57,6 @@ const searchQuery = ref('')
 const page = ref(1)
 const totalPages = ref(1)
 
-function formatDate(iso) {
-  const d = new Date(iso)
-  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
-}
 
 const filtered = computed(() =>
   notices.value.filter(n => n.title.toLowerCase().includes(searchQuery.value.toLowerCase()))

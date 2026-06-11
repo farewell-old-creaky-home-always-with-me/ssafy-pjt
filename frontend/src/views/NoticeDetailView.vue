@@ -6,6 +6,10 @@
       </button>
 
       <div v-if="loading" style="padding:4rem;text-align:center;color:#9ca3af">불러오는 중...</div>
+      <div v-else-if="error" style="display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:0.75rem;color:#DC2626;font-size:0.875rem">
+        <AlertCircle :size="16" style="flex-shrink:0" />
+        {{ error }}
+      </div>
       <div v-else-if="notice" class="card" style="overflow:hidden">
         <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #f3f4f6">
           <h2 style="color:#1A3C6E;font-size:1.25rem;font-weight:700;margin-bottom:0.75rem">{{ notice.title }}</h2>
@@ -29,23 +33,25 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ChevronLeft, FileText, Calendar } from 'lucide-vue-next'
+import { ChevronLeft, FileText, Calendar, AlertCircle } from 'lucide-vue-next'
 import { api } from '../api/index.js'
+import { formatDate } from '../utils/date.js'
 
 const router = useRouter()
 const route = useRoute()
 const notice = ref(null)
 const loading = ref(false)
-
-function formatDate(iso) {
-  const d = new Date(iso)
-  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`
-}
+const error = ref(null)
 
 onMounted(async () => {
   loading.value = true
-  try { notice.value = await api.get(`/api/notices/${route.params.id}`) }
-  finally { loading.value = false }
+  try {
+    notice.value = await api.get(`/api/notices/${route.params.id}`)
+  } catch {
+    error.value = '공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
