@@ -109,7 +109,13 @@ async function toggleLayer(key) {
   active.value[key] = !active.value[key]
   if (active.value[key] && layerData.value[key].length === 0) {
     loading.value = true
-    try { await fetchLayer(key) } finally { loading.value = false }
+    try {
+      await fetchLayer(key)
+    } catch {
+      active.value[key] = false
+    } finally {
+      loading.value = false
+    }
   }
   renderMapOverlays()
 }
