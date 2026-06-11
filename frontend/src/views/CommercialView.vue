@@ -73,7 +73,14 @@ async function fetchAndRender() {
     const content = document.createElement('div')
     content.className = 'marker-btn'
     content.style.cssText = 'position:relative;cursor:pointer'
-    content.innerHTML = `<div class="marker-dot" style="background:${activeCat.value.color}"></div><div class="marker-label">${store.bizName}</div>`
+    const dot = document.createElement('div')
+    dot.className = 'marker-dot'
+    dot.style.background = activeCat.value.color
+    const labelEl = document.createElement('div')
+    labelEl.className = 'marker-label'
+    labelEl.textContent = store.bizName
+    content.appendChild(dot)
+    content.appendChild(labelEl)
     content.onclick = () => { selectedShop.value = store }
     const overlay = new window.kakao.maps.CustomOverlay({ position: pos, content, yAnchor: 1 })
     overlay.setMap(map)

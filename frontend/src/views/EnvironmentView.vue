@@ -56,6 +56,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { TreePine, Droplets, Wind, MapPin, Eye, EyeOff, Info } from 'lucide-vue-next'
 import { api } from '../api/index.js'
+import { escapeHtml } from '../utils/html.js'
 
 const LAYERS = [
   { key: 'green', label: '공원/녹지', icon: TreePine, color: '#27AE60', desc: '녹지 환경 데이터', keywords: ['공원', '녹지', '수목'] },
@@ -97,7 +98,7 @@ function renderMapOverlays() {
       marker.setMap(map)
       mapOverlays.push(marker)
       window.kakao.maps.event.addListener(marker, 'click', () => {
-        infowindow.setContent(`<div style="padding:10px;font-size:12px;color:#1A3C6E;min-width:150px"><span style="font-weight:700;display:block;margin-bottom:4px">${data.itemName}</span><span style="color:#6b7280">${data.value} ${data.unit}</span></div>`)
+        infowindow.setContent(`<div style="padding:10px;font-size:12px;color:#1A3C6E;min-width:150px"><span style="font-weight:700;display:block;margin-bottom:4px">${escapeHtml(data.itemName)}</span><span style="color:#6b7280">${escapeHtml(data.value)} ${escapeHtml(data.unit)}</span></div>`)
         infowindow.open(map, marker)
       })
     })
