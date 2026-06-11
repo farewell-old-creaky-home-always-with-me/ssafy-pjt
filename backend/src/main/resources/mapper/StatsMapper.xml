@@ -25,6 +25,8 @@
                            AND deal_date  &lt; DATE_FORMAT(CURDATE(), '%Y-%m-01')
                       THEN deposit_amount END) AS SIGNED)                                 AS avgLeasePriceLastMonthManwon
         FROM house_deal
+        WHERE deal_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
+          AND deal_date &lt;= CURDATE()
     </select>
 
 </mapper>
