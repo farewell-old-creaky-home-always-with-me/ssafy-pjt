@@ -1,6 +1,5 @@
 package com.ssafy.home.global.exception;
 
-import com.ssafy.home.global.response.ApiResponse;
 import com.ssafy.home.global.response.ErrorDetail;
 import com.ssafy.home.global.response.FieldErrorDetail;
 import java.util.List;
@@ -18,14 +17,14 @@ import jakarta.validation.ConstraintViolationException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ApiResponse<Void>> handleCustom(CustomException ex) {
+    public ResponseEntity<ErrorDetail> handleCustom(CustomException ex) {
         ErrorCode code = ex.getErrorCode();
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(ErrorDetail.of(code.name(), code.getMessage())));
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Void>> handleValidation(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorDetail> handleValidation(MethodArgumentNotValidException ex) {
         List<FieldErrorDetail> fields = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
@@ -34,7 +33,7 @@ public class GlobalExceptionHandler {
 
         ErrorCode code = ErrorCode.COMMON_INVALID_INPUT;
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(ErrorDetail.of(code.name(), code.getMessage(), fields)));
+                .body(ErrorDetail.of(code.name(), code.getMessage(), fields));
     }
 
     @ExceptionHandler({
@@ -42,24 +41,24 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException.class,
             MethodArgumentTypeMismatchException.class
     })
-    public ResponseEntity<ApiResponse<Void>> handleBadRequest(Exception ex) {
+    public ResponseEntity<ErrorDetail> handleBadRequest(Exception ex) {
         ErrorCode code = ErrorCode.COMMON_INVALID_INPUT;
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(ErrorDetail.of(code.name(), code.getMessage())));
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiResponse<Void>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+    public ResponseEntity<ErrorDetail> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         ErrorCode code = ErrorCode.COMMON_DATA_CONFLICT;
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(ErrorDetail.of(code.name(), code.getMessage())));
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiResponse<Void>> handleGeneral(Exception ex) {
+    public ResponseEntity<ErrorDetail> handleGeneral(Exception ex) {
         ErrorCode code = ErrorCode.COMMON_INTERNAL_ERROR;
         return ResponseEntity.status(code.getStatus())
-                .body(ApiResponse.error(ErrorDetail.of(code.name(), code.getMessage())));
+                .body(ErrorDetail.of(code.name(), code.getMessage()));
     }
 
     private FieldErrorDetail toFieldErrorDetail(FieldError fieldError) {

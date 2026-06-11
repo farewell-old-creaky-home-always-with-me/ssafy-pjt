@@ -30,7 +30,7 @@ class AuthInterceptorTest {
     void loginRequiredEndpointReturns401WithoutSession() throws Exception {
         mockMvc.perform(get("/login-required").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHORIZED"));
+                .andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
     }
 
     @Test
@@ -40,7 +40,7 @@ class AuthInterceptorTest {
                         .sessionAttr("isAdmin", false)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error.code").value("AUTH_FORBIDDEN"));
+                .andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
     }
 
     @Test
