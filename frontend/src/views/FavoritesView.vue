@@ -111,7 +111,7 @@ const deleting = ref(false)
 const filtered = computed(() => {
   const q = searchQuery.value.toLowerCase()
   return favoritesStore.items.filter(f =>
-    !q || (f.dongName + f.sigunguName + f.sidoName).toLowerCase().includes(q)
+    !q || ((f.dongName ?? '') + (f.sigunguName ?? '') + (f.sidoName ?? '')).toLowerCase().includes(q)
   )
 })
 
