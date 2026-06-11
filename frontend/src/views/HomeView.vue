@@ -58,25 +58,49 @@
         <div class="stat-card">
           <div class="stat-card-top">
             <div class="stat-icon" style="background:rgba(45,156,219,0.1)"><BarChart3 style="color:#2D9CDB" :size="20" /></div>
+            <div v-if="stats.todayDealCountChange != null" :class="['stat-change', stats.todayDealCountChange >= 0 ? 'up' : 'down']">
+              <TrendingUp v-if="stats.todayDealCountChange >= 0" :size="14" />
+              <TrendingDown v-else :size="14" />
+              {{ (stats.todayDealCountChange >= 0 ? '+' : '') + stats.todayDealCountChange.toFixed(1) }}%
+            </div>
           </div>
           <p class="stat-label">오늘 거래량</p>
-          <div class="stat-value"><span class="stat-number">-</span><span class="stat-unit">건</span></div>
+          <div class="stat-value">
+            <span class="stat-number">{{ stats.todayDealCount != null ? stats.todayDealCount.toLocaleString() : '-' }}</span>
+            <span class="stat-unit">건</span>
+          </div>
           <p class="stat-desc">전일 대비</p>
         </div>
         <div class="stat-card">
           <div class="stat-card-top">
             <div class="stat-icon" style="background:rgba(26,60,110,0.1)"><Building2 style="color:#1A3C6E" :size="20" /></div>
+            <div v-if="stats.avgSalePriceChange != null" :class="['stat-change', stats.avgSalePriceChange >= 0 ? 'up' : 'down']">
+              <TrendingUp v-if="stats.avgSalePriceChange >= 0" :size="14" />
+              <TrendingDown v-else :size="14" />
+              {{ (stats.avgSalePriceChange >= 0 ? '+' : '') + stats.avgSalePriceChange.toFixed(1) }}%
+            </div>
           </div>
           <p class="stat-label">평균 매매가</p>
-          <div class="stat-value"><span class="stat-number">-</span><span class="stat-unit">만원</span></div>
+          <div class="stat-value">
+            <span class="stat-number">{{ formatKoreanManwon(stats.avgSalePrice) }}</span>
+            <span class="stat-unit">만원</span>
+          </div>
           <p class="stat-desc">전월 대비</p>
         </div>
         <div class="stat-card">
           <div class="stat-card-top">
             <div class="stat-icon" style="background:rgba(16,185,129,0.1)"><Landmark style="color:#059669" :size="20" /></div>
+            <div v-if="stats.avgLeasePriceChange != null" :class="['stat-change', stats.avgLeasePriceChange >= 0 ? 'up' : 'down']">
+              <TrendingUp v-if="stats.avgLeasePriceChange >= 0" :size="14" />
+              <TrendingDown v-else :size="14" />
+              {{ (stats.avgLeasePriceChange >= 0 ? '+' : '') + stats.avgLeasePriceChange.toFixed(1) }}%
+            </div>
           </div>
           <p class="stat-label">평균 전세가</p>
-          <div class="stat-value"><span class="stat-number">-</span><span class="stat-unit">만원</span></div>
+          <div class="stat-value">
+            <span class="stat-number">{{ formatKoreanManwon(stats.avgLeasePrice) }}</span>
+            <span class="stat-unit">만원</span>
+          </div>
           <p class="stat-desc">전월 대비</p>
         </div>
       </div>
@@ -85,13 +109,39 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, ChevronDown, BarChart3, Building2, Landmark } from 'lucide-vue-next'
+import { Search, ChevronDown, BarChart3, Building2, Landmark, TrendingUp, TrendingDown } from 'lucide-vue-next'
 import '../../css/pages/home.css'
 
 const router = useRouter()
 const heroInput = ref('')
 const heroTxType = ref('apt-sale')
 const searchFocused = ref(false)
+
+const stats = ref({
+  todayDealCount: null,
+  todayDealCountChange: null,
+  avgSalePrice: null,
+  avgSalePriceChange: null,
+  avgLeasePrice: null,
+  avgLeasePriceChange: null,
+})
+
+function formatKoreanManwon(won) {
+  if (won == null) return '-'
+  const manwon = Math.round(won / 10000)
+  const eok = Math.floor(manwon / 10000)
+  const rest = manwon % 10000
+  if (eok === 0) return rest.toLocaleString()
+  if (rest === 0) return eok + '억 0'
+  return eok + '억 ' + rest.toLocaleString()
+}
+
+onMounted(() => {
+  fetch('/api/stats')
+    .then(res => res.ok ? res.json() : Promise.reject(res.status))
+    .then(data => { stats.value = data })
+    .catch(() => {})
+})
 </script>
