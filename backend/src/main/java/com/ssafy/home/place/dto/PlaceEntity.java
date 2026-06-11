@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class PlaceEntity {
 
-    private Long placeId;
+    private Long id;
     private Long memberId;
     private String placeType;
     private String name;

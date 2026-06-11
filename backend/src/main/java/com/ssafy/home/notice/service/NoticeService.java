@@ -39,7 +39,7 @@ public class NoticeService {
         notice.setTitle(request.title().trim());
         notice.setContent(request.content().trim());
         noticeMapper.insertNotice(notice);
-        return new NoticeIdResponse(notice.getNoticeId());
+        return new NoticeIdResponse(notice.getId());
     }
 
     public NoticeIdResponse updateNotice(Long noticeId, NoticeRequest request) {
@@ -71,7 +71,7 @@ public class NoticeService {
 
     private NoticeListItemResponse toListItem(NoticeEntity notice) {
         return new NoticeListItemResponse(
-                notice.getNoticeId(),
+                notice.getId(),
                 notice.getTitle(),
                 notice.getAuthorName(),
                 notice.getCreatedAt()
@@ -80,7 +80,7 @@ public class NoticeService {
 
     private NoticeDetailResponse toDetail(NoticeEntity notice) {
         return new NoticeDetailResponse(
-                notice.getNoticeId(),
+                notice.getId(),
                 notice.getTitle(),
                 notice.getContent(),
                 notice.getAuthorName(),

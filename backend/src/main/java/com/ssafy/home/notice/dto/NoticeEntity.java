@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class NoticeEntity {
 
-    private Long noticeId;
+    private Long id;
     private Long memberId;
     private String title;
     private String content;

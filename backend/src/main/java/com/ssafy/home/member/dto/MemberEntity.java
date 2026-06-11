@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class MemberEntity {
 
-    private Long memberId;
+    private Long id;
     private String email;
     private String password;
     private String name;

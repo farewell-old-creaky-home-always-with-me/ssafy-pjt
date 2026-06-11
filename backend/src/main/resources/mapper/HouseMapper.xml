@@ -14,7 +14,7 @@
             hd.deal_date,
             hd.area,
             hd.floor,
-            ROW_NUMBER() OVER (PARTITION BY hd.house_id ORDER BY hd.deal_date DESC, hd.deal_id DESC) AS rn
+            ROW_NUMBER() OVER (PARTITION BY hd.house_id ORDER BY hd.deal_date DESC, hd.id DESC) AS rn
         FROM house_deal hd
     </sql>
 
@@ -47,13 +47,13 @@
         FROM house h
         INNER JOIN (
             <include refid="latestDealSubquery"/>
-        ) ld ON ld.house_id = h.house_id AND ld.rn = 1
+        ) ld ON ld.house_id = h.id AND ld.rn = 1
         <include refid="searchConditions"/>
     </select>
 
     <select id="findHouseSummaries" resultType="com.ssafy.home.house.dto.HouseSummaryRow">
         SELECT
-            h.house_id AS houseId,
+            h.id AS houseId,
             h.apt_name AS aptName,
             h.jibun AS jibun,
             h.build_year AS buildYear,
@@ -68,15 +68,15 @@
         FROM house h
         INNER JOIN (
             <include refid="latestDealSubquery"/>
-        ) ld ON ld.house_id = h.house_id AND ld.rn = 1
+        ) ld ON ld.house_id = h.id AND ld.rn = 1
         <include refid="searchConditions"/>
-        ORDER BY ld.deal_date DESC, h.house_id DESC
+        ORDER BY ld.deal_date DESC, h.id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="findHouseById" resultType="com.ssafy.home.house.dto.HouseDetailRow">
         SELECT
-            house_id AS houseId,
+            id AS houseId,
             apt_name AS aptName,
             region_code AS regionCode,
             jibun,
@@ -85,12 +85,12 @@
             latitude,
             longitude
         FROM house
-        WHERE house_id = #{houseId}
+        WHERE id = #{houseId}
     </select>
 
     <select id="findHouseDealsByHouseId" resultType="com.ssafy.home.house.dto.HouseDealRow">
         SELECT
-            deal_id AS dealId,
+            id AS dealId,
             deal_type AS dealType,
             deal_amount AS dealAmount,
             deposit_amount AS depositAmount,
@@ -100,6 +100,6 @@
             floor
         FROM house_deal
         WHERE house_id = #{houseId}
-        ORDER BY deal_date DESC, deal_id DESC
+        ORDER BY deal_date DESC, id DESC
     </select>
 </mapper>

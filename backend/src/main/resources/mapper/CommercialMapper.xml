@@ -6,7 +6,7 @@
 
     <select id="findCommercials" resultType="com.ssafy.home.commercial.dto.CommercialEntity">
         SELECT
-            commercial_id AS commercialId,
+            id AS id,
             biz_name AS bizName,
             category_large AS categoryLarge,
             category_medium AS categoryMedium,
@@ -25,6 +25,6 @@
             </if>
         </where>
         HAVING distance &lt;= #{radius}
-        ORDER BY distance ASC, commercial_id ASC
+        ORDER BY distance ASC, id ASC
     </select>
 </mapper>

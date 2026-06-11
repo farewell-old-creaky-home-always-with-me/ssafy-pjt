@@ -44,7 +44,7 @@ public class FavoriteService {
             throw new CustomException(ErrorCode.FAVORITE_DUPLICATE);
         }
 
-        return new FavoriteCreateResponse(favorite.getFavoriteId(), regionCode);
+        return new FavoriteCreateResponse(favorite.getId(), regionCode);
     }
 
     public void deleteFavorite(Long memberId, Long favoriteId) {
@@ -60,7 +60,7 @@ public class FavoriteService {
 
     private FavoriteResponse toResponse(FavoriteEntity favorite) {
         return new FavoriteResponse(
-                favorite.getFavoriteId(),
+                favorite.getId(),
                 favorite.getRegionCode(),
                 favorite.getSidoName(),
                 favorite.getSigunguName(),

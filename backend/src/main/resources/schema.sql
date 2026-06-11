@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS region_code (
 -- 주택 단지 (아파트·다세대)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS house (
-    house_id     BIGINT       NOT NULL AUTO_INCREMENT COMMENT '주택 ID',
+    id           BIGINT       NOT NULL AUTO_INCREMENT COMMENT '주택 ID',
     region_code  VARCHAR(10)  NOT NULL COMMENT '행정구역 코드',
     apt_name     VARCHAR(100) NOT NULL COMMENT '단지명',
     jibun        VARCHAR(50)  NOT NULL COMMENT '지번 주소',
@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS house (
     longitude    DECIMAL(10,7)         COMMENT '경도',
     created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 등록일시',
 
-    PRIMARY KEY (house_id),
+    PRIMARY KEY (id),
     FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE,
     INDEX idx_house_region (region_code),
     INDEX idx_house_name (apt_name),
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS house (
 -- 주택 거래 이력 (국토교통부 실거래가 데이터)
 -- ============================================================
 CREATE TABLE IF NOT EXISTS house_deal (
-    deal_id        BIGINT       NOT NULL AUTO_INCREMENT COMMENT '거래 ID',
+    id             BIGINT       NOT NULL AUTO_INCREMENT COMMENT '거래 ID',
     house_id       BIGINT       NOT NULL COMMENT '주택 ID',
     deal_type      VARCHAR(20)  NOT NULL COMMENT '거래 유형: 매매, 전세, 월세',
     deal_amount    INT                   COMMENT '매매 거래금액 (만원)',
@@ -55,8 +55,8 @@ CREATE TABLE IF NOT EXISTS house_deal (
     floor          INT                   COMMENT '층수',
     created_at     DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 등록일시',
 
-    PRIMARY KEY (deal_id),
-    FOREIGN KEY (house_id) REFERENCES house(house_id) ON DELETE CASCADE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (house_id) REFERENCES house(id) ON DELETE CASCADE,
     INDEX idx_deal_house (house_id),
     INDEX idx_deal_type (deal_type),
     INDEX idx_deal_date (deal_date),
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS house_deal (
 -- 서비스 전용 로그만 아래 batch_collection_log 테이블로 별도 관리한다.
 
 CREATE TABLE IF NOT EXISTS batch_collection_log (
-    collection_log_id BIGINT       NOT NULL AUTO_INCREMENT COMMENT '수집 로그 ID',
+    id                BIGINT       NOT NULL AUTO_INCREMENT COMMENT '수집 로그 ID',
     job_execution_id  BIGINT       NOT NULL COMMENT 'Spring Batch Job 실행 ID',
     job_name          VARCHAR(100) NOT NULL COMMENT 'Job 이름',
     data_type         VARCHAR(30)  NOT NULL COMMENT '수집 데이터 유형',
@@ -86,7 +86,7 @@ CREATE TABLE IF NOT EXISTS batch_collection_log (
     ended_at          DATETIME              COMMENT 'Job 종료 시각',
     created_at        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '로그 생성 시각',
 
-    PRIMARY KEY (collection_log_id),
+    PRIMARY KEY (id),
     FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE,
     INDEX idx_collection_job_execution (job_execution_id),
     INDEX idx_collection_condition (region_code, `year_month`, house_type, deal_type),
@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS batch_collection_log (
 -- 회원
 -- ============================================================
 CREATE TABLE IF NOT EXISTS member (
-    member_id  BIGINT       NOT NULL AUTO_INCREMENT COMMENT '회원 ID',
+    id         BIGINT       NOT NULL AUTO_INCREMENT COMMENT '회원 ID',
     email      VARCHAR(100) NOT NULL COMMENT '이메일 (로그인 ID)',
     password   VARCHAR(255) NOT NULL COMMENT '비밀번호 (bcrypt 해시)',
     name       VARCHAR(50)  NOT NULL COMMENT '이름',
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS member (
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '가입일시',
     updated_at DATETIME              COMMENT '정보 수정일시',
 
-    PRIMARY KEY (member_id),
+    PRIMARY KEY (id),
     UNIQUE KEY uq_member_email (email)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='회원';
 
@@ -113,13 +113,13 @@ CREATE TABLE IF NOT EXISTS member (
 -- 관심 지역
 -- ============================================================
 CREATE TABLE IF NOT EXISTS favorite_area (
-    favorite_id BIGINT      NOT NULL AUTO_INCREMENT COMMENT '관심 지역 ID',
+    id          BIGINT      NOT NULL AUTO_INCREMENT COMMENT '관심 지역 ID',
     member_id   BIGINT      NOT NULL COMMENT '회원 ID',
     region_code VARCHAR(10) NOT NULL COMMENT '행정구역 코드',
     created_at  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
 
-    PRIMARY KEY (favorite_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
     FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE,
     INDEX idx_favorite_member (member_id),
     UNIQUE KEY uq_favorite_member_region (member_id, region_code)
@@ -129,7 +129,7 @@ CREATE TABLE IF NOT EXISTS favorite_area (
 -- 회원 장소
 -- ============================================================
 CREATE TABLE IF NOT EXISTS member_place (
-    place_id    BIGINT        NOT NULL AUTO_INCREMENT COMMENT '장소 ID',
+    id          BIGINT        NOT NULL AUTO_INCREMENT COMMENT '장소 ID',
     member_id   BIGINT        NOT NULL COMMENT '회원 ID',
     place_type  VARCHAR(10)   NOT NULL COMMENT '장소 유형: HOME, WORK, OTHER',
     name        VARCHAR(50)   NOT NULL COMMENT '장소 표시 이름',
@@ -140,8 +140,8 @@ CREATE TABLE IF NOT EXISTS member_place (
     created_at  DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
     updated_at  DATETIME               COMMENT '수정일시',
 
-    PRIMARY KEY (place_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(id) ON DELETE CASCADE,
     FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE,
     INDEX idx_member_place_member (member_id),
     INDEX idx_member_place_member_type (member_id, place_type)
@@ -151,15 +151,15 @@ CREATE TABLE IF NOT EXISTS member_place (
 -- 공지사항
 -- ============================================================
 CREATE TABLE IF NOT EXISTS notice (
-    notice_id  BIGINT       NOT NULL AUTO_INCREMENT COMMENT '공지사항 ID',
+    id         BIGINT       NOT NULL AUTO_INCREMENT COMMENT '공지사항 ID',
     member_id  BIGINT       NOT NULL COMMENT '작성자 회원 ID',
     title      VARCHAR(200) NOT NULL COMMENT '제목',
     content    TEXT         NOT NULL COMMENT '내용',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '작성일시',
     updated_at DATETIME              COMMENT '수정일시',
 
-    PRIMARY KEY (notice_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(id),
     INDEX idx_notice_member (member_id),
     INDEX idx_notice_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='공지사항';
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS notice (
 -- 상권 정보
 -- ============================================================
 CREATE TABLE IF NOT EXISTS commercial_area (
-    commercial_id   BIGINT        NOT NULL AUTO_INCREMENT COMMENT '상권 ID',
+    id              BIGINT        NOT NULL AUTO_INCREMENT COMMENT '상권 ID',
     biz_name        VARCHAR(100)  NOT NULL COMMENT '상호명',
     category_large  VARCHAR(50)            COMMENT '업종 대분류',
     category_medium VARCHAR(50)            COMMENT '업종 중분류',
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS commercial_area (
     address         VARCHAR(150)           COMMENT '주소',
     created_at      DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 등록일시',
 
-    PRIMARY KEY (commercial_id),
+    PRIMARY KEY (id),
     INDEX idx_commercial_location (latitude, longitude)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='상권 정보';
 
@@ -186,7 +186,7 @@ CREATE TABLE IF NOT EXISTS commercial_area (
 -- 환경 정보
 -- ============================================================
 CREATE TABLE IF NOT EXISTS environment_info (
-    env_id        BIGINT        NOT NULL AUTO_INCREMENT COMMENT '환경 정보 ID',
+    id            BIGINT        NOT NULL AUTO_INCREMENT COMMENT '환경 정보 ID',
     item_name     VARCHAR(100)  NOT NULL COMMENT '점검 항목명',
     value         DECIMAL(10,4)          COMMENT '측정 수치',
     unit          VARCHAR(20)            COMMENT '단위',
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS environment_info (
     longitude     DECIMAL(10,7) NOT NULL COMMENT '경도',
     created_at    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '데이터 등록일시',
 
-    PRIMARY KEY (env_id),
+    PRIMARY KEY (id),
     INDEX idx_env_location (latitude, longitude),
     INDEX idx_env_date (measured_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='환경 정보';

@@ -5,7 +5,7 @@
 <mapper namespace="com.ssafy.home.notice.mapper.NoticeMapper">
 
     <resultMap id="noticeResultMap" type="com.ssafy.home.notice.dto.NoticeEntity">
-        <id property="noticeId" column="notice_id"/>
+        <id property="id" column="id"/>
         <result property="memberId" column="member_id"/>
         <result property="title" column="title"/>
         <result property="content" column="content"/>
@@ -21,7 +21,7 @@
 
     <select id="findNotices" resultMap="noticeResultMap">
         SELECT
-            n.notice_id,
+            n.id,
             n.member_id,
             n.title,
             n.content,
@@ -29,14 +29,14 @@
             n.created_at,
             n.updated_at
         FROM notice n
-        INNER JOIN member m ON m.member_id = n.member_id
-        ORDER BY n.created_at DESC, n.notice_id DESC
+        INNER JOIN member m ON m.id = n.member_id
+        ORDER BY n.created_at DESC, n.id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 
     <select id="findNoticeById" resultMap="noticeResultMap">
         SELECT
-            n.notice_id,
+            n.id,
             n.member_id,
             n.title,
             n.content,
@@ -44,11 +44,11 @@
             n.created_at,
             n.updated_at
         FROM notice n
-        INNER JOIN member m ON m.member_id = n.member_id
-        WHERE n.notice_id = #{noticeId}
+        INNER JOIN member m ON m.id = n.member_id
+        WHERE n.id = #{noticeId}
     </select>
 
-    <insert id="insertNotice" parameterType="com.ssafy.home.notice.dto.NoticeEntity" useGeneratedKeys="true" keyProperty="noticeId">
+    <insert id="insertNotice" parameterType="com.ssafy.home.notice.dto.NoticeEntity" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO notice (
             member_id,
             title,
@@ -66,11 +66,11 @@
             title = #{title},
             content = #{content},
             updated_at = CURRENT_TIMESTAMP
-        WHERE notice_id = #{noticeId}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteNoticeById">
         DELETE FROM notice
-        WHERE notice_id = #{noticeId}
+        WHERE id = #{noticeId}
     </delete>
 </mapper>

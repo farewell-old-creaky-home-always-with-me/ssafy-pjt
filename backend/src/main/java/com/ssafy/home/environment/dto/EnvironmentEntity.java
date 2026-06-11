@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class EnvironmentEntity {
 
-    private Long envId;
+    private Long id;
     private String itemName;
     private BigDecimal value;
     private String unit;
