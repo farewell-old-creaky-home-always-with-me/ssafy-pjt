@@ -23,7 +23,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
 
   async function addFavorite(regionCode) {
     const created = await api.post('/api/favorites', { regionCode })
-    await fetchFavorites()
+    items.value = [...items.value, created]
     return created
   }
 
