@@ -4,9 +4,9 @@ import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.auth.service.AuthService;
+import com.ssafy.home.global.auth.SessionManager;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController implements AuthApiDocs {
 
     private final AuthService authService;
+    private final SessionManager sessionManager;
 
     @PostMapping("/login")
     @Override
@@ -35,8 +36,8 @@ public class AuthController implements AuthApiDocs {
     @LoginRequired
     @PostMapping("/logout")
     @Override
-    public ResponseEntity<Void> logout(HttpSession session) {
-        authService.logout(session);
+    public ResponseEntity<Void> logout() {
+        sessionManager.invalidateCurrentSession();
         return ResponseEntity.ok().build();
     }
 

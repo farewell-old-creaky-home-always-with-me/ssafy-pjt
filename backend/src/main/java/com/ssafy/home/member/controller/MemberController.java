@@ -1,12 +1,13 @@
 package com.ssafy.home.member.controller;
 
+import com.ssafy.home.global.auth.LoginMemberId;
+import com.ssafy.home.global.auth.SessionManager;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.member.dto.CreateMemberRequest;
 import com.ssafy.home.member.dto.MemberResponse;
 import com.ssafy.home.member.dto.MemberUpdateResponse;
 import com.ssafy.home.member.dto.UpdateMemberRequest;
 import com.ssafy.home.member.service.MemberService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController implements MemberApiDocs {
 
     private final MemberService memberService;
+    private final SessionManager sessionManager;
 
     @PostMapping
     @Override
@@ -36,8 +38,8 @@ public class MemberController implements MemberApiDocs {
     @LoginRequired
     @GetMapping("/me")
     @Override
-    public MemberResponse getMyMember(HttpSession session) {
-        return memberService.getMyMember(getMemberId(session));
+    public MemberResponse getMyMember(@LoginMemberId Long memberId) {
+        return memberService.getMyMember(memberId);
     }
 
     @LoginRequired
@@ -45,21 +47,17 @@ public class MemberController implements MemberApiDocs {
     @Override
     public MemberUpdateResponse updateMyMember(
             @Valid @RequestBody UpdateMemberRequest request,
-            HttpSession session
+            @LoginMemberId Long memberId
     ) {
-        return memberService.updateMyMember(getMemberId(session), request);
+        return memberService.updateMyMember(memberId, request);
     }
 
     @LoginRequired
     @DeleteMapping("/me")
     @Override
-    public ResponseEntity<Void> deleteMyMember(HttpSession session) {
-        memberService.deleteMyMember(getMemberId(session));
-        session.invalidate();
+    public ResponseEntity<Void> deleteMyMember(@LoginMemberId Long memberId) {
+        memberService.deleteMyMember(memberId);
+        sessionManager.invalidateCurrentSession();
         return ResponseEntity.noContent().build();
-    }
-
-    private Long getMemberId(HttpSession session) {
-        return (Long) session.getAttribute("memberId");
     }
 }
