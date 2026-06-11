@@ -1,6 +1,10 @@
 <template>
   <div class="profile-page">
-    <div class="profile-wrap" v-if="profile">
+    <div v-if="profileError" style="max-width:40rem;margin:2rem auto;display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:0.75rem;color:#DC2626;font-size:0.875rem">
+      <AlertCircle :size="16" style="flex-shrink:0" />
+      {{ profileError }}
+    </div>
+    <div class="profile-wrap" v-else-if="profile">
       <div class="card card-lg" style="margin-bottom:1.5rem;overflow:hidden">
         <div class="profile-banner">
           <div class="profile-avatar-wrap">
@@ -90,7 +94,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, Loader2 } from 'lucide-vue-next'
+import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2 } from 'lucide-vue-next'
 import { api } from '../api/index.js'
 import { useAuthStore } from '../stores/auth.js'
 import '../../css/pages/profile.css'
@@ -99,6 +103,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const profile = ref(null)
+const profileError = ref(null)
 const editMode = ref(false)
 const editName = ref('')
 const editPassword = ref('')
@@ -107,7 +112,11 @@ const showDeleteModal = ref(false)
 const deleting = ref(false)
 
 onMounted(async () => {
-  profile.value = await api.get('/api/members/me')
+  try {
+    profile.value = await api.get('/api/members/me')
+  } catch {
+    profileError.value = '프로필 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+  }
 })
 
 function startEdit() {
