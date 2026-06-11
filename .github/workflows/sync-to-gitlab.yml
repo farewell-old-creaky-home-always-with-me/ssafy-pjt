@@ -1,0 +1,125 @@
+name: Sync to GitLab
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect changed directories
+        id: detect
+        run: |
+          CHANGED=$(git diff HEAD~1 HEAD --name-only)
+          echo "Changed files:"
+          echo "$CHANGED"
+
+          SYNC_ARTIFACT=false
+          SYNC_BACKEND=false
+          SYNC_FRONTEND=false
+
+          if echo "$CHANGED" | grep -q "^artifact/"; then
+            SYNC_ARTIFACT=true
+          fi
+          if echo "$CHANGED" | grep -q "^backend/"; then
+            SYNC_BACKEND=true
+          fi
+          if echo "$CHANGED" | grep -q "^frontend/"; then
+            SYNC_FRONTEND=true
+          fi
+
+          echo "sync_artifact=$SYNC_ARTIFACT" >> "$GITHUB_OUTPUT"
+          echo "sync_backend=$SYNC_BACKEND" >> "$GITHUB_OUTPUT"
+          echo "sync_frontend=$SYNC_FRONTEND" >> "$GITHUB_OUTPUT"
+
+      - name: Sync artifact to GitLab
+        if: steps.detect.outputs.sync_artifact == 'true'
+        env:
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
+          COMMIT_EMAIL=$(git log -1 --pretty="%ae")
+
+          git clone "https://$GITLAB_USERNAME:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/artifact" /tmp/artifact-gitlab
+
+          find /tmp/artifact-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+
+          rsync -av --exclude='.git' artifact/ /tmp/artifact-gitlab/
+
+          cd /tmp/artifact-gitlab
+          git config user.name "$COMMIT_AUTHOR"
+          git config user.email "$COMMIT_EMAIL"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to artifact, skipping push"
+          else
+            git commit -m "$COMMIT_MSG"
+            git push -u origin main
+          fi
+
+      - name: Sync backend to GitLab
+        if: steps.detect.outputs.sync_backend == 'true'
+        env:
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
+          COMMIT_EMAIL=$(git log -1 --pretty="%ae")
+
+          git clone "https://$GITLAB_USERNAME:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/backend" /tmp/backend-gitlab
+
+          find /tmp/backend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+
+          rsync -av --exclude='.git' --exclude='src/main/resources/secret' backend/ /tmp/backend-gitlab/
+
+          cd /tmp/backend-gitlab
+          git config user.name "$COMMIT_AUTHOR"
+          git config user.email "$COMMIT_EMAIL"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to backend, skipping push"
+          else
+            git commit -m "$COMMIT_MSG"
+            git push -u origin main
+          fi
+
+      - name: Sync frontend to GitLab
+        if: steps.detect.outputs.sync_frontend == 'true'
+        env:
+          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
+          COMMIT_EMAIL=$(git log -1 --pretty="%ae")
+
+          git clone "https://$GITLAB_USERNAME:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/frontend.git" /tmp/frontend-gitlab
+
+          find /tmp/frontend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+
+          rsync -av --exclude='.git' frontend/ /tmp/frontend-gitlab/
+
+          cd /tmp/frontend-gitlab
+          git config user.name "$COMMIT_AUTHOR"
+          git config user.email "$COMMIT_EMAIL"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to frontend, skipping push"
+          else
+            git commit -m "$COMMIT_MSG"
+            git push -u origin main
+          fi
