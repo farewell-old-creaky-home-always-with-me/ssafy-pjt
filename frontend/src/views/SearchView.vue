@@ -68,7 +68,9 @@
           </thead>
           <tbody id="result-tbody">
             <tr v-if="pageData.length === 0">
-              <td colspan="5" style="text-align:center;padding:3rem;color:#9ca3af">검색 결과가 없습니다.</td>
+              <td colspan="5" style="text-align:center;padding:3rem;color:#9ca3af">
+                {{ loadError ? '데이터를 불러오는 중 오류가 발생했습니다. 콘솔을 확인하세요.' : '검색 결과가 없습니다.' }}
+              </td>
             </tr>
             <tr v-for="item in pageData" :key="item.id"
               :class="{ selected: selectedId === item.id }"
@@ -159,6 +161,7 @@ const aptImages = [
 
 const allData = ref([])
 const dongList = ref([])
+const loadError = ref(false)
 const sidebarOpen = ref(false)
 const selectedId = ref(null)
 const modalItem = ref(null)
@@ -179,7 +182,9 @@ async function loadDongListFromXML() {
       const text = await res.text()
       const doc = new DOMParser().parseFromString(text, 'text/xml')
       Array.from(doc.getElementsByTagName('법정동')).forEach(el => { if (el.textContent.trim()) dongSet.add(el.textContent.trim()) })
-    } catch {}
+    } catch (err) {
+      console.error('[XML] 법정동 목록 로딩 실패:', file, err)
+    }
   }
   return Array.from(dongSet).sort()
 }
@@ -221,7 +226,10 @@ async function loadRealEstateDataFromXML() {
         const date = year && month && day ? `${year}.${month.padStart(2,'0')}.${day.padStart(2,'0')}` : ''
         if (name && dong && buildYear) result.push({ id: idCounter++, name, area, floor, price, date, buildYear, dong, jibun, regionCode, buildingType: fi.buildingType, transactionType: fi.transactionType })
       })
-    } catch {}
+    } catch (err) {
+      console.error('[XML] 부동산 데이터 로딩 실패:', fi.path, err)
+      loadError.value = true
+    }
   }
   return result
 }
