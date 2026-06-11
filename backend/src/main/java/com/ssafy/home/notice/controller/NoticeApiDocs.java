@@ -1,5 +1,6 @@
 package com.ssafy.home.notice.controller;
 
+import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
 import com.ssafy.home.notice.dto.NoticeIdResponse;
@@ -8,7 +9,6 @@ import com.ssafy.home.notice.dto.NoticeRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -45,7 +45,7 @@ public interface NoticeApiDocs {
     ResponseEntity<NoticeIdResponse> createNotice(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "공지사항 요청", required = true)
             @Valid @RequestBody NoticeRequest request,
-            @Parameter(hidden = true) HttpSession session
+            @Parameter(hidden = true) @LoginMemberId Long memberId
     );
 
     @Operation(

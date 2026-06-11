@@ -1,11 +1,11 @@
 package com.ssafy.home.place.controller;
 
+import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.place.dto.CreatePlaceRequest;
 import com.ssafy.home.place.dto.PlaceResponse;
 import com.ssafy.home.place.dto.UpdatePlaceRequest;
 import com.ssafy.home.place.service.PlaceService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +30,18 @@ public class PlaceController implements PlaceApiDocs {
 
     @GetMapping
     @Override
-    public List<PlaceResponse> getPlaces(HttpSession session) {
-        return placeService.getPlaces(getMemberId(session));
+    public List<PlaceResponse> getPlaces(@LoginMemberId Long memberId) {
+        return placeService.getPlaces(memberId);
     }
 
     @PostMapping
     @Override
     public ResponseEntity<PlaceResponse> createPlace(
             @Valid @RequestBody CreatePlaceRequest request,
-            HttpSession session
+            @LoginMemberId Long memberId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(placeService.createPlace(getMemberId(session), request));
+                .body(placeService.createPlace(memberId, request));
     }
 
     @PutMapping("/{placeId}")
@@ -49,19 +49,15 @@ public class PlaceController implements PlaceApiDocs {
     public PlaceResponse updatePlace(
             @PathVariable Long placeId,
             @Valid @RequestBody UpdatePlaceRequest request,
-            HttpSession session
+            @LoginMemberId Long memberId
     ) {
-        return placeService.updatePlace(getMemberId(session), placeId, request);
+        return placeService.updatePlace(memberId, placeId, request);
     }
 
     @DeleteMapping("/{placeId}")
     @Override
-    public ResponseEntity<Void> deletePlace(@PathVariable Long placeId, HttpSession session) {
-        placeService.deletePlace(getMemberId(session), placeId);
+    public ResponseEntity<Void> deletePlace(@PathVariable Long placeId, @LoginMemberId Long memberId) {
+        placeService.deletePlace(memberId, placeId);
         return ResponseEntity.noContent().build();
-    }
-
-    private Long getMemberId(HttpSession session) {
-        return (Long) session.getAttribute("memberId");
     }
 }
