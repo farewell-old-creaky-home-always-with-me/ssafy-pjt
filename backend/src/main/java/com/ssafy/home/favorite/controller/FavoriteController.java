@@ -4,8 +4,8 @@ import com.ssafy.home.favorite.dto.CreateFavoriteRequest;
 import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.service.FavoriteService;
+import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.LoginRequired;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,28 +29,24 @@ public class FavoriteController implements FavoriteApiDocs {
 
     @GetMapping
     @Override
-    public List<FavoriteResponse> getFavorites(HttpSession session) {
-        return favoriteService.getFavorites(getMemberId(session));
+    public List<FavoriteResponse> getFavorites(@LoginMemberId Long memberId) {
+        return favoriteService.getFavorites(memberId);
     }
 
     @PostMapping
     @Override
     public ResponseEntity<FavoriteCreateResponse> createFavorite(
             @Valid @RequestBody CreateFavoriteRequest request,
-            HttpSession session
+            @LoginMemberId Long memberId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(favoriteService.createFavorite(getMemberId(session), request));
+                .body(favoriteService.createFavorite(memberId, request));
     }
 
     @DeleteMapping("/{favoriteId}")
     @Override
-    public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteId, HttpSession session) {
-        favoriteService.deleteFavorite(getMemberId(session), favoriteId);
+    public ResponseEntity<Void> deleteFavorite(@PathVariable Long favoriteId, @LoginMemberId Long memberId) {
+        favoriteService.deleteFavorite(memberId, favoriteId);
         return ResponseEntity.noContent().build();
-    }
-
-    private Long getMemberId(HttpSession session) {
-        return (Long) session.getAttribute("memberId");
     }
 }

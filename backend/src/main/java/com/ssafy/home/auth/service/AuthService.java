@@ -3,14 +3,14 @@ package com.ssafy.home.auth.service;
 import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
+import com.ssafy.home.global.auth.SessionConst;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import com.ssafy.home.global.interceptor.AuthInterceptor;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.mapper.MemberMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +33,8 @@ public class AuthService {
         }
 
         HttpSession session = httpServletRequest.getSession(true);
-        session.setAttribute(AuthInterceptor.SESSION_MEMBER_ID, member.getId());
-        session.setAttribute(AuthInterceptor.SESSION_IS_ADMIN, member.isAdmin());
+        session.setAttribute(SessionConst.MEMBER_ID, member.getId());
+        session.setAttribute(SessionConst.IS_ADMIN, member.isAdmin());
 
         return new LoginResponse(member.getId(), member.getName(), member.isAdmin());
     }
@@ -48,7 +48,7 @@ public class AuthService {
             return new AuthMeResponse(false, null, null, null);
         }
 
-        Object memberId = session.getAttribute(AuthInterceptor.SESSION_MEMBER_ID);
+        Object memberId = session.getAttribute(SessionConst.MEMBER_ID);
         if (!(memberId instanceof Long id)) {
             return new AuthMeResponse(false, null, null, null);
         }

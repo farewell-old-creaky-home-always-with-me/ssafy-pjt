@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +28,7 @@ public interface AuthApiDocs {
             summary = "로그아웃",
             description = "현재 로그인 세션을 종료합니다."
     )
-    ResponseEntity<Void> logout(@Parameter(hidden = true) HttpSession session);
+    ResponseEntity<Void> logout();
 
     @Operation(
             summary = "내 인증 정보 조회",

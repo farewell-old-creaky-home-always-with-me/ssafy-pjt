@@ -1,5 +1,6 @@
 package com.ssafy.home.notice.controller;
 
+import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.AdminOnly;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
@@ -7,7 +8,6 @@ import com.ssafy.home.notice.dto.NoticeIdResponse;
 import com.ssafy.home.notice.dto.NoticeListItemResponse;
 import com.ssafy.home.notice.dto.NoticeRequest;
 import com.ssafy.home.notice.service.NoticeService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -49,10 +49,10 @@ public class NoticeController implements NoticeApiDocs {
     @Override
     public ResponseEntity<NoticeIdResponse> createNotice(
             @Valid @RequestBody NoticeRequest request,
-            HttpSession session
+            @LoginMemberId Long memberId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(noticeService.createNotice(getMemberId(session), request));
+                .body(noticeService.createNotice(memberId, request));
     }
 
     @AdminOnly
@@ -73,7 +73,4 @@ public class NoticeController implements NoticeApiDocs {
         return ResponseEntity.noContent().build();
     }
 
-    private Long getMemberId(HttpSession session) {
-        return (Long) session.getAttribute("memberId");
-    }
 }
