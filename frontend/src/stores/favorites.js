@@ -5,6 +5,7 @@ import { useAuthStore } from './auth.js'
 
 export const useFavoritesStore = defineStore('favorites', () => {
   const items = ref([]) // [{ favoriteId, regionCode, sidoName, sigunguName, dongName, createdAt }]
+  const error = ref(null)
 
   const count = computed(() => items.value.length)
 
@@ -14,10 +15,12 @@ export const useFavoritesStore = defineStore('favorites', () => {
       items.value = []
       return
     }
+    error.value = null
     try {
       items.value = await api.get('/api/favorites')
     } catch {
       items.value = []
+      error.value = '관심지역 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
     }
   }
 
@@ -32,5 +35,5 @@ export const useFavoritesStore = defineStore('favorites', () => {
     items.value = items.value.filter(f => f.favoriteId !== favoriteId)
   }
 
-  return { items, count, fetchFavorites, addFavorite, removeFavorite }
+  return { items, error, count, fetchFavorites, addFavorite, removeFavorite }
 })

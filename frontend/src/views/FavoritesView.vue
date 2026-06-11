@@ -39,6 +39,12 @@
         <input v-model="searchQuery" type="text" placeholder="지역명으로 검색..." />
       </div>
 
+      <!-- Error -->
+      <div v-if="favoritesStore.error" style="display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:0.75rem;color:#DC2626;font-size:0.875rem;margin-bottom:1rem">
+        <AlertTriangle :size="16" style="flex-shrink:0" />
+        {{ favoritesStore.error }}
+      </div>
+
       <!-- List -->
       <div id="fav-list-container">
         <div v-if="filtered.length === 0" class="empty-state">
