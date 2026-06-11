@@ -58,28 +58,25 @@
         <div class="stat-card">
           <div class="stat-card-top">
             <div class="stat-icon" style="background:rgba(45,156,219,0.1)"><BarChart3 style="color:#2D9CDB" :size="20" /></div>
-            <div class="stat-change up"><TrendingUp :size="14" /> +12.5%</div>
           </div>
           <p class="stat-label">오늘 거래량</p>
-          <div class="stat-value"><span class="stat-number">1,247</span><span class="stat-unit">건</span></div>
+          <div class="stat-value"><span class="stat-number">-</span><span class="stat-unit">건</span></div>
           <p class="stat-desc">전일 대비</p>
         </div>
         <div class="stat-card">
           <div class="stat-card-top">
             <div class="stat-icon" style="background:rgba(26,60,110,0.1)"><Building2 style="color:#1A3C6E" :size="20" /></div>
-            <div class="stat-change up"><TrendingUp :size="14" /> +3.2%</div>
           </div>
           <p class="stat-label">평균 매매가</p>
-          <div class="stat-value"><span class="stat-number">8억 4,200</span><span class="stat-unit">만원</span></div>
+          <div class="stat-value"><span class="stat-number">-</span><span class="stat-unit">만원</span></div>
           <p class="stat-desc">전월 대비</p>
         </div>
         <div class="stat-card">
           <div class="stat-card-top">
             <div class="stat-icon" style="background:rgba(16,185,129,0.1)"><Landmark style="color:#059669" :size="20" /></div>
-            <div class="stat-change down"><TrendingDown :size="14" /> -1.8%</div>
           </div>
           <p class="stat-label">평균 전세가</p>
-          <div class="stat-value"><span class="stat-number">4억 1,800</span><span class="stat-unit">만원</span></div>
+          <div class="stat-value"><span class="stat-number">-</span><span class="stat-unit">만원</span></div>
           <p class="stat-desc">전월 대비</p>
         </div>
       </div>
@@ -90,7 +87,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, ChevronDown, BarChart3, TrendingUp, TrendingDown, Building2, Landmark } from 'lucide-vue-next'
+import { Search, ChevronDown, BarChart3, Building2, Landmark } from 'lucide-vue-next'
 import '../../css/pages/home.css'
 
 const router = useRouter()
