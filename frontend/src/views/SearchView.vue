@@ -222,9 +222,13 @@ async function loadRealEstateDataFromXML() {
         const floor = parseInt(getTag(item, '층')) || 0, buildYear = parseInt(getTag(item, '건축년도')) || 0
         const dong = getTag(item, '법정동').trim(), jibun = getTag(item, '지번'), regionCode = getTag(item, '지역코드')
         const year = getTag(item, '년'), month = getTag(item, '월'), day = getTag(item, '일')
-        const price = fi.transactionType === '매매' ? formatPrice(getTag(item, '거래금액').trim()) : formatRentPrice(getTag(item, '보증금액').trim(), getTag(item, '월세금액').trim())
+        const rawDeal = getTag(item, '거래금액').trim(), rawDeposit = getTag(item, '보증금액').trim()
+        const price = fi.transactionType === '매매' ? formatPrice(rawDeal) : formatRentPrice(rawDeposit, getTag(item, '월세금액').trim())
+        const priceRaw = fi.transactionType === '매매'
+          ? (parseInt(rawDeal.replace(/,/g, '')) || 0)
+          : (parseInt(rawDeposit.replace(/,/g, '')) || 0)
         const date = year && month && day ? `${year}.${month.padStart(2,'0')}.${day.padStart(2,'0')}` : ''
-        if (name && dong && buildYear) result.push({ id: idCounter++, name, area, floor, price, date, buildYear, dong, jibun, regionCode, buildingType: fi.buildingType, transactionType: fi.transactionType })
+        if (name && dong && buildYear) result.push({ id: idCounter++, name, area, floor, price, priceRaw, date, buildYear, dong, jibun, regionCode, buildingType: fi.buildingType, transactionType: fi.transactionType })
       })
     } catch (err) {
       console.error('[XML] 부동산 데이터 로딩 실패:', fi.path, err)
@@ -245,7 +249,7 @@ const filteredData = computed(() => {
     return true
   }).sort((a, b) => {
     let av = a[sortKey.value], bv = b[sortKey.value]
-    if (sortKey.value === 'price') { av = parseFloat(String(av).replace(/[^0-9.]/g, '')); bv = parseFloat(String(bv).replace(/[^0-9.]/g, '')) }
+    if (sortKey.value === 'price') { av = a.priceRaw; bv = b.priceRaw }
     if (av < bv) return sortDir.value === 'asc' ? -1 : 1
     if (av > bv) return sortDir.value === 'asc' ? 1 : -1
     return 0
