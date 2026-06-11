@@ -131,7 +131,7 @@ async function handleUpdate() {
   try {
     await api.put('/api/members/me', { name: editName.value.trim(), password: editPassword.value })
     profile.value = await api.get('/api/members/me')
-    authStore.user = { ...authStore.user, name: profile.value.name }
+    authStore.patchUser({ name: profile.value.name })
     editMode.value = false
   } catch (err) {
     alert(err.data?.message ?? '저장에 실패했습니다')
@@ -144,7 +144,7 @@ async function handleDelete() {
   deleting.value = true
   try {
     await api.delete('/api/members/me')
-    authStore.user = null
+    authStore.clearUser()
     router.push('/login')
   } catch (err) {
     alert(err.data?.message ?? '탈퇴에 실패했습니다')

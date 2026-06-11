@@ -29,5 +29,13 @@ export const useAuthStore = defineStore('auth', () => {
 
   const isLoggedIn = () => user.value !== null
 
-  return { user, fetchMe, login, logout, isLoggedIn }
+  function patchUser(patch) {
+    if (user.value) user.value = { ...user.value, ...patch }
+  }
+
+  function clearUser() {
+    user.value = null
+  }
+
+  return { user, fetchMe, login, logout, isLoggedIn, patchUser, clearUser }
 })

@@ -80,7 +80,7 @@ const favCount = computed(() => favoritesStore.count)
 async function handleLogout() {
   if (!confirm('로그아웃 하시겠습니까?')) return
   await authStore.logout()
-  favoritesStore.items = []
+  favoritesStore.clearItems()
   mobileOpen.value = false
   router.push('/')
 }

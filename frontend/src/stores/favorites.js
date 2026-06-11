@@ -35,5 +35,10 @@ export const useFavoritesStore = defineStore('favorites', () => {
     items.value = items.value.filter(f => f.favoriteId !== favoriteId)
   }
 
-  return { items, error, count, fetchFavorites, addFavorite, removeFavorite }
+  function clearItems() {
+    items.value = []
+    error.value = null
+  }
+
+  return { items, error, count, fetchFavorites, addFavorite, removeFavorite, clearItems }
 })
