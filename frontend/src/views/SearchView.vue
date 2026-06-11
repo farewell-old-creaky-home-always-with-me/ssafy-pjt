@@ -129,13 +129,22 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { X, SlidersHorizontal, ChevronsUpDown, ChevronUp, ChevronDown, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight, Heart, Building2, Handshake, Calendar, MapPin, Hash, Landmark, Maximize2, Layers } from 'lucide-vue-next'
 import { useFavoritesStore } from '../stores/favorites.js'
 import { useAuthStore } from '../stores/auth.js'
 import '../../css/pages/search.css'
 
+const route = useRoute()
 const favoritesStore = useFavoritesStore()
 const authStore = useAuthStore()
+
+const TYPE_MAP = {
+  'apt-sale':   { buildingType: '아파트', transactionType: '매매' },
+  'apt-rent':   { buildingType: '아파트', transactionType: '전월세' },
+  'multi-sale': { buildingType: '다세대', transactionType: '매매' },
+  'multi-rent': { buildingType: '다세대', transactionType: '전월세' },
+}
 
 const PAGE_SIZE = 10
 const WINDOW_SIZE = 5
@@ -310,5 +319,9 @@ onMounted(async () => {
   dongList.value = await loadDongListFromXML()
   allData.value = await loadRealEstateDataFromXML()
   initMap()
+
+  const { dong, type } = route.query
+  if (dong) filters.value.dong = dong
+  if (type && TYPE_MAP[type]) Object.assign(filters.value, TYPE_MAP[type])
 })
 </script>

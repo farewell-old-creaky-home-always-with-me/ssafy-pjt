@@ -35,7 +35,7 @@
               </select>
               <ChevronDown :size="16" />
             </div>
-            <button class="hero-search-btn" @click="router.push('/search')">검색하기</button>
+            <button class="hero-search-btn" @click="router.push({ path: '/search', query: { dong: heroInput, type: heroTxType } })">검색하기</button>
           </div>
         </div>
         <div class="hero-tags">
