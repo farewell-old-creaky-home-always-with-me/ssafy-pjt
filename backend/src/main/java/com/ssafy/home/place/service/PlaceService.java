@@ -155,7 +155,7 @@ public class PlaceService {
 
     private PlaceResponse toResponse(PlaceEntity place) {
         return new PlaceResponse(
-                place.getPlaceId(),
+                place.getId(),
                 place.getPlaceType(),
                 place.getName(),
                 place.getAddress(),

@@ -5,7 +5,7 @@
 <mapper namespace="com.ssafy.home.favorite.mapper.FavoriteMapper">
 
     <resultMap id="favoriteResultMap" type="com.ssafy.home.favorite.dto.FavoriteEntity">
-        <id property="favoriteId" column="favorite_id"/>
+        <id property="id" column="id"/>
         <result property="memberId" column="member_id"/>
         <result property="regionCode" column="region_code"/>
         <result property="sidoName" column="sido_name"/>
@@ -31,7 +31,7 @@
         )
     </select>
 
-    <insert id="insertFavorite" parameterType="com.ssafy.home.favorite.dto.FavoriteEntity" useGeneratedKeys="true" keyProperty="favoriteId">
+    <insert id="insertFavorite" parameterType="com.ssafy.home.favorite.dto.FavoriteEntity" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO favorite_area (
             member_id,
             region_code
@@ -43,7 +43,7 @@
 
     <select id="findByMemberId" resultMap="favoriteResultMap">
         SELECT
-            fa.favorite_id,
+            fa.id,
             fa.member_id,
             fa.region_code,
             rc.sido_name,
@@ -53,18 +53,18 @@
         FROM favorite_area fa
         INNER JOIN region_code rc ON rc.region_code = fa.region_code
         WHERE fa.member_id = #{memberId}
-        ORDER BY fa.created_at DESC, fa.favorite_id DESC
+        ORDER BY fa.created_at DESC, fa.id DESC
     </select>
 
     <select id="findOwnerMemberIdByFavoriteId" resultType="long">
         SELECT member_id
         FROM favorite_area
-        WHERE favorite_id = #{favoriteId}
+        WHERE id = #{favoriteId}
     </select>
 
     <delete id="deleteByFavoriteIdAndMemberId">
         DELETE FROM favorite_area
-        WHERE favorite_id = #{favoriteId}
+        WHERE id = #{favoriteId}
           AND member_id = #{memberId}
     </delete>
 </mapper>

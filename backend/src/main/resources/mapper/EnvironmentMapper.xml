@@ -6,7 +6,7 @@
 
     <select id="findEnvironmentInfos" resultType="com.ssafy.home.environment.dto.EnvironmentEntity">
         SELECT
-            env_id AS envId,
+            id AS id,
             item_name AS itemName,
             value,
             unit,
@@ -19,6 +19,6 @@
             ) AS distance
         FROM environment_info
         HAVING distance &lt;= #{radius}
-        ORDER BY distance ASC, env_id ASC
+        ORDER BY distance ASC, id ASC
     </select>
 </mapper>

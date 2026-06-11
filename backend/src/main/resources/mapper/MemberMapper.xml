@@ -5,7 +5,7 @@
 <mapper namespace="com.ssafy.home.member.mapper.MemberMapper">
 
     <resultMap id="memberResultMap" type="com.ssafy.home.member.dto.MemberEntity">
-        <id property="memberId" column="member_id"/>
+        <id property="id" column="id"/>
         <result property="email" column="email"/>
         <result property="password" column="password"/>
         <result property="name" column="name"/>
@@ -22,7 +22,7 @@
         )
     </select>
 
-    <insert id="insertMember" parameterType="com.ssafy.home.member.dto.MemberEntity" useGeneratedKeys="true" keyProperty="memberId">
+    <insert id="insertMember" parameterType="com.ssafy.home.member.dto.MemberEntity" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO member (
             email,
             password,
@@ -38,7 +38,7 @@
 
     <select id="findById" resultMap="memberResultMap">
         SELECT
-            member_id,
+            id,
             email,
             password,
             name,
@@ -46,12 +46,12 @@
             created_at,
             updated_at
         FROM member
-        WHERE member_id = #{memberId}
+        WHERE id = #{memberId}
     </select>
 
     <select id="findByEmail" resultMap="memberResultMap">
         SELECT
-            member_id,
+            id,
             email,
             password,
             name,
@@ -68,11 +68,11 @@
             name = #{name},
             password = #{password},
             updated_at = CURRENT_TIMESTAMP
-        WHERE member_id = #{memberId}
+        WHERE id = #{id}
     </update>
 
     <delete id="deleteMember">
         DELETE FROM member
-        WHERE member_id = #{memberId}
+        WHERE id = #{memberId}
     </delete>
 </mapper>

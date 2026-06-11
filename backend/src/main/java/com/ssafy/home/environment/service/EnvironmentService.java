@@ -25,7 +25,7 @@ public class EnvironmentService {
         return environmentMapper.findEnvironmentInfos(lat, lng, normalizedRadius)
                 .stream()
                 .map(entity -> new EnvironmentResponse(
-                        entity.getEnvId(),
+                        entity.getId(),
                         entity.getItemName(),
                         entity.getValue(),
                         entity.getUnit(),
