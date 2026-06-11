@@ -43,14 +43,13 @@ jobs:
       - name: Sync artifact to GitLab
         if: steps.detect.outputs.sync_artifact == 'true'
         env:
-          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           COMMIT_AUTHOR=$(git log -1 --pretty="%an")
           COMMIT_EMAIL=$(git log -1 --pretty="%ae")
 
-          git clone "https://$GITLAB_USERNAME:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/artifact" /tmp/artifact-gitlab
+          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/artifact" /tmp/artifact-gitlab
 
           find /tmp/artifact-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
 
@@ -71,14 +70,13 @@ jobs:
       - name: Sync backend to GitLab
         if: steps.detect.outputs.sync_backend == 'true'
         env:
-          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           COMMIT_AUTHOR=$(git log -1 --pretty="%an")
           COMMIT_EMAIL=$(git log -1 --pretty="%ae")
 
-          git clone "https://$GITLAB_USERNAME:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/backend" /tmp/backend-gitlab
+          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/backend" /tmp/backend-gitlab
 
           find /tmp/backend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
 
@@ -99,14 +97,13 @@ jobs:
       - name: Sync frontend to GitLab
         if: steps.detect.outputs.sync_frontend == 'true'
         env:
-          GITLAB_USERNAME: ${{ secrets.GITLAB_USERNAME }}
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
           COMMIT_MSG=$(git log -1 --pretty=%B)
           COMMIT_AUTHOR=$(git log -1 --pretty="%an")
           COMMIT_EMAIL=$(git log -1 --pretty="%ae")
 
-          git clone "https://$GITLAB_USERNAME:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/frontend.git" /tmp/frontend-gitlab
+          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/frontend.git" /tmp/frontend-gitlab
 
           find /tmp/frontend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
 
