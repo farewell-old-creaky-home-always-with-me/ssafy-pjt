@@ -134,7 +134,7 @@ function formatKoreanManwon(won) {
   const eok = Math.floor(manwon / 10000)
   const rest = manwon % 10000
   if (eok === 0) return rest.toLocaleString()
-  if (rest === 0) return eok + '억 0'
+  if (rest === 0) return manwon.toLocaleString()
   return eok + '억 ' + rest.toLocaleString()
 }
 
