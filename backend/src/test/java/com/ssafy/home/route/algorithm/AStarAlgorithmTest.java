@@ -51,7 +51,7 @@ class AStarAlgorithmTest {
 
         List<Node> path = astar.search(graph, a, a);
 
-        assertThat(path).isEmpty();
+        assertThat(path).extracting(Node::getId).containsExactly(1L);
     }
 
     @Test

@@ -91,7 +91,7 @@ class PlaceServiceTest {
         when(placeMapper.countByMemberIdAndType(1L, PlaceType.HOME.name())).thenReturn(0);
         doAnswer(invocation -> {
             PlaceEntity entity = invocation.getArgument(0);
-            entity.setPlaceId(10L);
+            entity.setId(10L);
             return null;
         }).when(placeMapper).insertPlace(any(PlaceEntity.class));
 
@@ -113,7 +113,7 @@ class PlaceServiceTest {
     @Test
     void updatePlaceThrowsWhenOwnerDiffers() {
         PlaceEntity existing = new PlaceEntity();
-        existing.setPlaceId(3L);
+        existing.setId(3L);
         existing.setMemberId(2L);
         existing.setPlaceType(PlaceType.OTHER.name());
         when(placeMapper.findById(3L)).thenReturn(existing);
@@ -135,7 +135,7 @@ class PlaceServiceTest {
     @Test
     void deletePlaceDeletesOnlyOwnerPlace() {
         PlaceEntity existing = new PlaceEntity();
-        existing.setPlaceId(3L);
+        existing.setId(3L);
         existing.setMemberId(1L);
         existing.setPlaceType(PlaceType.OTHER.name());
         when(placeMapper.findById(3L)).thenReturn(existing);
