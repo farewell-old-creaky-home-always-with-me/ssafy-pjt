@@ -1,0 +1,38 @@
+name: Frontend CI
+
+on:
+  push:
+    branches: [master]
+    paths: ["frontend/**"]
+  pull_request:
+    branches: [master]
+    paths: ["frontend/**"]
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate HTML
+        working-directory: frontend
+        run: npx --yes htmlhint@latest "*.html"
+
+      - name: Check JS syntax
+        working-directory: frontend
+        run: |
+          FAILED=0
+          for f in js/*.js; do
+            node --check "$f" && echo "OK  $f" || { echo "ERR $f"; FAILED=1; }
+          done
+          exit $FAILED
