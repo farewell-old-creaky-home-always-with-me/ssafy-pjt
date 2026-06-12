@@ -1,0 +1,7 @@
+spring:
+  config:
+    import: optional:classpath:secret/application-secret.yml
+  datasource:
+    url: jdbc:mysql://localhost:3306/ssafy_home
+    username: test
+    password: test

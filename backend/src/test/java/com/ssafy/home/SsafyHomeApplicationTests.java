@@ -9,6 +9,7 @@ import com.ssafy.home.notice.mapper.NoticeMapper;
 import com.ssafy.home.place.mapper.PlaceMapper;
 import com.ssafy.home.route.mapper.FacilityMapper;
 import com.ssafy.home.route.mapper.RouteMapper;
+import com.ssafy.home.stats.mapper.StatsMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -45,6 +46,9 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     RouteMapper routeMapper;
+
+    @MockitoBean
+    StatsMapper statsMapper;
 
     @Test
     void contextLoads() {

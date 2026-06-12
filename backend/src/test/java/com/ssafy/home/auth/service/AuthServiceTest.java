@@ -42,7 +42,7 @@ class AuthServiceTest {
     @Test
     void loginCreatesSessionWhenCredentialsMatch() {
         MemberEntity member = new MemberEntity();
-        member.setMemberId(1L);
+        member.setId(1L);
         member.setName("홍길동");
         member.setEmail("user@example.com");
         member.setPassword("encoded");

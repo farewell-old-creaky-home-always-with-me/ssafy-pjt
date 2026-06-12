@@ -28,11 +28,10 @@ jobs:
         working-directory: frontend
         run: npx --yes htmlhint@latest "*.html"
 
-      - name: Check JS syntax
+      - name: Install dependencies
         working-directory: frontend
-        run: |
-          FAILED=0
-          for f in js/*.js; do
-            node --check "$f" && echo "OK  $f" || { echo "ERR $f"; FAILED=1; }
-          done
-          exit $FAILED
+        run: npm ci
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build

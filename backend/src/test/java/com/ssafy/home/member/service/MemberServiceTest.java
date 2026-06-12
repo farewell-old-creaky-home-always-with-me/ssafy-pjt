@@ -54,12 +54,12 @@ class MemberServiceTest {
         when(passwordEncoder.encode("password1234")).thenReturn("encoded-password");
         doAnswer(invocation -> {
             MemberEntity member = invocation.getArgument(0);
-            member.setMemberId(10L);
+            member.setId(10L);
             return null;
         }).when(memberMapper).insertMember(any(MemberEntity.class));
 
         MemberEntity saved = new MemberEntity();
-        saved.setMemberId(10L);
+        saved.setId(10L);
         saved.setEmail("user@example.com");
         saved.setName("홍길동");
         when(memberMapper.findById(10L)).thenReturn(saved);
@@ -74,7 +74,7 @@ class MemberServiceTest {
     @Test
     void updateMemberReplacesNameAndPassword() {
         MemberEntity member = new MemberEntity();
-        member.setMemberId(1L);
+        member.setId(1L);
         member.setName("기존 이름");
         member.setPassword("old");
         when(memberMapper.findById(1L)).thenReturn(member);
