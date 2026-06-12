@@ -7,7 +7,8 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.ssafy.home.global.exception.DuplicateResourceException;
+import com.ssafy.home.global.exception.CustomException;
+import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.member.dto.CreateMemberRequest;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.dto.MemberResponse;
@@ -41,7 +42,9 @@ class MemberServiceTest {
         when(memberMapper.existsByEmail("user@example.com")).thenReturn(true);
 
         assertThatThrownBy(() -> memberService.createMember(new CreateMemberRequest("user@example.com", "password1234", "홍길동")))
-                .isInstanceOf(DuplicateResourceException.class)
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(ErrorCode.MEMBER_DUPLICATE_EMAIL))
                 .hasMessage("이미 사용 중인 이메일입니다");
     }
 

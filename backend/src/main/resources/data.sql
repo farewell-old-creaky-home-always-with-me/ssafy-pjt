@@ -167,27 +167,4 @@ measured_date = VALUES(measured_date),
 latitude = VALUES(latitude),
 longitude = VALUES(longitude);
 
-INSERT INTO route_node (id, latitude, longitude, node_name) VALUES
-(1, 37.5006130, 127.0364310, '역삼래미안 앞'),
-(2, 37.5008750, 127.0354020, '테헤란로 교차로'),
-(3, 37.5011220, 127.0347210, '역삼역 방면'),
-(4, 37.4886330, 127.0665640, '개포자이프레지던스 앞'),
-(5, 37.5127170, 127.0823660, '잠실엘스 앞')
-ON DUPLICATE KEY UPDATE
-latitude = VALUES(latitude),
-longitude = VALUES(longitude),
-node_name = VALUES(node_name);
-
-INSERT INTO route_edge (id, from_node_id, to_node_id, distance) VALUES
-(1, 1, 2, 96.5),
-(2, 2, 1, 96.5),
-(3, 2, 3, 71.8),
-(4, 3, 2, 71.8),
-(5, 4, 5, 2750.0),
-(6, 5, 4, 2750.0)
-ON DUPLICATE KEY UPDATE
-from_node_id = VALUES(from_node_id),
-to_node_id = VALUES(to_node_id),
-distance = VALUES(distance);
-
 SET FOREIGN_KEY_CHECKS = 1;

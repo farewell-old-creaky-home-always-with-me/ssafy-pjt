@@ -201,32 +201,55 @@ CREATE TABLE IF NOT EXISTS environment_info (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='환경 정보';
 
 -- ============================================================
--- 경로 노드 (A* 알고리즘 그래프 노드)
+-- 시설물 (A* 그래프 노드 — 지하철역, 학교, 병원, 공원 등)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS route_node (
-    id        BIGINT        NOT NULL AUTO_INCREMENT COMMENT '노드 ID',
-    latitude  DECIMAL(10,7) NOT NULL COMMENT '위도',
-    longitude DECIMAL(10,7) NOT NULL COMMENT '경도',
-    node_name VARCHAR(100)           COMMENT '노드 명칭 (교차로명 등, 선택)',
+CREATE TABLE IF NOT EXISTS facility (
+    facility_id   BIGINT        NOT NULL AUTO_INCREMENT COMMENT '시설물 ID',
+    name          VARCHAR(100)  NOT NULL COMMENT '시설물명',
+    facility_type VARCHAR(30)   NOT NULL COMMENT '유형: SUBWAY, SCHOOL, HOSPITAL, PARK 등',
+    address       VARCHAR(200)           COMMENT '주소',
+    latitude      DECIMAL(10,7) NOT NULL COMMENT '위도',
+    longitude     DECIMAL(10,7) NOT NULL COMMENT '경도',
+    created_at    DATETIME      NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '등록일시',
 
-    PRIMARY KEY (id),
-    INDEX idx_node_location (latitude, longitude)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='경로 탐색 그래프 노드';
+    PRIMARY KEY (facility_id),
+    INDEX idx_facility_location (latitude, longitude),
+    INDEX idx_facility_type (facility_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='시설물 (A* 경로 탐색 노드)';
 
 -- ============================================================
--- 경로 엣지 (A* 알고리즘 그래프 간선)
+-- A* 경로 탐색 요청 결과
 -- ============================================================
-CREATE TABLE IF NOT EXISTS route_edge (
-    id           BIGINT NOT NULL AUTO_INCREMENT COMMENT '엣지 ID',
-    from_node_id BIGINT NOT NULL COMMENT '출발 노드 ID',
-    to_node_id   BIGINT NOT NULL COMMENT '도착 노드 ID',
-    distance     DOUBLE NOT NULL COMMENT '거리 (미터)',
+CREATE TABLE IF NOT EXISTS route_request (
+    route_request_id BIGINT   NOT NULL AUTO_INCREMENT COMMENT '경로 탐색 요청 ID',
+    member_id        BIGINT   NOT NULL COMMENT '회원 ID',
+    house_id         BIGINT   NOT NULL COMMENT '출발 매물 ID',
+    place_id         BIGINT   NOT NULL COMMENT '도착 장소 ID',
+    total_dist_m     INT      NOT NULL COMMENT '총 거리 (미터)',
+    node_count       INT      NOT NULL COMMENT '경로 좌표 수',
+    created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '요청일시',
 
-    PRIMARY KEY (id),
-    FOREIGN KEY (from_node_id) REFERENCES route_node(id),
-    FOREIGN KEY (to_node_id) REFERENCES route_node(id),
-    INDEX idx_edge_from (from_node_id),
-    INDEX idx_edge_to (to_node_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='경로 탐색 그래프 엣지';
+    PRIMARY KEY (route_request_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id),
+    FOREIGN KEY (house_id)  REFERENCES house(house_id),
+    FOREIGN KEY (place_id)  REFERENCES member_place(place_id),
+    INDEX idx_route_request_member (member_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='A* 경로 탐색 요청 결과';
+
+-- ============================================================
+-- A* 경로 좌표 목록
+-- ============================================================
+CREATE TABLE IF NOT EXISTS route_path (
+    route_path_id    BIGINT        NOT NULL AUTO_INCREMENT COMMENT '경로 좌표 ID',
+    route_request_id BIGINT        NOT NULL COMMENT '경로 탐색 요청 ID',
+    seq              INT           NOT NULL COMMENT '순서 (0부터)',
+    latitude         DECIMAL(10,7) NOT NULL COMMENT '위도',
+    longitude        DECIMAL(10,7) NOT NULL COMMENT '경도',
+
+    PRIMARY KEY (route_path_id),
+    FOREIGN KEY (route_request_id) REFERENCES route_request(route_request_id) ON DELETE CASCADE,
+    INDEX idx_route_path_request (route_request_id),
+    UNIQUE KEY uq_route_path_order (route_request_id, seq)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='A* 경로 좌표 목록';
 
 SET FOREIGN_KEY_CHECKS = 1;

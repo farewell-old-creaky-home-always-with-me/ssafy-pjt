@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.route.mapper.RouteMapper">
+
+    <insert id="insertRouteRequest"
+            parameterType="com.ssafy.home.route.dto.RouteRequestEntity"
+            useGeneratedKeys="true" keyProperty="routeRequestId">
+        INSERT INTO route_request (member_id, house_id, place_id, total_dist_m, node_count)
+        VALUES (#{memberId}, #{houseId}, #{placeId}, #{totalDistM}, #{nodeCount})
+    </insert>
+
+    <insert id="insertRoutePaths" parameterType="java.util.List">
+        INSERT INTO route_path (route_request_id, seq, latitude, longitude)
+        VALUES
+        <foreach collection="list" item="p" separator=",">
+            (#{p.routeRequestId}, #{p.seq}, #{p.latitude}, #{p.longitude})
+        </foreach>
+    </insert>
+</mapper>

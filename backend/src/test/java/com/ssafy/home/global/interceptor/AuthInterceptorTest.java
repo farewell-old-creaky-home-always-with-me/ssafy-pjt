@@ -5,7 +5,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ssafy.home.global.exception.GlobalExceptionHandler;
-import com.ssafy.home.global.response.ApiResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -30,7 +29,7 @@ class AuthInterceptorTest {
     void loginRequiredEndpointReturns401WithoutSession() throws Exception {
         mockMvc.perform(get("/login-required").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.error.code").value("AUTH_UNAUTHORIZED"));
+                .andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
     }
 
     @Test
@@ -40,7 +39,7 @@ class AuthInterceptorTest {
                         .sessionAttr("isAdmin", false)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.error.code").value("AUTH_FORBIDDEN"));
+                .andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
     }
 
     @Test
@@ -49,8 +48,7 @@ class AuthInterceptorTest {
                         .sessionAttr("memberId", 1L)
                         .sessionAttr("isAdmin", true)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
+                .andExpect(status().isOk());
     }
 
     @RestController
@@ -58,14 +56,14 @@ class AuthInterceptorTest {
 
         @LoginRequired
         @GetMapping("/login-required")
-        public ApiResponse<String> loginRequired() {
-            return ApiResponse.success("ok");
+        public String loginRequired() {
+            return "ok";
         }
 
         @AdminOnly
         @GetMapping("/admin-only")
-        public ApiResponse<String> adminOnly() {
-            return ApiResponse.success("ok");
+        public String adminOnly() {
+            return "ok";
         }
     }
 }

@@ -46,6 +46,9 @@ public enum ErrorCode {
 
     ENV_INVALID_COORDINATE(HttpStatus.BAD_REQUEST, "유효하지 않은 좌표입니다"),
     ENV_INVALID_RADIUS(HttpStatus.BAD_REQUEST, "반경은 0보다 커야 합니다"),
+    ROUTE_NO_FACILITIES(HttpStatus.UNPROCESSABLE_ENTITY, "등록된 시설물이 없습니다"),
+    ROUTE_UNREACHABLE(HttpStatus.UNPROCESSABLE_ENTITY, "출발지 또는 도착지 1km 내에 시설물이 없습니다"),
+    ROUTE_NOT_FOUND(HttpStatus.UNPROCESSABLE_ENTITY, "경로를 찾을 수 없습니다"),
 
     COMMON_INVALID_INPUT(HttpStatus.BAD_REQUEST, "입력값이 올바르지 않습니다"),
     COMMON_INVALID_PAGE(HttpStatus.BAD_REQUEST, "페이지 조건이 올바르지 않습니다"),

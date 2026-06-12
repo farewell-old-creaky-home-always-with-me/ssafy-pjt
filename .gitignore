@@ -1,6 +1,7 @@
 # Claude & Codex
 .claude/
 .codex/
+docs/
 
 # Node
 node_modules/
