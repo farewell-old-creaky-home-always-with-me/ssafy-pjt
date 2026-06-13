@@ -17,9 +17,7 @@ Run from `backend/`.
 Read only the relevant document before editing.
 
 - Backend: `docs/conventions/backend.md`
-- API: `docs/conventions/api.md`
 - Test: `docs/conventions/test.md`
-- Database: `docs/conventions/db.md`
 - Architecture: `docs/conventions/architecture.md`
 
 ## Rules
