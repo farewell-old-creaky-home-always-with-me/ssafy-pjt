@@ -42,3 +42,6 @@ uploads/
 
 # Docker override (local only)
 docker-compose.override.yml
+
+# Local agent documentation
+docs/
