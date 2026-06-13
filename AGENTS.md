@@ -19,6 +19,7 @@ Read only the relevant document before editing.
 - Backend: `docs/conventions/backend.md`
 - Test: `docs/conventions/test.md`
 - Architecture: `docs/conventions/architecture.md`
+- Database: `docs/conventions/db.md`
 
 ## Rules
 
