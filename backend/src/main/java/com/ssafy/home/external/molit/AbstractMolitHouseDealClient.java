@@ -85,7 +85,7 @@ public abstract class AbstractMolitHouseDealClient implements MolitHouseDealClie
             JsonNode body = response.path("body");
             JsonNode item = body.path("items").path("item");
             if (item.isMissingNode() || item.isNull()) {
-                return MolitHouseDealPage.empty();
+                return new MolitHouseDealPage(List.of(), integer(body.path("totalCount")));
             }
             List<MolitRawHouseDeal> deals = new ArrayList<>();
             if (item.isArray()) {
@@ -130,10 +130,15 @@ public abstract class AbstractMolitHouseDealClient implements MolitHouseDealClie
     }
 
     private int integer(JsonNode node) {
+        String text = node.asText("0").trim();
         try {
-            return Integer.parseInt(node.asText("0").trim());
+            return Integer.parseInt(text);
         } catch (NumberFormatException exception) {
-            return 0;
+            throw new MolitApiException(
+                    "Unexpected totalCount format from MOLIT API: '" + text + "'",
+                    exception,
+                    true
+            );
         }
     }
 }
