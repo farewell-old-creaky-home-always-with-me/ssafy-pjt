@@ -23,7 +23,7 @@ CREATE TABLE house (
     longitude DECIMAL(10, 7),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_house_identity UNIQUE (region_code, apt_name, jibun, house_type),
-    CONSTRAINT fk_house_region FOREIGN KEY (region_code) REFERENCES region_code(region_code)
+    CONSTRAINT fk_house_region FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE
 );
 
 CREATE TABLE house_deal (
@@ -39,7 +39,7 @@ CREATE TABLE house_deal (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_house_deal_identity
         UNIQUE (house_id, deal_type, deal_date, area, floor, deal_amount),
-    CONSTRAINT fk_deal_house FOREIGN KEY (house_id) REFERENCES house(id)
+    CONSTRAINT fk_deal_house FOREIGN KEY (house_id) REFERENCES house(id) ON DELETE CASCADE
 );
 
 CREATE TABLE batch_collection_log (
