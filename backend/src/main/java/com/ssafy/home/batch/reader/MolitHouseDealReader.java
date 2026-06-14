@@ -35,7 +35,9 @@ public class MolitHouseDealReader implements ItemReader<MolitRawHouseDeal> {
                 return null;
             }
             MolitHouseDealPage page = client.fetch(regionCode, yearMonth, pageNumber);
-            totalCount = page.totalCount();
+            if (totalCount == null) {
+                totalCount = page.totalCount();
+            }
             items = page.items().iterator();
             if (!items.hasNext()) {
                 if (emittedCount < totalCount) {
