@@ -10,13 +10,11 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
-import java.util.Objects;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.JobParametersInvalidException;
-import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
@@ -33,19 +31,15 @@ public class BatchJobService {
 
     private final JobLauncher jobLauncher;
     private final Job job;
-    private final JobExplorer jobExplorer;
     private final Clock clock;
-    private final Object launchLock = new Object();
 
     public BatchJobService(
             @Qualifier("asyncJobLauncher") JobLauncher jobLauncher,
             @Qualifier(JOB_NAME) Job job,
-            JobExplorer jobExplorer,
             Clock clock
     ) {
         this.jobLauncher = jobLauncher;
         this.job = job;
-        this.jobExplorer = jobExplorer;
         this.clock = clock;
     }
 
@@ -55,31 +49,29 @@ public class BatchJobService {
     ) {
         validate(request);
         HouseType houseType = HouseType.from(request.houseType());
-        synchronized (launchLock) {
-            rejectMatchingExecution(request, houseType);
-            JobParameters parameters = new JobParametersBuilder()
-                    .addString("regionCode", request.regionCode())
-                    .addString("yearMonth", request.yearMonth())
-                    .addString("houseType", houseType.name())
-                    .addString("dealType", request.dealType())
-                    .addLong("requestedMemberId", memberId)
-                    .addLong("requestedAt", clock.millis())
-                    .toJobParameters();
-            try {
-                JobExecution execution = jobLauncher.run(job, parameters);
-                return new HouseDealCollectResponse(
-                        execution.getId(), JOB_NAME, execution.getStatus().name(),
-                        new HouseDealCollectResponse.Parameters(
-                                request.regionCode(), request.yearMonth(),
-                                houseType.name(), request.dealType()
-                        )
-                );
-            } catch (JobExecutionAlreadyRunningException exception) {
-                throw new CustomException(ErrorCode.BATCH_ALREADY_RUNNING);
-            } catch (JobRestartException | JobInstanceAlreadyCompleteException
-                     | JobParametersInvalidException exception) {
-                throw new CustomException(ErrorCode.BATCH_LAUNCH_FAILED);
-            }
+        // identifying 파라미터(regionCode/yearMonth/houseType/dealType)가 JobInstance 키를
+        // 결정하므로, BATCH_JOB_INSTANCE 유니크 제약이 중복 실행을 원자적으로 차단한다.
+        JobParameters parameters = new JobParametersBuilder()
+                .addString("regionCode", request.regionCode())
+                .addString("yearMonth", request.yearMonth())
+                .addString("houseType", houseType.name())
+                .addString("dealType", request.dealType())
+                .addLong("requestedMemberId", memberId, false)
+                .addLong("requestedAt", clock.millis(), false)
+                .toJobParameters();
+        try {
+            JobExecution execution = jobLauncher.run(job, parameters);
+            return new HouseDealCollectResponse(
+                    execution.getId(), JOB_NAME, execution.getStatus().name(),
+                    new HouseDealCollectResponse.Parameters(
+                            request.regionCode(), request.yearMonth(),
+                            houseType.name(), request.dealType()
+                    )
+            );
+        } catch (JobExecutionAlreadyRunningException | JobInstanceAlreadyCompleteException exception) {
+            throw new CustomException(ErrorCode.BATCH_ALREADY_RUNNING);
+        } catch (JobRestartException | JobParametersInvalidException exception) {
+            throw new CustomException(ErrorCode.BATCH_LAUNCH_FAILED);
         }
     }
 
@@ -92,25 +84,5 @@ public class BatchJobService {
         if (!"SALE".equals(request.dealType())) {
             throw new CustomException(ErrorCode.BATCH_INVALID_PARAMETER);
         }
-    }
-
-    private void rejectMatchingExecution(HouseDealCollectRequest request, HouseType houseType) {
-        boolean running = jobExplorer.findRunningJobExecutions(JOB_NAME).stream()
-                .map(JobExecution::getJobParameters)
-                .anyMatch(parameters -> matches(parameters, request, houseType));
-        if (running) {
-            throw new CustomException(ErrorCode.BATCH_ALREADY_RUNNING);
-        }
-    }
-
-    private boolean matches(
-            JobParameters parameters,
-            HouseDealCollectRequest request,
-            HouseType houseType
-    ) {
-        return Objects.equals(parameters.getString("regionCode"), request.regionCode())
-                && Objects.equals(parameters.getString("yearMonth"), request.yearMonth())
-                && Objects.equals(parameters.getString("houseType"), houseType.name())
-                && Objects.equals(parameters.getString("dealType"), request.dealType());
     }
 }
