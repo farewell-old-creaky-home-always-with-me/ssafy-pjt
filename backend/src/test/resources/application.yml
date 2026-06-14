@@ -5,3 +5,11 @@ spring:
     url: jdbc:mysql://localhost:3306/ssafy_home
     username: test
     password: test
+
+molit:
+  apartment-sale-url: http://localhost/test
+  multi-family-sale-url: http://localhost/test
+  service-key: test-key
+  page-size: 10
+  timeout: 5s
+  retry-count: 0

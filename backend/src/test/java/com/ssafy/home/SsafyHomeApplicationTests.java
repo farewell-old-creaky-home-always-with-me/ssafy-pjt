@@ -1,5 +1,7 @@
 package com.ssafy.home;
 
+import com.ssafy.home.batch.mapper.BatchCollectionLogMapper;
+import com.ssafy.home.batch.mapper.HouseDealBatchMapper;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
@@ -11,8 +13,10 @@ import com.ssafy.home.route.mapper.FacilityMapper;
 import com.ssafy.home.route.mapper.RouteMapper;
 import com.ssafy.home.stats.mapper.StatsMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootTest(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
@@ -49,6 +53,18 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     StatsMapper statsMapper;
+
+    @MockitoBean
+    JobRepository jobRepository;
+
+    @MockitoBean
+    PlatformTransactionManager transactionManager;
+
+    @MockitoBean
+    BatchCollectionLogMapper batchCollectionLogMapper;
+
+    @MockitoBean
+    HouseDealBatchMapper houseDealBatchMapper;
 
     @Test
     void contextLoads() {
