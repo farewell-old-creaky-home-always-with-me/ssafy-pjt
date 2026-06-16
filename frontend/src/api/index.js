@@ -1,22 +1,20 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
+import { request } from './client.js'
 
-async function request(path, options = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    credentials: 'include',
-    headers: { ...(options.body ? { 'Content-Type': 'application/json' } : {}), ...options.headers },
-    ...options,
-  })
-  if (!res.ok) {
-    const data = await res.json().catch(() => null)
-    throw Object.assign(new Error(data?.message ?? res.statusText), { status: res.status, data })
-  }
-  if (res.status === 204) return null
-  return res.json()
-}
+export { apiClient, request, toApiError } from './client.js'
+export * as authApi from './auth.js'
+export * as membersApi from './members.js'
+export * as housesApi from './houses.js'
+export * as favoritesApi from './favorites.js'
+export * as placesApi from './places.js'
+export * as routeApi from './route.js'
+export * as commercialApi from './commercial.js'
+export * as environmentApi from './environment.js'
+export * as noticesApi from './notices.js'
+export * as statsApi from './stats.js'
 
 export const api = {
-  get:    (path, params) => request(path + (params ? '?' + new URLSearchParams(params) : '')),
-  post:   (path, body)   => request(path, { method: 'POST', body: JSON.stringify(body) }),
-  put:    (path, body)   => request(path, { method: 'PUT',  body: JSON.stringify(body) }),
-  delete: (path)         => request(path, { method: 'DELETE' }),
+  get: (url, params) => request({ method: 'GET', url, params }),
+  post: (url, data) => request({ method: 'POST', url, data }),
+  put: (url, data) => request({ method: 'PUT', url, data }),
+  delete: (url) => request({ method: 'DELETE', url }),
 }
