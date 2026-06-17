@@ -6,5 +6,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface RegionBatchMapper {
 
-    int upsertRegionCode(NormalizedRegionCode regionCode);
+    int upsert(NormalizedRegionCode regionCode);
 }

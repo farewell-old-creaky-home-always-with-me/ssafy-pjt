@@ -11,6 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.match.MockRestRequestMatchers;
+import org.springframework.test.web.client.response.MockRestResponseCreators;
 import org.springframework.web.client.RestClient;
 
 class VworldLegalRegionClientTest {
@@ -42,6 +44,7 @@ class VworldLegalRegionClientTest {
     @Test
     @DisplayName("VWorld 응답을 파싱한다")
     void fetchParsesFeatures() {
+        // given
         String body = """
                 {
                   "response": {
@@ -66,11 +69,12 @@ class VworldLegalRegionClientTest {
                 }
                 """;
         server.expect(request -> request.getURI().getQuery().contains("page=1"))
-                .andRespond(org.springframework.test.web.client.response.MockRestResponseCreators
-                        .withSuccess(body, MediaType.APPLICATION_JSON));
+                .andRespond(MockRestResponseCreators.withSuccess(body, MediaType.APPLICATION_JSON));
 
+        // when
         VworldRegionPage page = client.fetch("11", 1);
 
+        // then
         assertThat(page.regions()).hasSize(1);
         assertThat(page.regions().get(0).regionCode()).isEqualTo("1111010100");
         assertThat(page.totalCount()).isEqualTo(1);
@@ -80,6 +84,7 @@ class VworldLegalRegionClientTest {
     @Test
     @DisplayName("API 오류 응답은 예외로 변환한다")
     void fetchThrowsOnErrorStatus() {
+        // given
         String body = """
                 {
                   "response": {
@@ -88,11 +93,10 @@ class VworldLegalRegionClientTest {
                   }
                 }
                 """;
-        server.expect(org.springframework.test.web.client.match.MockRestRequestMatchers
-                        .requestTo(org.hamcrest.Matchers.containsString("/vworld")))
-                .andRespond(org.springframework.test.web.client.response.MockRestResponseCreators
-                        .withSuccess(body, MediaType.APPLICATION_JSON));
+        server.expect(MockRestRequestMatchers.requestTo(org.hamcrest.Matchers.containsString("/vworld")))
+                .andRespond(MockRestResponseCreators.withSuccess(body, MediaType.APPLICATION_JSON));
 
+        // when / then
         assertThatThrownBy(() -> client.fetch("11", 1))
                 .isInstanceOf(VworldApiException.class);
     }

@@ -32,20 +32,20 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class HouseDealCollectJobConfig {
 
     @Bean
-    public BatchCollectionLogListener batchCollectionLogListener(
+    public BatchCollectionLogListener houseDealBatchCollectionLogListener(
             BatchCollectionLogMapper mapper
     ) {
-        return new BatchCollectionLogListener(mapper);
+        return BatchCollectionLogListener.forHouseDeal(mapper);
     }
 
     @Bean("houseDealCollectJob")
     public Job houseDealCollectJob(
             JobRepository jobRepository,
             Step houseDealCollectStep,
-            BatchCollectionLogListener listener
+            BatchCollectionLogListener houseDealBatchCollectionLogListener
     ) {
         return new JobBuilder("houseDealCollectJob", jobRepository)
-                .listener(listener)
+                .listener(houseDealBatchCollectionLogListener)
                 .start(houseDealCollectStep)
                 .build();
     }

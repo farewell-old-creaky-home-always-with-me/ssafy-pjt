@@ -3,11 +3,12 @@ package com.ssafy.home.batch;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import com.ssafy.home.external.vworld.VworldLegalRegionClient;
 import com.ssafy.home.external.vworld.VworldRawRegion;
 import com.ssafy.home.external.vworld.VworldRegionPage;
+import com.ssafy.home.external.vworld.VworldSidoCodes;
 import com.ssafy.home.route.service.GraphCacheService;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -79,46 +80,12 @@ class RegionCodeCollectJobTest {
     @Test
     @DisplayName("전국 법정동을 수집해 region_code에 저장한다")
     void collectsAndPersistsRegionCodes() throws Exception {
-        VworldRawRegion valid = new VworldRawRegion(
-                "1111010100", "서울특별시", "종로구", "청운동", false
-        );
-        VworldRawRegion invalid = new VworldRawRegion(
-                "11110", "서울특별시", "종로구", "청운동", false
-        );
-        when(vworldLegalRegionClient.fetch(eq("11"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(valid, invalid), 2));
-        when(vworldLegalRegionClient.fetch(eq("26"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("27"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("28"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("29"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("30"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("31"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("36"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("41"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("43"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("44"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("46"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("47"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("48"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("50"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("51"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
-        when(vworldLegalRegionClient.fetch(eq("52"), anyInt()))
-                .thenReturn(new VworldRegionPage(List.of(), 0));
+        // given
+        VworldRawRegion valid = rawRegion("1111010100", false);
+        VworldRawRegion invalid = rawRegion("11110", false);
+        given(vworldLegalRegionClient.fetch(eq("11"), anyInt()))
+                .willReturn(new VworldRegionPage(List.of(valid, invalid), 2));
+        stubEmptySidoResponsesExcept("11");
 
         JobParameters parameters = new JobParametersBuilder()
                 .addString("syncScope", "FULL")
@@ -126,8 +93,10 @@ class RegionCodeCollectJobTest {
                 .addLong("requestedAt", System.currentTimeMillis())
                 .toJobParameters();
 
+        // when
         JobExecution execution = jobLauncher.run(job, parameters);
 
+        // then
         assertThat(execution.getStatus()).isEqualTo(BatchStatus.COMPLETED);
         assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM region_code", Long.class))
                 .isEqualTo(1);
@@ -140,5 +109,21 @@ class RegionCodeCollectJobTest {
                 .containsEntry("COLLECTED_COUNT", 1)
                 .containsEntry("SKIPPED_COUNT", 1)
                 .containsEntry("STATUS", "COMPLETED");
+    }
+
+    private void stubEmptySidoResponsesExcept(String excludedSidoCode) {
+        for (String sidoCode : VworldSidoCodes.ALL) {
+            if (sidoCode.equals(excludedSidoCode)) {
+                continue;
+            }
+            given(vworldLegalRegionClient.fetch(eq(sidoCode), anyInt()))
+                    .willReturn(new VworldRegionPage(List.of(), 0));
+        }
+    }
+
+    private VworldRawRegion rawRegion(String regionCode, boolean abolished) {
+        return new VworldRawRegion(
+                regionCode, "서울특별시", "종로구", "청운동", abolished
+        );
     }
 }

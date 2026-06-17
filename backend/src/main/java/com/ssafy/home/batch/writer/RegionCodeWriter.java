@@ -26,7 +26,7 @@ public class RegionCodeWriter implements ItemWriter<NormalizedRegionCode> {
     public void write(Chunk<? extends NormalizedRegionCode> chunk) {
         long collected = context().getLong("collectedCount", 0);
         for (NormalizedRegionCode regionCode : chunk) {
-            mapper.upsertRegionCode(regionCode);
+            mapper.upsert(regionCode);
             collected++;
         }
         context().putLong("collectedCount", collected);

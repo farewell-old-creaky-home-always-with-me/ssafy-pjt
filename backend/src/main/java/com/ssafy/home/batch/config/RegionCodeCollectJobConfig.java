@@ -1,7 +1,7 @@
 package com.ssafy.home.batch.config;
 
 import com.ssafy.home.batch.domain.NormalizedRegionCode;
-import com.ssafy.home.batch.listener.RegionBatchCollectionLogListener;
+import com.ssafy.home.batch.listener.BatchCollectionLogListener;
 import com.ssafy.home.batch.mapper.BatchCollectionLogMapper;
 import com.ssafy.home.batch.mapper.RegionBatchMapper;
 import com.ssafy.home.batch.processor.InvalidRegionCodeException;
@@ -28,20 +28,20 @@ import org.springframework.transaction.PlatformTransactionManager;
 public class RegionCodeCollectJobConfig {
 
     @Bean
-    public RegionBatchCollectionLogListener regionBatchCollectionLogListener(
+    public BatchCollectionLogListener regionBatchCollectionLogListener(
             BatchCollectionLogMapper mapper
     ) {
-        return new RegionBatchCollectionLogListener(mapper);
+        return BatchCollectionLogListener.forRegionCode(mapper);
     }
 
     @Bean("regionCodeCollectJob")
     public Job regionCodeCollectJob(
             JobRepository jobRepository,
             Step regionCodeCollectStep,
-            RegionBatchCollectionLogListener listener
+            BatchCollectionLogListener regionBatchCollectionLogListener
     ) {
         return new JobBuilder("regionCodeCollectJob", jobRepository)
-                .listener(listener)
+                .listener(regionBatchCollectionLogListener)
                 .start(regionCodeCollectStep)
                 .build();
     }

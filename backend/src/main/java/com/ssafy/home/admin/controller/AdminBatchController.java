@@ -4,11 +4,11 @@ import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
 import com.ssafy.home.admin.dto.RegionCodeCollectResponse;
 import com.ssafy.home.admin.service.BatchJobService;
-import com.ssafy.home.admin.service.RegionBatchJobService;
 import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.AdminOnly;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,18 +21,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminBatchController {
 
     private final BatchJobService batchJobService;
-    private final RegionBatchJobService regionBatchJobService;
 
     @PostMapping("/house-deals")
-    public HouseDealCollectResponse collectHouseDeals(
+    public ResponseEntity<HouseDealCollectResponse> collectHouseDeals(
             @Valid @RequestBody HouseDealCollectRequest request,
             @LoginMemberId Long memberId
     ) {
-        return batchJobService.collectHouseDeals(memberId, request);
+        return ResponseEntity.ok(batchJobService.collectHouseDeals(memberId, request));
     }
 
     @PostMapping("/region-codes")
-    public RegionCodeCollectResponse collectRegionCodes(@LoginMemberId Long memberId) {
-        return regionBatchJobService.collectRegionCodes(memberId);
+    public ResponseEntity<RegionCodeCollectResponse> collectRegionCodes(
+            @LoginMemberId Long memberId
+    ) {
+        return ResponseEntity.ok(batchJobService.collectRegionCodes(memberId));
     }
 }
