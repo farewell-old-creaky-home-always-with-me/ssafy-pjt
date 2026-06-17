@@ -1,14 +1,15 @@
 package com.ssafy.home.route.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 
 import com.ssafy.home.route.domain.FacilityGraph;
-import com.ssafy.home.route.mapper.dto.FacilityResult;
 import com.ssafy.home.route.mapper.FacilityMapper;
+import com.ssafy.home.route.mapper.dto.FacilityResult;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -28,31 +29,37 @@ class GraphCacheServiceTest {
     }
 
     @Test
+    @DisplayName("1km 이내 시설물은 서로 연결된다")
     void facilitiesWithin1kmAreConnected() {
-        // A(37.000, 127.000) — B(37.008, 127.000): Haversine ≈ 890m (1km 이내)
-        when(facilityMapper.findAll()).thenReturn(List.of(
+        // given — A(37.000, 127.000) — B(37.008, 127.000): Haversine ≈ 890m
+        given(facilityMapper.findAll()).willReturn(List.of(
                 facility(1L, 37.000, 127.000),
                 facility(2L, 37.008, 127.000)
         ));
 
+        // when
         graphCacheService.rebuild();
         FacilityGraph graph = graphCacheService.getGraph();
 
+        // then
         assertThat(graph.getAdjacentEdges(1L)).anyMatch(e -> e.getToId() == 2L);
         assertThat(graph.getAdjacentEdges(2L)).anyMatch(e -> e.getToId() == 1L);
     }
 
     @Test
+    @DisplayName("1km를 초과하는 시설물은 연결되지 않는다")
     void facilitiesOver1kmAreNotConnected() {
-        // A(37.000, 127.000) — B(37.010, 127.000): Haversine ≈ 1112m (1km 초과)
-        when(facilityMapper.findAll()).thenReturn(List.of(
+        // given — A(37.000, 127.000) — B(37.010, 127.000): Haversine ≈ 1112m
+        given(facilityMapper.findAll()).willReturn(List.of(
                 facility(1L, 37.000, 127.000),
                 facility(2L, 37.010, 127.000)
         ));
 
+        // when
         graphCacheService.rebuild();
         FacilityGraph graph = graphCacheService.getGraph();
 
+        // then
         assertThat(graph.getAdjacentEdges(1L)).noneMatch(e -> e.getToId() == 2L);
         assertThat(graph.getAdjacentEdges(2L)).noneMatch(e -> e.getToId() == 1L);
     }
