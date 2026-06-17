@@ -6,11 +6,11 @@
 
     <select id="findAllByLocation" resultType="com.ssafy.home.environment.mapper.dto.EnvironmentResult">
         SELECT
-            id AS id,
-            item_name AS itemName,
+            id,
+            item_name,
             value,
             unit,
-            measured_date AS measuredDate,
+            measured_date,
             latitude,
             longitude,
             SQRT(

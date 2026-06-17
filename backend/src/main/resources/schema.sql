@@ -230,9 +230,9 @@ CREATE TABLE IF NOT EXISTS route_request (
     created_at       DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '요청일시',
 
     PRIMARY KEY (route_request_id),
-    FOREIGN KEY (member_id) REFERENCES member(member_id),
-    FOREIGN KEY (house_id)  REFERENCES house(house_id),
-    FOREIGN KEY (place_id)  REFERENCES member_place(place_id),
+    FOREIGN KEY (member_id) REFERENCES member(id),
+    FOREIGN KEY (house_id)  REFERENCES house(id),
+    FOREIGN KEY (place_id)  REFERENCES member_place(id),
     INDEX idx_route_request_member (member_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='A* 경로 탐색 요청 결과';
 

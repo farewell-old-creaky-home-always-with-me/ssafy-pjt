@@ -6,14 +6,15 @@
 
     <select id="findAllByLocation" resultType="com.ssafy.home.commercial.mapper.dto.CommercialResult">
         SELECT
-            id AS id,
-            biz_name AS bizName,
-            category_large AS categoryLarge,
-            category_medium AS categoryMedium,
-            category_small AS categorySmall,
+            id,
+            biz_name,
+            category_large,
+            category_medium,
+            category_small,
             latitude,
             longitude,
             address,
+            created_at,
             SQRT(
                 POW((latitude - #{lat}) * 111320, 2)
                 + POW((longitude - #{lng}) * 111320 * COS(RADIANS(#{lat})), 2)
