@@ -25,6 +25,10 @@ public enum ErrorCode {
     HOUSE_INVALID_AMOUNT_MAX(HttpStatus.BAD_REQUEST, "최대 금액은 0 이상이어야 합니다"),
     HOUSE_INVALID_AMOUNT_RANGE(HttpStatus.BAD_REQUEST, "최소 금액은 최대 금액보다 클 수 없습니다"),
 
+    BATCH_INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "배치 파라미터가 올바르지 않습니다"),
+    BATCH_ALREADY_RUNNING(HttpStatus.CONFLICT, "동일한 배치가 실행 중입니다"),
+    BATCH_LAUNCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "배치 실행에 실패했습니다"),
+
     FAVORITE_DUPLICATE(HttpStatus.CONFLICT, "이미 등록된 관심 지역입니다"),
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 관심 지역을 찾을 수 없습니다"),
     FAVORITE_FORBIDDEN(HttpStatus.FORBIDDEN, "본인 관심 지역만 삭제할 수 있습니다"),

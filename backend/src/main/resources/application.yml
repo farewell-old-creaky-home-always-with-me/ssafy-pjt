@@ -1,6 +1,11 @@
 spring:
   application:
     name: ssafy-home-backend
+  batch:
+    job:
+      enabled: false
+    jdbc:
+      initialize-schema: ${BATCH_JDBC_INITIALIZE_SCHEMA:never}
   config:
     import: classpath:secret/application-secret.yml
   sql:
@@ -16,6 +21,14 @@ mybatis:
   type-aliases-package: com.ssafy.home
   configuration:
     map-underscore-to-camel-case: true
+
+molit:
+  apartment-sale-url: ${MOLIT_APARTMENT_SALE_URL}
+  multi-family-sale-url: ${MOLIT_MULTI_FAMILY_SALE_URL}
+  service-key: ${MOLIT_SERVICE_KEY}
+  page-size: ${MOLIT_PAGE_SIZE:100}
+  timeout: ${MOLIT_TIMEOUT:10s}
+  retry-count: ${MOLIT_RETRY_COUNT:2}
 
 cors:
   allowed-origins:

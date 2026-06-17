@@ -16,3 +16,21 @@ mybatis:
   mapper-locations: classpath:/mapper/*.xml
   configuration:
     map-underscore-to-camel-case: true
+
+molit:
+  apartment-sale-url: http://localhost/test
+  multi-family-sale-url: http://localhost/test
+  service-key: test-key
+  page-size: 10
+  timeout: 5s
+  retry-count: 0
+
+vworld:
+  data-url: http://localhost/vworld
+  api-key: test-key
+  domain: localhost
+  legal-emd-layer: LT_C_ADLEGAL_EMD
+  page-size: 10
+  timeout: 5s
+  retry-count: 0
+  sido-retry-count: 1
