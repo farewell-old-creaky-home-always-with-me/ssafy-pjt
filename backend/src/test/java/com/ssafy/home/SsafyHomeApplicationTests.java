@@ -2,6 +2,7 @@ package com.ssafy.home;
 
 import com.ssafy.home.batch.mapper.BatchCollectionLogMapper;
 import com.ssafy.home.batch.mapper.HouseDealBatchMapper;
+import com.ssafy.home.batch.mapper.RegionBatchMapper;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
@@ -20,7 +21,12 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 @SpringBootTest(properties = {
         "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
-                + "org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration"
+                + "org.mybatis.spring.boot.autoconfigure.MybatisAutoConfiguration",
+        "molit.apartment-sale-url=http://localhost/test",
+        "molit.multi-family-sale-url=http://localhost/test",
+        "molit.service-key=test-key",
+        "vworld.data-url=http://localhost/vworld",
+        "vworld.api-key=test-key"
 })
 class SsafyHomeApplicationTests {
 
@@ -65,6 +71,9 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     HouseDealBatchMapper houseDealBatchMapper;
+
+    @MockitoBean
+    RegionBatchMapper regionBatchMapper;
 
     @Test
     void contextLoads() {
