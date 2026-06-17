@@ -17,7 +17,7 @@ public class StatsService {
 
     @Transactional(readOnly = true)
     public StatsResponse getStats() {
-        StatsResult row = statsMapper.find();
+        StatsResult row = statsMapper.findSummary();
 
         long todayCount    = row.getTodayDealCount();
         long yesterdayCount = row.getYesterdayDealCount();
@@ -28,7 +28,7 @@ public class StatsService {
         double saleChange   = calculateChange(avgSalePrice, toWon(row.getAvgSalePriceLastMonthManwon()));
         double leaseChange  = calculateChange(avgLeasePrice, toWon(row.getAvgLeasePriceLastMonthManwon()));
 
-        return new StatsResponse(todayCount, todayChange, avgSalePrice, saleChange, avgLeasePrice, leaseChange);
+        return StatsResponse.of(todayCount, todayChange, avgSalePrice, saleChange, avgLeasePrice, leaseChange);
     }
 
     private long toWon(Long manwon) {

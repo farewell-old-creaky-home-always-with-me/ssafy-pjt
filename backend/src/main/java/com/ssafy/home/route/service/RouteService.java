@@ -1,7 +1,12 @@
 package com.ssafy.home.route.service;
 
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_FORBIDDEN;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_NOT_FOUND;
+import static com.ssafy.home.global.exception.ErrorCode.ROUTE_NOT_FOUND;
+import static com.ssafy.home.global.exception.ErrorCode.ROUTE_NO_FACILITIES;
+import static com.ssafy.home.global.exception.ErrorCode.ROUTE_UNREACHABLE;
 import com.ssafy.home.house.mapper.dto.HouseDetailResult;
 import com.ssafy.home.house.mapper.HouseMapper;
 import com.ssafy.home.place.mapper.dto.PlaceResult;
@@ -42,20 +47,20 @@ public class RouteService {
     public RouteResponse calculateRoute(Long memberId, RouteRequest request) {
         HouseDetailResult house = houseMapper.findById(request.houseId());
         if (house == null) {
-            throw new CustomException(ErrorCode.HOUSE_NOT_FOUND);
+            throw new CustomException(HOUSE_NOT_FOUND);
         }
 
         PlaceResult place = placeMapper.findById(request.placeId());
         if (place == null) {
-            throw new CustomException(ErrorCode.PLACE_NOT_FOUND);
+            throw new CustomException(PLACE_NOT_FOUND);
         }
         if (!memberId.equals(place.getMemberId())) {
-            throw new CustomException(ErrorCode.PLACE_FORBIDDEN);
+            throw new CustomException(PLACE_FORBIDDEN);
         }
 
         FacilityGraph baseGraph = graphCacheService.getGraph();
         if (baseGraph == null || baseGraph.getNodes().isEmpty()) {
-            throw new CustomException(ErrorCode.ROUTE_NO_FACILITIES);
+            throw new CustomException(ROUTE_NO_FACILITIES);
         }
 
         FacilityGraph workGraph = baseGraph.copy();
@@ -69,12 +74,12 @@ public class RouteService {
         workGraph.addNode(end);
 
         if (!connectToNearby(workGraph, start) || !connectToNearby(workGraph, end)) {
-            throw new CustomException(ErrorCode.ROUTE_UNREACHABLE);
+            throw new CustomException(ROUTE_UNREACHABLE);
         }
 
         List<Node> path = aStarAlgorithm.search(workGraph, start, end);
         if (path.isEmpty()) {
-            throw new CustomException(ErrorCode.ROUTE_NOT_FOUND);
+            throw new CustomException(ROUTE_NOT_FOUND);
         }
 
         int totalDistM = calculateTotalDistM(path);
@@ -97,17 +102,13 @@ public class RouteService {
                     return pe;
                 })
                 .toList();
-        routeMapper.insertPaths(pathEntities);
+        routeMapper.insertAll(pathEntities);
 
         List<RoutePathPoint> points = IntStream.range(0, path.size())
-                .mapToObj(i -> new RoutePathPoint(
-                        i,
-                        BigDecimal.valueOf(path.get(i).getLat()),
-                        BigDecimal.valueOf(path.get(i).getLng()),
-                        path.get(i).getName()))
+                .mapToObj(i -> RoutePathPoint.from(path.get(i), i))
                 .toList();
 
-        return new RouteResponse(requestEntity.getRouteRequestId(), totalDistM, points);
+        return RouteResponse.of(requestEntity.getRouteRequestId(), totalDistM, points);
     }
 
     private boolean connectToNearby(FacilityGraph graph, Node node) {

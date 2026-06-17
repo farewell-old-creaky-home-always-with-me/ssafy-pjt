@@ -5,7 +5,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
 import com.ssafy.home.house.mapper.HouseMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,12 +29,12 @@ class HouseServiceTest {
 
     @Test
     void searchHousesThrowsWhenRegionCodeIsInvalid() {
-        when(houseMapper.existsRegionCode("1100000000")).thenReturn(false);
+        when(houseMapper.existsByRegionCode("1100000000")).thenReturn(false);
 
         assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.HOUSE_INVALID_REGION))
+                        .isEqualTo(HOUSE_INVALID_REGION))
                 .hasMessage("유효하지 않은 행정구역 코드입니다");
     }
 
@@ -44,7 +45,7 @@ class HouseServiceTest {
         assertThatThrownBy(() -> houseService.getHouseDetail(99L))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.HOUSE_NOT_FOUND))
+                        .isEqualTo(HOUSE_NOT_FOUND))
                 .hasMessage("해당 주택을 찾을 수 없습니다");
     }
 }

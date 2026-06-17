@@ -1,7 +1,7 @@
 package com.ssafy.home.auth.controller;
 
 import com.ssafy.home.auth.dto.AuthMeResponse;
-import com.ssafy.home.auth.dto.LoginRequest;
+import com.ssafy.home.auth.dto.AuthLoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.auth.service.AuthService;
 import com.ssafy.home.global.auth.SessionManager;
@@ -27,7 +27,7 @@ public class AuthController implements AuthApiDocs {
     @PostMapping("/login")
     @Override
     public ResponseEntity<LoginResponse> login(
-            @Valid @RequestBody LoginRequest request,
+            @Valid @RequestBody AuthLoginRequest request,
             HttpServletRequest httpServletRequest
     ) {
         return ResponseEntity.ok(authService.login(request, httpServletRequest));

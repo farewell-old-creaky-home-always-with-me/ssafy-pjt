@@ -1,6 +1,6 @@
 package com.ssafy.home.favorite.controller;
 
-import com.ssafy.home.favorite.dto.CreateFavoriteRequest;
+import com.ssafy.home.favorite.dto.FavoriteCreateRequest;
 import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.service.FavoriteService;
@@ -36,7 +36,7 @@ public class FavoriteController implements FavoriteApiDocs {
     @PostMapping
     @Override
     public ResponseEntity<FavoriteCreateResponse> createFavorite(
-            @Valid @RequestBody CreateFavoriteRequest request,
+            @Valid @RequestBody FavoriteCreateRequest request,
             @LoginMemberId Long memberId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)

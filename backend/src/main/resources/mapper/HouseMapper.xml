@@ -34,7 +34,7 @@
         </if>
     </sql>
 
-    <select id="existsRegionCode" resultType="boolean">
+    <select id="existsByRegionCode" resultType="boolean">
         SELECT EXISTS(
             SELECT 1
             FROM region_code
@@ -42,7 +42,7 @@
         )
     </select>
 
-    <select id="count" resultType="long">
+    <select id="countBySearch" resultType="long">
         SELECT COUNT(*)
         FROM house h
         INNER JOIN (
@@ -51,7 +51,7 @@
         <include refid="searchConditions"/>
     </select>
 
-    <select id="findSummaries" resultType="com.ssafy.home.house.mapper.dto.HouseSummaryResult">
+    <select id="search" resultType="com.ssafy.home.house.mapper.dto.HouseSummaryResult">
         SELECT
             h.id AS houseId,
             h.apt_name AS aptName,
@@ -88,7 +88,7 @@
         WHERE id = #{houseId}
     </select>
 
-    <select id="findDealsByHouseId" resultType="com.ssafy.home.house.mapper.dto.HouseDealResult">
+    <select id="findAllByHouseId" resultType="com.ssafy.home.house.mapper.dto.HouseDealResult">
         SELECT
             id AS dealId,
             deal_type AS dealType,

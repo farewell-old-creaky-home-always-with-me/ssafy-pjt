@@ -2,9 +2,9 @@ package com.ssafy.home.place.controller;
 
 import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.LoginRequired;
-import com.ssafy.home.place.dto.CreatePlaceRequest;
+import com.ssafy.home.place.dto.PlaceCreateRequest;
 import com.ssafy.home.place.dto.PlaceResponse;
-import com.ssafy.home.place.dto.UpdatePlaceRequest;
+import com.ssafy.home.place.dto.PlaceUpdateRequest;
 import com.ssafy.home.place.service.PlaceService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -37,7 +37,7 @@ public class PlaceController implements PlaceApiDocs {
     @PostMapping
     @Override
     public ResponseEntity<PlaceResponse> createPlace(
-            @Valid @RequestBody CreatePlaceRequest request,
+            @Valid @RequestBody PlaceCreateRequest request,
             @LoginMemberId Long memberId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -48,7 +48,7 @@ public class PlaceController implements PlaceApiDocs {
     @Override
     public ResponseEntity<PlaceResponse> updatePlace(
             @PathVariable Long placeId,
-            @Valid @RequestBody UpdatePlaceRequest request,
+            @Valid @RequestBody PlaceUpdateRequest request,
             @LoginMemberId Long memberId
     ) {
         return ResponseEntity.ok(placeService.updatePlace(memberId, placeId, request));

@@ -2,7 +2,8 @@ package com.ssafy.home.global.interceptor;
 
 import com.ssafy.home.global.auth.SessionConst;
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
+import static com.ssafy.home.global.exception.ErrorCode.AUTH_FORBIDDEN;
+import static com.ssafy.home.global.exception.ErrorCode.AUTH_UNAUTHORIZED;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -33,13 +34,13 @@ public class AuthInterceptor implements HandlerInterceptor {
                 : session.getAttribute(SESSION_MEMBER_ID);
 
         if ((loginRequired || adminOnly) && memberId == null) {
-            throw new CustomException(ErrorCode.AUTH_UNAUTHORIZED);
+            throw new CustomException(AUTH_UNAUTHORIZED);
         }
 
         if (adminOnly) {
             Object isAdmin = session.getAttribute(SESSION_IS_ADMIN);
             if (!(isAdmin instanceof Boolean admin) || !admin) {
-                throw new CustomException(ErrorCode.AUTH_FORBIDDEN);
+                throw new CustomException(AUTH_FORBIDDEN);
             }
         }
 

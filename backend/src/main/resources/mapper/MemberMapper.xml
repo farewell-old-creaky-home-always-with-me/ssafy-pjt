@@ -62,7 +62,7 @@
         WHERE email = #{email}
     </select>
 
-    <update id="update" parameterType="com.ssafy.home.member.mapper.dto.MemberUpdateParam">
+    <update id="updateById" parameterType="com.ssafy.home.member.mapper.dto.MemberUpdateParam">
         UPDATE member
         SET
             name = #{name},
@@ -71,7 +71,7 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="delete">
+    <delete id="deleteById">
         DELETE FROM member
         WHERE id = #{memberId}
     </delete>

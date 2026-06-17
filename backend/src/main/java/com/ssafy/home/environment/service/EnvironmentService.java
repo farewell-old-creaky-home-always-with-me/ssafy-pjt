@@ -3,7 +3,8 @@ package com.ssafy.home.environment.service;
 import com.ssafy.home.environment.dto.EnvironmentResponse;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
+import static com.ssafy.home.global.exception.ErrorCode.ENV_INVALID_COORDINATE;
+import static com.ssafy.home.global.exception.ErrorCode.ENV_INVALID_RADIUS;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,21 +22,12 @@ public class EnvironmentService {
         validateCoordinate(lat, lng);
         int normalizedRadius = radius == null ? 1000 : radius;
         if (normalizedRadius <= 0) {
-            throw new CustomException(ErrorCode.ENV_INVALID_RADIUS);
+            throw new CustomException(ENV_INVALID_RADIUS);
         }
 
-        return environmentMapper.findByLocation(lat, lng, normalizedRadius)
+        return environmentMapper.findAllByLocation(lat, lng, normalizedRadius)
                 .stream()
-                .map(entity -> new EnvironmentResponse(
-                        entity.getId(),
-                        entity.getItemName(),
-                        entity.getValue(),
-                        entity.getUnit(),
-                        entity.getMeasuredDate(),
-                        entity.getLatitude(),
-                        entity.getLongitude(),
-                        entity.getDistance()
-                ))
+                .map(EnvironmentResponse::from)
                 .toList();
     }
 
@@ -45,7 +37,7 @@ public class EnvironmentService {
                 || lat.compareTo(BigDecimal.valueOf(90)) > 0
                 || lng.compareTo(BigDecimal.valueOf(-180)) < 0
                 || lng.compareTo(BigDecimal.valueOf(180)) > 0) {
-            throw new CustomException(ErrorCode.ENV_INVALID_COORDINATE);
+            throw new CustomException(ENV_INVALID_COORDINATE);
         }
     }
 }

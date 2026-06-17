@@ -6,7 +6,8 @@ import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
 import com.ssafy.home.notice.dto.NoticeIdResponse;
 import com.ssafy.home.notice.dto.NoticeListItemResponse;
-import com.ssafy.home.notice.dto.NoticeRequest;
+import com.ssafy.home.notice.dto.NoticeCreateRequest;
+import com.ssafy.home.notice.dto.NoticeUpdateRequest;
 import com.ssafy.home.notice.service.NoticeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +49,7 @@ public class NoticeController implements NoticeApiDocs {
     @PostMapping
     @Override
     public ResponseEntity<NoticeIdResponse> createNotice(
-            @Valid @RequestBody NoticeRequest request,
+            @Valid @RequestBody NoticeCreateRequest request,
             @LoginMemberId Long memberId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -60,7 +61,7 @@ public class NoticeController implements NoticeApiDocs {
     @Override
     public ResponseEntity<NoticeIdResponse> updateNotice(
             @PathVariable Long noticeId,
-            @Valid @RequestBody NoticeRequest request
+            @Valid @RequestBody NoticeUpdateRequest request
     ) {
         return ResponseEntity.ok(noticeService.updateNotice(noticeId, request));
     }

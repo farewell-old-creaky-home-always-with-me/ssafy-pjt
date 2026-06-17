@@ -6,11 +6,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ssafy.home.auth.dto.AuthMeResponse;
-import com.ssafy.home.auth.dto.LoginRequest;
+import com.ssafy.home.auth.dto.AuthLoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.global.auth.SessionManager;
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
+import static com.ssafy.home.global.exception.ErrorCode.AUTH_INVALID_CREDENTIALS;
 import com.ssafy.home.member.mapper.dto.MemberDetailResult;
 import com.ssafy.home.member.mapper.MemberMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -57,7 +57,7 @@ class AuthServiceTest {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
 
-        LoginResponse response = authService.login(new LoginRequest("user@example.com", "password1234"), request);
+        LoginResponse response = authService.login(new AuthLoginRequest("user@example.com", "password1234"), request);
 
         assertThat(response.memberId()).isEqualTo(1L);
         assertThat(response.isAdmin()).isTrue();
@@ -73,10 +73,10 @@ class AuthServiceTest {
         when(memberMapper.findByEmail("user@example.com")).thenReturn(member);
         when(passwordEncoder.matches("wrong", "encoded")).thenReturn(false);
 
-        assertThatThrownBy(() -> authService.login(new LoginRequest("user@example.com", "wrong"), new MockHttpServletRequest()))
+        assertThatThrownBy(() -> authService.login(new AuthLoginRequest("user@example.com", "wrong"), new MockHttpServletRequest()))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.AUTH_INVALID_CREDENTIALS))
+                        .isEqualTo(AUTH_INVALID_CREDENTIALS))
                 .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다");
     }
 

@@ -3,7 +3,8 @@ package com.ssafy.home.commercial.service;
 import com.ssafy.home.commercial.dto.CommercialResponse;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
+import static com.ssafy.home.global.exception.ErrorCode.COMMERCIAL_INVALID_COORDINATE;
+import static com.ssafy.home.global.exception.ErrorCode.COMMERCIAL_INVALID_RADIUS;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,20 +27,12 @@ public class CommercialService {
         validateCoordinate(lat, lng);
         int normalizedRadius = radius == null ? 500 : radius;
         if (normalizedRadius <= 0) {
-            throw new CustomException(ErrorCode.COMMERCIAL_INVALID_RADIUS);
+            throw new CustomException(COMMERCIAL_INVALID_RADIUS);
         }
 
-        return commercialMapper.findByLocation(lat, lng, normalizedRadius, normalizeNullable(category))
+        return commercialMapper.findAllByLocation(lat, lng, normalizedRadius, normalizeNullable(category))
                 .stream()
-                .map(entity -> new CommercialResponse(
-                        entity.getId(),
-                        entity.getBizName(),
-                        entity.getCategoryLarge(),
-                        entity.getCategoryMedium(),
-                        entity.getLatitude(),
-                        entity.getLongitude(),
-                        entity.getDistance()
-                ))
+                .map(CommercialResponse::from)
                 .toList();
     }
 
@@ -49,7 +42,7 @@ public class CommercialService {
                 || lat.compareTo(BigDecimal.valueOf(90)) > 0
                 || lng.compareTo(BigDecimal.valueOf(-180)) < 0
                 || lng.compareTo(BigDecimal.valueOf(180)) > 0) {
-            throw new CustomException(ErrorCode.COMMERCIAL_INVALID_COORDINATE);
+            throw new CustomException(COMMERCIAL_INVALID_COORDINATE);
         }
     }
 

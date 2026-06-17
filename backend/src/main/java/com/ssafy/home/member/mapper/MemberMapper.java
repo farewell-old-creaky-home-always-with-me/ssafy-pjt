@@ -17,7 +17,7 @@ public interface MemberMapper {
 
     MemberDetailResult findByEmail(@Param("email") String email);
 
-    int update(MemberUpdateParam member);
+    int updateById(MemberUpdateParam member);
 
-    int delete(@Param("memberId") Long memberId);
+    int deleteById(@Param("memberId") Long memberId);
 }

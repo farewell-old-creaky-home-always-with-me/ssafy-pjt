@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.home.environment.mapper.EnvironmentMapper">
 
-    <select id="findByLocation" resultType="com.ssafy.home.environment.mapper.dto.EnvironmentResult">
+    <select id="findAllByLocation" resultType="com.ssafy.home.environment.mapper.dto.EnvironmentResult">
         SELECT
             id AS id,
             item_name AS itemName,

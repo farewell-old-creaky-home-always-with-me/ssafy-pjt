@@ -1,6 +1,6 @@
 package com.ssafy.home.favorite.controller;
 
-import com.ssafy.home.favorite.dto.CreateFavoriteRequest;
+import com.ssafy.home.favorite.dto.FavoriteCreateRequest;
 import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.global.auth.LoginMemberId;
@@ -29,7 +29,7 @@ public interface FavoriteApiDocs {
     )
     ResponseEntity<FavoriteCreateResponse> createFavorite(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "관심 매물 등록 요청", required = true)
-            @Valid @RequestBody CreateFavoriteRequest request,
+            @Valid @RequestBody FavoriteCreateRequest request,
             @Parameter(hidden = true) @LoginMemberId Long memberId
     );
 

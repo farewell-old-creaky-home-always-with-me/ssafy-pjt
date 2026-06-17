@@ -11,13 +11,13 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface HouseMapper {
 
-    boolean existsRegionCode(@Param("regionCode") String regionCode);
+    boolean existsByRegionCode(@Param("regionCode") String regionCode);
 
-    long count(HouseSearchParam condition);
+    long countBySearch(HouseSearchParam condition);
 
-    List<HouseSummaryResult> findSummaries(HouseSearchParam condition);
+    List<HouseSummaryResult> search(HouseSearchParam condition);
 
     HouseDetailResult findById(@Param("houseId") Long houseId);
 
-    List<HouseDealResult> findDealsByHouseId(@Param("houseId") Long houseId);
+    List<HouseDealResult> findAllByHouseId(@Param("houseId") Long houseId);
 }

@@ -1,7 +1,7 @@
 package com.ssafy.home.auth.controller;
 
 import com.ssafy.home.auth.dto.AuthMeResponse;
-import com.ssafy.home.auth.dto.LoginRequest;
+import com.ssafy.home.auth.dto.AuthLoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,7 +20,7 @@ public interface AuthApiDocs {
     )
     ResponseEntity<LoginResponse> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "로그인 요청", required = true)
-            @Valid @RequestBody LoginRequest request,
+            @Valid @RequestBody AuthLoginRequest request,
             @Parameter(hidden = true) HttpServletRequest httpServletRequest
     );
 

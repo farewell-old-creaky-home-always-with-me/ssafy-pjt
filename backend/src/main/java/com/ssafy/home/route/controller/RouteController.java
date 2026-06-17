@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @LoginRequired
 @RestController
-@RequestMapping("/api/route")
+@RequestMapping("/api/routes")
 @RequiredArgsConstructor
 public class RouteController implements RouteApiDocs {
 

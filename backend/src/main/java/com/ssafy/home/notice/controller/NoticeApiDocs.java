@@ -5,7 +5,8 @@ import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
 import com.ssafy.home.notice.dto.NoticeIdResponse;
 import com.ssafy.home.notice.dto.NoticeListItemResponse;
-import com.ssafy.home.notice.dto.NoticeRequest;
+import com.ssafy.home.notice.dto.NoticeCreateRequest;
+import com.ssafy.home.notice.dto.NoticeUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,7 +45,7 @@ public interface NoticeApiDocs {
     )
     ResponseEntity<NoticeIdResponse> createNotice(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "공지사항 요청", required = true)
-            @Valid @RequestBody NoticeRequest request,
+            @Valid @RequestBody NoticeCreateRequest request,
             @Parameter(hidden = true) @LoginMemberId Long memberId
     );
 
@@ -56,7 +57,7 @@ public interface NoticeApiDocs {
             @Parameter(description = "공지사항 ID", example = "1")
             @PathVariable Long noticeId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "공지사항 요청", required = true)
-            @Valid @RequestBody NoticeRequest request
+            @Valid @RequestBody NoticeUpdateRequest request
     );
 
     @Operation(

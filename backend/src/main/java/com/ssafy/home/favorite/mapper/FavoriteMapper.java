@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface FavoriteMapper {
 
-    boolean existsRegionCode(@Param("regionCode") String regionCode);
+    boolean existsByRegionCode(@Param("regionCode") String regionCode);
 
     boolean existsByMemberIdAndRegionCode(@Param("memberId") Long memberId, @Param("regionCode") String regionCode);
 
@@ -17,7 +17,7 @@ public interface FavoriteMapper {
 
     List<FavoriteDetailResult> findByMemberId(@Param("memberId") Long memberId);
 
-    Long findOwnerMemberIdByFavoriteId(@Param("favoriteId") Long favoriteId);
+    Long findMemberIdById(@Param("favoriteId") Long favoriteId);
 
-    int deleteByFavoriteIdAndMemberId(@Param("favoriteId") Long favoriteId, @Param("memberId") Long memberId);
+    int deleteByIdAndMemberId(@Param("favoriteId") Long favoriteId, @Param("memberId") Long memberId);
 }

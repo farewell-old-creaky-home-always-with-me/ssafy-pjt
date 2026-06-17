@@ -1,5 +1,6 @@
 package com.ssafy.home.notice.dto;
 
+import com.ssafy.home.notice.mapper.dto.NoticeResult;
 import java.time.LocalDateTime;
 
 public record NoticeDetailResponse(
@@ -9,4 +10,14 @@ public record NoticeDetailResponse(
         String authorName,
         LocalDateTime createdAt
 ) {
+
+    public static NoticeDetailResponse from(NoticeResult notice) {
+        return new NoticeDetailResponse(
+                notice.getId(),
+                notice.getTitle(),
+                notice.getContent(),
+                notice.getAuthorName(),
+                notice.getCreatedAt()
+        );
+    }
 }

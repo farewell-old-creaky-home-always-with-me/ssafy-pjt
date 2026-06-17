@@ -3,17 +3,23 @@ package com.ssafy.home.place.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
-import com.ssafy.home.place.dto.CreatePlaceRequest;
-import com.ssafy.home.place.mapper.dto.PlaceParam;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_DUPLICATE_TYPE;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_FORBIDDEN;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_INVALID_COORDINATE;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_OTHER_LIMIT_EXCEEDED;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_INVALID_REGION;
+import com.ssafy.home.place.dto.PlaceCreateRequest;
+import com.ssafy.home.place.mapper.dto.PlaceCreateParam;
 import com.ssafy.home.place.mapper.dto.PlaceResult;
 import com.ssafy.home.place.dto.PlaceType;
-import com.ssafy.home.place.dto.UpdatePlaceRequest;
+import com.ssafy.home.place.dto.PlaceUpdateRequest;
 import com.ssafy.home.place.mapper.PlaceMapper;
 import java.math.BigDecimal;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,23 +39,24 @@ class PlaceServiceTest {
     @BeforeEach
     void setUp() {
         placeService = new PlaceService(placeMapper);
+        lenient().when(placeMapper.existsByRegionCode(eq("1100000000"))).thenReturn(true);
     }
 
     @Test
     void createPlaceThrowsWhenHomeAlreadyExists() {
         when(placeMapper.countByMemberIdAndType(1L, PlaceType.HOME.name())).thenReturn(1);
 
-        assertThatThrownBy(() -> placeService.createPlace(1L, new CreatePlaceRequest(
+        assertThatThrownBy(() -> placeService.createPlace(1L, new PlaceCreateRequest(
                 "HOME",
                 "우리집",
                 "서울특별시 강남구 테헤란로 212",
-                null,
+                "1100000000",
                 new BigDecimal("37.5012743"),
                 new BigDecimal("127.0395850")
         )))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.PLACE_DUPLICATE_TYPE))
+                        .isEqualTo(PLACE_DUPLICATE_TYPE))
                 .hasMessage("이미 등록된 장소 유형입니다");
     }
 
@@ -57,33 +64,33 @@ class PlaceServiceTest {
     void createPlaceThrowsWhenOtherLimitExceeded() {
         when(placeMapper.countByMemberIdAndType(1L, PlaceType.OTHER.name())).thenReturn(5);
 
-        assertThatThrownBy(() -> placeService.createPlace(1L, new CreatePlaceRequest(
+        assertThatThrownBy(() -> placeService.createPlace(1L, new PlaceCreateRequest(
                 "OTHER",
                 "헬스장",
                 "서울특별시 강남구 테헤란로 300",
-                null,
+                "1100000000",
                 new BigDecimal("37.5030000"),
                 new BigDecimal("127.0400000")
         )))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.PLACE_OTHER_LIMIT_EXCEEDED))
+                        .isEqualTo(PLACE_OTHER_LIMIT_EXCEEDED))
                 .hasMessage("기타 장소는 최대 5개까지 등록할 수 있습니다");
     }
 
     @Test
     void createPlaceThrowsWhenCoordinateIsInvalid() {
-        assertThatThrownBy(() -> placeService.createPlace(1L, new CreatePlaceRequest(
+        assertThatThrownBy(() -> placeService.createPlace(1L, new PlaceCreateRequest(
                 "WORK",
                 "회사",
                 "서울특별시 중구 세종대로 110",
-                null,
+                "1100000000",
                 new BigDecimal("91.0000000"),
                 new BigDecimal("127.0000000")
         )))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.PLACE_INVALID_COORDINATE))
+                        .isEqualTo(PLACE_INVALID_COORDINATE))
                 .hasMessage("유효하지 않은 좌표입니다");
     }
 
@@ -91,16 +98,16 @@ class PlaceServiceTest {
     void createPlaceReturnsSavedPlace() {
         when(placeMapper.countByMemberIdAndType(1L, PlaceType.HOME.name())).thenReturn(0);
         doAnswer(invocation -> {
-            PlaceParam entity = invocation.getArgument(0);
+            PlaceCreateParam entity = invocation.getArgument(0);
             entity.setId(10L);
             return null;
-        }).when(placeMapper).insert(any(PlaceParam.class));
+        }).when(placeMapper).insert(any(PlaceCreateParam.class));
 
-        var response = placeService.createPlace(1L, new CreatePlaceRequest(
+        var response = placeService.createPlace(1L, new PlaceCreateRequest(
                 "HOME",
                 "  우리집  ",
                 "  서울특별시 강남구 테헤란로 212  ",
-                null,
+                "1100000000",
                 new BigDecimal("37.5012743"),
                 new BigDecimal("127.0395850")
         ));
@@ -119,17 +126,17 @@ class PlaceServiceTest {
         existing.setPlaceType(PlaceType.OTHER.name());
         when(placeMapper.findById(3L)).thenReturn(existing);
 
-        assertThatThrownBy(() -> placeService.updatePlace(1L, 3L, new UpdatePlaceRequest(
+        assertThatThrownBy(() -> placeService.updatePlace(1L, 3L, new PlaceUpdateRequest(
                 "OTHER",
                 "카페",
                 "서울특별시 마포구 양화로 10",
-                null,
+                "1100000000",
                 new BigDecimal("37.5500000"),
                 new BigDecimal("126.9200000")
         )))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.PLACE_FORBIDDEN))
+                        .isEqualTo(PLACE_FORBIDDEN))
                 .hasMessage("본인 장소만 수정하거나 삭제할 수 있습니다");
     }
 

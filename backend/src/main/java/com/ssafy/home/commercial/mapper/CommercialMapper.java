@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface CommercialMapper {
 
-    List<CommercialResult> findByLocation(
+    List<CommercialResult> findAllByLocation(
             @Param("lat") BigDecimal lat,
             @Param("lng") BigDecimal lng,
             @Param("radius") int radius,

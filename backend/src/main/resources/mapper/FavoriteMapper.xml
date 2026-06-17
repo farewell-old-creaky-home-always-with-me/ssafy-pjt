@@ -3,18 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.home.favorite.mapper.FavoriteMapper">
-
-    <resultMap id="favoriteResultMap" type="com.ssafy.home.favorite.mapper.dto.FavoriteDetailResult">
-        <id property="id" column="id"/>
-        <result property="memberId" column="member_id"/>
-        <result property="regionCode" column="region_code"/>
-        <result property="sidoName" column="sido_name"/>
-        <result property="sigunguName" column="sigungu_name"/>
-        <result property="dongName" column="dong_name"/>
-        <result property="createdAt" column="created_at"/>
-    </resultMap>
-
-    <select id="existsRegionCode" resultType="boolean">
+<select id="existsByRegionCode" resultType="boolean">
         SELECT EXISTS(
             SELECT 1
             FROM region_code
@@ -41,7 +30,7 @@
         )
     </insert>
 
-    <select id="findByMemberId" resultMap="favoriteResultMap">
+    <select id="findByMemberId" resultType="com.ssafy.home.favorite.mapper.dto.FavoriteDetailResult">
         SELECT
             fa.id,
             fa.member_id,
@@ -56,13 +45,13 @@
         ORDER BY fa.created_at DESC, fa.id DESC
     </select>
 
-    <select id="findOwnerMemberIdByFavoriteId" resultType="long">
+    <select id="findMemberIdById" resultType="long">
         SELECT member_id
         FROM favorite_area
         WHERE id = #{favoriteId}
     </select>
 
-    <delete id="deleteByFavoriteIdAndMemberId">
+    <delete id="deleteByIdAndMemberId">
         DELETE FROM favorite_area
         WHERE id = #{favoriteId}
           AND member_id = #{memberId}

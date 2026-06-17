@@ -8,10 +8,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
-import com.ssafy.home.member.dto.CreateMemberRequest;
-import com.ssafy.home.member.dto.MemberResponse;
-import com.ssafy.home.member.dto.UpdateMemberRequest;
+import static com.ssafy.home.global.exception.ErrorCode.MEMBER_DUPLICATE_EMAIL;
+import com.ssafy.home.member.dto.MemberCreateRequest;
+import com.ssafy.home.member.dto.MemberDetailResponse;
+import com.ssafy.home.member.dto.MemberUpdateRequest;
 import com.ssafy.home.member.mapper.MemberMapper;
 import com.ssafy.home.member.mapper.dto.MemberCreateParam;
 import com.ssafy.home.member.mapper.dto.MemberDetailResult;
@@ -43,10 +43,10 @@ class MemberServiceTest {
     void createMemberThrowsWhenEmailAlreadyExists() {
         when(memberMapper.existsByEmail("user@example.com")).thenReturn(true);
 
-        assertThatThrownBy(() -> memberService.createMember(new CreateMemberRequest("user@example.com", "password1234", "홍길동")))
+        assertThatThrownBy(() -> memberService.createMember(new MemberCreateRequest("user@example.com", "password1234", "홍길동")))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.MEMBER_DUPLICATE_EMAIL))
+                        .isEqualTo(MEMBER_DUPLICATE_EMAIL))
                 .hasMessage("이미 사용 중인 이메일입니다");
     }
 
@@ -66,7 +66,7 @@ class MemberServiceTest {
         saved.setName("홍길동");
         when(memberMapper.findById(10L)).thenReturn(saved);
 
-        MemberResponse response = memberService.createMember(new CreateMemberRequest("user@example.com", "password1234", "홍길동"));
+        MemberDetailResponse response = memberService.createMember(new MemberCreateRequest("user@example.com", "password1234", "홍길동"));
 
         assertThat(response.memberId()).isEqualTo(10L);
         assertThat(response.email()).isEqualTo("user@example.com");
@@ -82,10 +82,10 @@ class MemberServiceTest {
         when(memberMapper.findById(1L)).thenReturn(member);
         when(passwordEncoder.encode("new-password")).thenReturn("encoded");
 
-        var response = memberService.updateMyMember(1L, new UpdateMemberRequest("새 이름", "new-password"));
+        var response = memberService.updateMyMember(1L, new MemberUpdateRequest("새 이름", "new-password"));
 
         assertThat(response.memberId()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("새 이름");
-        verify(memberMapper).update(any(MemberUpdateParam.class));
+        verify(memberMapper).updateById(any(MemberUpdateParam.class));
     }
 }
