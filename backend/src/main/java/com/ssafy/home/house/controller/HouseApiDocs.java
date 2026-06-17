@@ -6,6 +6,7 @@ import com.ssafy.home.house.dto.HouseSummaryResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -16,7 +17,7 @@ public interface HouseApiDocs {
             summary = "주택 매물 검색",
             description = "지역 코드와 검색 조건으로 주택 매물 목록을 페이지 단위로 조회합니다."
     )
-    PageResponse<HouseSummaryResponse> searchHouses(
+    ResponseEntity<PageResponse<HouseSummaryResponse>> searchHouses(
             @Parameter(description = "법정동 지역 코드", example = "1111010100")
             @RequestParam String regionCode,
             @Parameter(description = "주택 유형", example = "APT")
@@ -37,7 +38,7 @@ public interface HouseApiDocs {
             summary = "주택 매물 상세 조회",
             description = "주택 매물 ID로 상세 정보와 거래 이력을 조회합니다."
     )
-    HouseDetailResponse getHouseDetail(
+    ResponseEntity<HouseDetailResponse> getHouseDetail(
             @Parameter(description = "주택 매물 ID", example = "1")
             @PathVariable Long houseId
     );

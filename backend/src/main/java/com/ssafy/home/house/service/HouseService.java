@@ -1,19 +1,29 @@
 package com.ssafy.home.house.service;
 
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
+import static com.ssafy.home.global.exception.ErrorCode.COMMON_INVALID_PAGE;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_AMOUNT_MAX;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_AMOUNT_MIN;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_AMOUNT_RANGE;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_DEAL_TYPE;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION_LENGTH;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION_REQUIRED;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_TYPE;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
 import lombok.RequiredArgsConstructor;
 import com.ssafy.home.global.response.PageResponse;
-import com.ssafy.home.house.dto.HouseDealRow;
+import com.ssafy.home.house.mapper.dto.HouseDealResult;
 import com.ssafy.home.house.dto.HouseDetailResponse;
-import com.ssafy.home.house.dto.HouseDetailRow;
-import com.ssafy.home.house.dto.HouseSearchCondition;
+import com.ssafy.home.house.mapper.dto.HouseDetailResult;
+import com.ssafy.home.house.mapper.dto.HouseSearchParam;
 import com.ssafy.home.house.dto.HouseSummaryResponse;
-import com.ssafy.home.house.dto.HouseSummaryRow;
+import com.ssafy.home.house.mapper.dto.HouseSummaryResult;
 import com.ssafy.home.house.mapper.HouseMapper;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +34,7 @@ public class HouseService {
 
     private final HouseMapper houseMapper;
 
+    @Transactional(readOnly = true)
     public PageResponse<HouseSummaryResponse> searchHouses(
             String regionCode,
             String houseType,
@@ -40,7 +51,7 @@ public class HouseService {
         validateAmounts(minAmount, maxAmount);
         validatePage(page, size);
 
-        HouseSearchCondition condition = new HouseSearchCondition();
+        HouseSearchParam condition = new HouseSearchParam();
         condition.setRegionCode(normalizedRegionCode);
         condition.setHouseType(normalizeNullable(houseType));
         condition.setDealType(normalizeNullable(dealType));
@@ -50,82 +61,73 @@ public class HouseService {
         condition.setSize(size);
         condition.setOffset((page - 1) * size);
 
-        long total = houseMapper.countHouses(condition);
-        List<HouseSummaryResponse> items = houseMapper.findHouseSummaries(condition)
+        long total = houseMapper.countBySearch(condition);
+        List<HouseSummaryResponse> items = houseMapper.search(condition)
                 .stream()
-                .map(this::toSummaryResponse)
+                .map(HouseSummaryResponse::from)
                 .toList();
 
-        return new PageResponse<>(items, total, page, size);
+        return PageResponse.of(items, total, page, size);
     }
 
+    @Transactional(readOnly = true)
     public HouseDetailResponse getHouseDetail(Long houseId) {
-        HouseDetailRow house = houseMapper.findHouseById(houseId);
+        HouseDetailResult house = houseMapper.findById(houseId);
         if (house == null) {
-            throw new CustomException(ErrorCode.HOUSE_NOT_FOUND);
+            throw new CustomException(HOUSE_NOT_FOUND);
         }
 
-        List<HouseDetailResponse.HouseDealResponse> deals = houseMapper.findHouseDealsByHouseId(houseId)
+        List<HouseDetailResponse.HouseDealResponse> deals = houseMapper.findAllByHouseId(houseId)
                 .stream()
-                .map(this::toDealResponse)
+                .map(HouseDetailResponse.HouseDealResponse::from)
                 .toList();
 
-        return new HouseDetailResponse(
-                house.getHouseId(),
-                house.getAptName(),
-                house.getRegionCode(),
-                house.getJibun(),
-                house.getBuildYear(),
-                house.getHouseType(),
-                house.getLatitude(),
-                house.getLongitude(),
-                deals
-        );
+        return HouseDetailResponse.from(house, deals);
     }
 
     private void validateRegionCode(String regionCode) {
-        if (!houseMapper.existsRegionCode(regionCode)) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_REGION);
+        if (!houseMapper.existsByRegionCode(regionCode)) {
+            throw new CustomException(HOUSE_INVALID_REGION);
         }
     }
 
     private void validateHouseType(String houseType) {
         if (houseType != null && !ALLOWED_HOUSE_TYPES.contains(houseType.trim())) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_TYPE);
+            throw new CustomException(HOUSE_INVALID_TYPE);
         }
     }
 
     private void validateDealType(String dealType) {
         if (dealType != null && !ALLOWED_DEAL_TYPES.contains(dealType.trim())) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_DEAL_TYPE);
+            throw new CustomException(HOUSE_INVALID_DEAL_TYPE);
         }
     }
 
     private void validateAmounts(Integer minAmount, Integer maxAmount) {
         if (minAmount != null && minAmount < 0) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_AMOUNT_MIN);
+            throw new CustomException(HOUSE_INVALID_AMOUNT_MIN);
         }
         if (maxAmount != null && maxAmount < 0) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_AMOUNT_MAX);
+            throw new CustomException(HOUSE_INVALID_AMOUNT_MAX);
         }
         if (minAmount != null && maxAmount != null && minAmount > maxAmount) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_AMOUNT_RANGE);
+            throw new CustomException(HOUSE_INVALID_AMOUNT_RANGE);
         }
     }
 
     private void validatePage(int page, int size) {
         if (page < 1 || size < 1 || size > 100) {
-            throw new CustomException(ErrorCode.COMMON_INVALID_PAGE);
+            throw new CustomException(COMMON_INVALID_PAGE);
         }
     }
 
     private String normalizeRegionCode(String regionCode) {
         if (regionCode == null || regionCode.trim().isEmpty()) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_REGION_REQUIRED);
+            throw new CustomException(HOUSE_INVALID_REGION_REQUIRED);
         }
         String normalized = regionCode.trim();
         if (normalized.length() != 10) {
-            throw new CustomException(ErrorCode.HOUSE_INVALID_REGION_LENGTH);
+            throw new CustomException(HOUSE_INVALID_REGION_LENGTH);
         }
         return normalized;
     }
@@ -134,35 +136,5 @@ public class HouseService {
         return value == null ? null : value.trim();
     }
 
-    private HouseSummaryResponse toSummaryResponse(HouseSummaryRow row) {
-        return new HouseSummaryResponse(
-                row.getHouseId(),
-                row.getAptName(),
-                row.getJibun(),
-                row.getBuildYear(),
-                row.getHouseType(),
-                new HouseSummaryResponse.LatestDealResponse(
-                        row.getLatestDealType(),
-                        row.getLatestDealAmount(),
-                        row.getLatestDepositAmount(),
-                        row.getLatestMonthlyRent(),
-                        row.getLatestDealDate(),
-                        row.getLatestArea(),
-                        row.getLatestFloor()
-                )
-        );
-    }
 
-    private HouseDetailResponse.HouseDealResponse toDealResponse(HouseDealRow row) {
-        return new HouseDetailResponse.HouseDealResponse(
-                row.getDealId(),
-                row.getDealType(),
-                row.getDealAmount(),
-                row.getDepositAmount(),
-                row.getMonthlyRent(),
-                row.getDealDate(),
-                row.getArea(),
-                row.getFloor()
-        );
-    }
 }

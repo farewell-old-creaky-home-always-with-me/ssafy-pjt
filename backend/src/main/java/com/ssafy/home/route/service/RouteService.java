@@ -1,20 +1,25 @@
 package com.ssafy.home.route.service;
 
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
-import com.ssafy.home.house.dto.HouseDetailRow;
+import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_FORBIDDEN;
+import static com.ssafy.home.global.exception.ErrorCode.PLACE_NOT_FOUND;
+import static com.ssafy.home.global.exception.ErrorCode.ROUTE_NOT_FOUND;
+import static com.ssafy.home.global.exception.ErrorCode.ROUTE_NO_FACILITIES;
+import static com.ssafy.home.global.exception.ErrorCode.ROUTE_UNREACHABLE;
+import com.ssafy.home.house.mapper.dto.HouseDetailResult;
 import com.ssafy.home.house.mapper.HouseMapper;
-import com.ssafy.home.place.dto.PlaceEntity;
+import com.ssafy.home.place.mapper.dto.PlaceResult;
 import com.ssafy.home.place.mapper.PlaceMapper;
 import com.ssafy.home.route.algorithm.AStarAlgorithm;
 import com.ssafy.home.route.algorithm.Haversine;
 import com.ssafy.home.route.domain.Edge;
 import com.ssafy.home.route.domain.FacilityGraph;
 import com.ssafy.home.route.domain.Node;
-import com.ssafy.home.route.dto.RoutePathEntity;
+import com.ssafy.home.route.mapper.dto.RoutePathParam;
 import com.ssafy.home.route.dto.RoutePathPoint;
 import com.ssafy.home.route.dto.RouteRequest;
-import com.ssafy.home.route.dto.RouteRequestEntity;
+import com.ssafy.home.route.mapper.dto.RouteRequestParam;
 import com.ssafy.home.route.dto.RouteResponse;
 import com.ssafy.home.route.mapper.RouteMapper;
 import java.math.BigDecimal;
@@ -40,22 +45,22 @@ public class RouteService {
 
     @Transactional
     public RouteResponse calculateRoute(Long memberId, RouteRequest request) {
-        HouseDetailRow house = houseMapper.findHouseById(request.houseId());
+        HouseDetailResult house = houseMapper.findById(request.houseId());
         if (house == null) {
-            throw new CustomException(ErrorCode.HOUSE_NOT_FOUND);
+            throw new CustomException(HOUSE_NOT_FOUND);
         }
 
-        PlaceEntity place = placeMapper.findById(request.placeId());
+        PlaceResult place = placeMapper.findById(request.placeId());
         if (place == null) {
-            throw new CustomException(ErrorCode.PLACE_NOT_FOUND);
+            throw new CustomException(PLACE_NOT_FOUND);
         }
         if (!memberId.equals(place.getMemberId())) {
-            throw new CustomException(ErrorCode.PLACE_FORBIDDEN);
+            throw new CustomException(PLACE_FORBIDDEN);
         }
 
         FacilityGraph baseGraph = graphCacheService.getGraph();
         if (baseGraph == null || baseGraph.getNodes().isEmpty()) {
-            throw new CustomException(ErrorCode.ROUTE_NO_FACILITIES);
+            throw new CustomException(ROUTE_NO_FACILITIES);
         }
 
         FacilityGraph workGraph = baseGraph.copy();
@@ -69,27 +74,27 @@ public class RouteService {
         workGraph.addNode(end);
 
         if (!connectToNearby(workGraph, start) || !connectToNearby(workGraph, end)) {
-            throw new CustomException(ErrorCode.ROUTE_UNREACHABLE);
+            throw new CustomException(ROUTE_UNREACHABLE);
         }
 
         List<Node> path = aStarAlgorithm.search(workGraph, start, end);
         if (path.isEmpty()) {
-            throw new CustomException(ErrorCode.ROUTE_NOT_FOUND);
+            throw new CustomException(ROUTE_NOT_FOUND);
         }
 
         int totalDistM = calculateTotalDistM(path);
 
-        RouteRequestEntity requestEntity = new RouteRequestEntity();
+        RouteRequestParam requestEntity = new RouteRequestParam();
         requestEntity.setMemberId(memberId);
         requestEntity.setHouseId(request.houseId());
         requestEntity.setPlaceId(request.placeId());
         requestEntity.setTotalDistM(totalDistM);
         requestEntity.setNodeCount(path.size());
-        routeMapper.insertRouteRequest(requestEntity);
+        routeMapper.insert(requestEntity);
 
-        List<RoutePathEntity> pathEntities = IntStream.range(0, path.size())
+        List<RoutePathParam> pathEntities = IntStream.range(0, path.size())
                 .mapToObj(i -> {
-                    RoutePathEntity pe = new RoutePathEntity();
+                    RoutePathParam pe = new RoutePathParam();
                     pe.setRouteRequestId(requestEntity.getRouteRequestId());
                     pe.setSeq(i);
                     pe.setLatitude(BigDecimal.valueOf(path.get(i).getLat()));
@@ -97,17 +102,13 @@ public class RouteService {
                     return pe;
                 })
                 .toList();
-        routeMapper.insertRoutePaths(pathEntities);
+        routeMapper.insertAll(pathEntities);
 
         List<RoutePathPoint> points = IntStream.range(0, path.size())
-                .mapToObj(i -> new RoutePathPoint(
-                        i,
-                        BigDecimal.valueOf(path.get(i).getLat()),
-                        BigDecimal.valueOf(path.get(i).getLng()),
-                        path.get(i).getName()))
+                .mapToObj(i -> RoutePathPoint.from(path.get(i), i))
                 .toList();
 
-        return new RouteResponse(requestEntity.getRouteRequestId(), totalDistM, points);
+        return RouteResponse.of(requestEntity.getRouteRequestId(), totalDistM, points);
     }
 
     private boolean connectToNearby(FacilityGraph graph, Node node) {

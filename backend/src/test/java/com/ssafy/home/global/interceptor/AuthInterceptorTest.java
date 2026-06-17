@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.ssafy.home.global.exception.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,14 +27,18 @@ class AuthInterceptorTest {
     }
 
     @Test
+    @DisplayName("세션 없이 로그인 필수 API를 호출하면 401을 반환한다")
     void loginRequiredEndpointReturns401WithoutSession() throws Exception {
+        // when / then
         mockMvc.perform(get("/login-required").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
     }
 
     @Test
+    @DisplayName("일반 회원이 관리자 전용 API를 호출하면 403을 반환한다")
     void adminOnlyEndpointReturns403ForNonAdmin() throws Exception {
+        // when / then
         mockMvc.perform(get("/admin-only")
                         .sessionAttr("memberId", 1L)
                         .sessionAttr("isAdmin", false)
@@ -43,7 +48,9 @@ class AuthInterceptorTest {
     }
 
     @Test
+    @DisplayName("관리자 세션으로 관리자 전용 API를 호출하면 통과한다")
     void adminOnlyEndpointPassesForAdminSession() throws Exception {
+        // when / then
         mockMvc.perform(get("/admin-only")
                         .sessionAttr("memberId", 1L)
                         .sessionAttr("isAdmin", true)

@@ -5,6 +5,7 @@ import com.ssafy.home.house.dto.HouseDetailResponse;
 import com.ssafy.home.house.dto.HouseSummaryResponse;
 import com.ssafy.home.house.service.HouseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ public class HouseController implements HouseApiDocs {
 
     @GetMapping
     @Override
-    public PageResponse<HouseSummaryResponse> searchHouses(
+    public ResponseEntity<PageResponse<HouseSummaryResponse>> searchHouses(
             @RequestParam String regionCode,
             @RequestParam(required = false) String houseType,
             @RequestParam(required = false) String dealType,
@@ -29,12 +30,13 @@ public class HouseController implements HouseApiDocs {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        return houseService.searchHouses(regionCode, houseType, dealType, minAmount, maxAmount, page, size);
+        return ResponseEntity.ok(
+                houseService.searchHouses(regionCode, houseType, dealType, minAmount, maxAmount, page, size));
     }
 
     @GetMapping("/{houseId}")
     @Override
-    public HouseDetailResponse getHouseDetail(@PathVariable Long houseId) {
-        return houseService.getHouseDetail(houseId);
+    public ResponseEntity<HouseDetailResponse> getHouseDetail(@PathVariable Long houseId) {
+        return ResponseEntity.ok(houseService.getHouseDetail(houseId));
     }
 }
