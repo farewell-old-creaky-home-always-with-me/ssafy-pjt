@@ -29,3 +29,6 @@ yarn-debug.log*
 yarn-error.log*
 tmp/
 temp/
+
+# Local agent documentation
+docs/
