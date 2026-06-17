@@ -1,0 +1,12 @@
+INSERT INTO region_code (region_code, sido_name, sigungu_name, dong_name) VALUES
+('1168010100', '서울특별시', '강남구', '역삼동');
+
+INSERT INTO house (id, region_code, apt_name, jibun, build_year, house_type, latitude, longitude) VALUES
+(1, '1168010100', '역삼래미안', '757', 2005, '아파트', 37.5006130, 127.0364310);
+
+INSERT INTO house_deal (id, house_id, deal_type, deal_amount, monthly_rent, deal_date, area, floor) VALUES
+(1, 1, '매매', 178000, 0, '2026-05-10', 84.93, 12),
+(2, 1, '전세', NULL, 0, '2026-04-18', 84.93, 9);
+
+ALTER TABLE house ALTER COLUMN id RESTART WITH 2;
+ALTER TABLE house_deal ALTER COLUMN id RESTART WITH 3;
