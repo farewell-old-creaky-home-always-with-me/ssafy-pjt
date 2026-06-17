@@ -1,4 +1,4 @@
-package com.ssafy.home.route.dto;
+package com.ssafy.home.route.mapper.dto;
 
 import java.math.BigDecimal;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class RoutePathEntity {
+public class RoutePathParam {
     private Long routePathId;
     private Long routeRequestId;
     private int seq;

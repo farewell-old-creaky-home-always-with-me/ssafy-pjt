@@ -4,7 +4,7 @@ import com.ssafy.home.route.algorithm.Haversine;
 import com.ssafy.home.route.domain.Edge;
 import com.ssafy.home.route.domain.FacilityGraph;
 import com.ssafy.home.route.domain.Node;
-import com.ssafy.home.route.dto.FacilityEntity;
+import com.ssafy.home.route.mapper.dto.FacilityResult;
 import com.ssafy.home.route.mapper.FacilityMapper;
 import jakarta.annotation.PostConstruct;
 import java.util.List;
@@ -22,10 +22,10 @@ public class GraphCacheService {
 
     @PostConstruct
     public void rebuild() {
-        List<FacilityEntity> facilities = facilityMapper.findAll();
+        List<FacilityResult> facilities = facilityMapper.findAll();
         FacilityGraph graph = new FacilityGraph();
 
-        for (FacilityEntity f : facilities) {
+        for (FacilityResult f : facilities) {
             graph.addNode(new Node(
                     f.getFacilityId(),
                     f.getLatitude().doubleValue(),

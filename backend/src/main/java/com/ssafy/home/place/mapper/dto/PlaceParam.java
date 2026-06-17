@@ -1,4 +1,4 @@
-package com.ssafy.home.place.dto;
+package com.ssafy.home.place.mapper.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class PlaceEntity {
+public class PlaceParam {
 
     private Long id;
     private Long memberId;

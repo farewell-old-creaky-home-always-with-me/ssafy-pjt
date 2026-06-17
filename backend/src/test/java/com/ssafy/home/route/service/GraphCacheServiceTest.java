@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 import com.ssafy.home.route.domain.FacilityGraph;
-import com.ssafy.home.route.dto.FacilityEntity;
+import com.ssafy.home.route.mapper.dto.FacilityResult;
 import com.ssafy.home.route.mapper.FacilityMapper;
 import java.math.BigDecimal;
 import java.util.List;
@@ -57,8 +57,8 @@ class GraphCacheServiceTest {
         assertThat(graph.getAdjacentEdges(2L)).noneMatch(e -> e.getToId() == 1L);
     }
 
-    private FacilityEntity facility(Long id, double lat, double lng) {
-        FacilityEntity f = new FacilityEntity();
+    private FacilityResult facility(Long id, double lat, double lng) {
+        FacilityResult f = new FacilityResult();
         f.setFacilityId(id);
         f.setName("시설물-" + id);
         f.setFacilityType("SUBWAY");

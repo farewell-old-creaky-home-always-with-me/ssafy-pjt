@@ -1,10 +1,11 @@
 package com.ssafy.home.stats.service;
 
 import com.ssafy.home.stats.dto.StatsResponse;
-import com.ssafy.home.stats.dto.StatsRow;
+import com.ssafy.home.stats.mapper.dto.StatsResult;
 import com.ssafy.home.stats.mapper.StatsMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -14,8 +15,9 @@ public class StatsService {
 
     private final StatsMapper statsMapper;
 
+    @Transactional(readOnly = true)
     public StatsResponse getStats() {
-        StatsRow row = statsMapper.findStats();
+        StatsResult row = statsMapper.find();
 
         long todayCount    = row.getTodayDealCount();
         long yesterdayCount = row.getYesterdayDealCount();

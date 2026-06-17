@@ -31,17 +31,17 @@ public class NoticeController implements NoticeApiDocs {
 
     @GetMapping
     @Override
-    public PageResponse<NoticeListItemResponse> getNotices(
+    public ResponseEntity<PageResponse<NoticeListItemResponse>> getNotices(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        return noticeService.getNotices(page, size);
+        return ResponseEntity.ok(noticeService.getNotices(page, size));
     }
 
     @GetMapping("/{noticeId}")
     @Override
-    public NoticeDetailResponse getNotice(@PathVariable Long noticeId) {
-        return noticeService.getNotice(noticeId);
+    public ResponseEntity<NoticeDetailResponse> getNotice(@PathVariable Long noticeId) {
+        return ResponseEntity.ok(noticeService.getNotice(noticeId));
     }
 
     @AdminOnly
@@ -58,11 +58,11 @@ public class NoticeController implements NoticeApiDocs {
     @AdminOnly
     @PutMapping("/{noticeId}")
     @Override
-    public NoticeIdResponse updateNotice(
+    public ResponseEntity<NoticeIdResponse> updateNotice(
             @PathVariable Long noticeId,
             @Valid @RequestBody NoticeRequest request
     ) {
-        return noticeService.updateNotice(noticeId, request);
+        return ResponseEntity.ok(noticeService.updateNotice(noticeId, request));
     }
 
     @AdminOnly
@@ -72,5 +72,4 @@ public class NoticeController implements NoticeApiDocs {
         noticeService.deleteNotice(noticeId);
         return ResponseEntity.noContent().build();
     }
-
 }

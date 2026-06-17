@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.math.BigDecimal;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Commercial", description = "상권 정보 API")
@@ -15,7 +16,7 @@ public interface CommercialApiDocs {
             summary = "주변 상권 정보 조회",
             description = "좌표와 반경 조건으로 주변 상권 정보를 조회합니다."
     )
-    List<CommercialResponse> getCommercials(
+    ResponseEntity<List<CommercialResponse>> getCommercials(
             @Parameter(description = "위도", example = "37.5665")
             @RequestParam BigDecimal lat,
             @Parameter(description = "경도", example = "126.9780")

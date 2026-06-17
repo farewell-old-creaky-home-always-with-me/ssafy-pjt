@@ -8,12 +8,13 @@ import static org.mockito.Mockito.when;
 import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
+import com.ssafy.home.global.auth.SessionManager;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
-import com.ssafy.home.member.dto.MemberEntity;
+import com.ssafy.home.member.mapper.dto.MemberDetailResult;
 import com.ssafy.home.member.mapper.MemberMapper;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,16 +33,19 @@ class AuthServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private SessionManager sessionManager;
+
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(memberMapper, passwordEncoder);
+        authService = new AuthService(memberMapper, passwordEncoder, sessionManager);
     }
 
     @Test
     void loginCreatesSessionWhenCredentialsMatch() {
-        MemberEntity member = new MemberEntity();
+        MemberDetailResult member = new MemberDetailResult();
         member.setId(1L);
         member.setName("홍길동");
         member.setEmail("user@example.com");
@@ -64,7 +68,7 @@ class AuthServiceTest {
 
     @Test
     void loginThrowsWhenCredentialsDoNotMatch() {
-        MemberEntity member = new MemberEntity();
+        MemberDetailResult member = new MemberDetailResult();
         member.setPassword("encoded");
         when(memberMapper.findByEmail("user@example.com")).thenReturn(member);
         when(passwordEncoder.matches("wrong", "encoded")).thenReturn(false);
@@ -78,13 +82,12 @@ class AuthServiceTest {
 
     @Test
     void getAuthMeReturnsUnauthenticatedWhenSessionMemberIsMissing() {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("memberId", 1L);
+        when(sessionManager.findCurrentMemberId()).thenReturn(Optional.of(1L));
         when(memberMapper.findById(1L)).thenReturn(null);
 
-        AuthMeResponse response = authService.getAuthMe(session);
+        AuthMeResponse response = authService.getAuthMe();
 
         assertThat(response.isAuthenticated()).isFalse();
-        assertThat(session.isInvalid()).isTrue();
+        verify(sessionManager).invalidateCurrentSession();
     }
 }

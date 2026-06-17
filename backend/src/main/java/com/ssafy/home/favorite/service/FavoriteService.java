@@ -2,15 +2,17 @@ package com.ssafy.home.favorite.service;
 
 import com.ssafy.home.favorite.dto.CreateFavoriteRequest;
 import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
-import com.ssafy.home.favorite.dto.FavoriteEntity;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
+import com.ssafy.home.favorite.mapper.dto.FavoriteCreateParam;
+import com.ssafy.home.favorite.mapper.dto.FavoriteDetailResult;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +20,7 @@ public class FavoriteService {
 
     private final FavoriteMapper favoriteMapper;
 
+    @Transactional(readOnly = true)
     public List<FavoriteResponse> getFavorites(Long memberId) {
         return favoriteMapper.findByMemberId(memberId)
                 .stream()
@@ -25,6 +28,7 @@ public class FavoriteService {
                 .toList();
     }
 
+    @Transactional
     public FavoriteCreateResponse createFavorite(Long memberId, CreateFavoriteRequest request) {
         String regionCode = request.regionCode().trim();
         if (!favoriteMapper.existsRegionCode(regionCode)) {
@@ -34,19 +38,20 @@ public class FavoriteService {
             throw new CustomException(ErrorCode.FAVORITE_DUPLICATE);
         }
 
-        FavoriteEntity favorite = new FavoriteEntity();
-        favorite.setMemberId(memberId);
-        favorite.setRegionCode(regionCode);
+        FavoriteCreateParam param = new FavoriteCreateParam();
+        param.setMemberId(memberId);
+        param.setRegionCode(regionCode);
 
         try {
-            favoriteMapper.insertFavorite(favorite);
+            favoriteMapper.insert(param);
         } catch (DataIntegrityViolationException ex) {
             throw new CustomException(ErrorCode.FAVORITE_DUPLICATE);
         }
 
-        return new FavoriteCreateResponse(favorite.getId(), regionCode);
+        return new FavoriteCreateResponse(param.getId(), regionCode);
     }
 
+    @Transactional
     public void deleteFavorite(Long memberId, Long favoriteId) {
         Long ownerMemberId = favoriteMapper.findOwnerMemberIdByFavoriteId(favoriteId);
         if (ownerMemberId == null) {
@@ -58,7 +63,7 @@ public class FavoriteService {
         favoriteMapper.deleteByFavoriteIdAndMemberId(favoriteId, memberId);
     }
 
-    private FavoriteResponse toResponse(FavoriteEntity favorite) {
+    private FavoriteResponse toResponse(FavoriteDetailResult favorite) {
         return new FavoriteResponse(
                 favorite.getId(),
                 favorite.getRegionCode(),

@@ -1,9 +1,9 @@
-package com.ssafy.home.stats.dto;
+package com.ssafy.home.stats.mapper.dto;
 
 import lombok.Data;
 
 @Data
-public class StatsRow {
+public class StatsResult {
     private long todayDealCount;
     private long yesterdayDealCount;
     private Long avgSalePriceThisMonthManwon;

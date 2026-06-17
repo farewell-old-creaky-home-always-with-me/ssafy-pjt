@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class CommercialService {
 
     private final CommercialMapper commercialMapper;
 
+    @Transactional(readOnly = true)
     public List<CommercialResponse> getCommercials(
             BigDecimal lat,
             BigDecimal lng,
@@ -27,7 +29,7 @@ public class CommercialService {
             throw new CustomException(ErrorCode.COMMERCIAL_INVALID_RADIUS);
         }
 
-        return commercialMapper.findCommercials(lat, lng, normalizedRadius, normalizeNullable(category))
+        return commercialMapper.findByLocation(lat, lng, normalizedRadius, normalizeNullable(category))
                 .stream()
                 .map(entity -> new CommercialResponse(
                         entity.getId(),

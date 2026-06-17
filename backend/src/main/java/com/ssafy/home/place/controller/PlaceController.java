@@ -30,8 +30,8 @@ public class PlaceController implements PlaceApiDocs {
 
     @GetMapping
     @Override
-    public List<PlaceResponse> getPlaces(@LoginMemberId Long memberId) {
-        return placeService.getPlaces(memberId);
+    public ResponseEntity<List<PlaceResponse>> getPlaces(@LoginMemberId Long memberId) {
+        return ResponseEntity.ok(placeService.getPlaces(memberId));
     }
 
     @PostMapping
@@ -46,12 +46,12 @@ public class PlaceController implements PlaceApiDocs {
 
     @PutMapping("/{placeId}")
     @Override
-    public PlaceResponse updatePlace(
+    public ResponseEntity<PlaceResponse> updatePlace(
             @PathVariable Long placeId,
             @Valid @RequestBody UpdatePlaceRequest request,
             @LoginMemberId Long memberId
     ) {
-        return placeService.updatePlace(memberId, placeId, request);
+        return ResponseEntity.ok(placeService.updatePlace(memberId, placeId, request));
     }
 
     @DeleteMapping("/{placeId}")

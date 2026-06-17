@@ -28,13 +28,13 @@ public interface MemberApiDocs {
             summary = "내 회원 정보 조회",
             description = "현재 로그인한 회원의 정보를 조회합니다."
     )
-    MemberResponse getMyMember(@Parameter(hidden = true) @LoginMemberId Long memberId);
+    ResponseEntity<MemberResponse> getMyMember(@Parameter(hidden = true) @LoginMemberId Long memberId);
 
     @Operation(
             summary = "내 회원 정보 수정",
             description = "현재 로그인한 회원의 정보를 수정합니다."
     )
-    MemberUpdateResponse updateMyMember(
+    ResponseEntity<MemberUpdateResponse> updateMyMember(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "회원 수정 요청", required = true)
             @Valid @RequestBody UpdateMemberRequest request,
             @Parameter(hidden = true) @LoginMemberId Long memberId

@@ -1,4 +1,4 @@
-package com.ssafy.home.house.dto;
+package com.ssafy.home.house.mapper.dto;
 
 import java.math.BigDecimal;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HouseDetailRow {
+public class HouseDetailResult {
 
     private Long houseId;
     private String aptName;

@@ -1,4 +1,4 @@
-package com.ssafy.home.route.dto;
+package com.ssafy.home.route.mapper.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FacilityEntity {
+public class FacilityResult {
     private Long facilityId;
     private String name;
     private String facilityType;

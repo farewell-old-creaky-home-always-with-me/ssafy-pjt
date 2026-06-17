@@ -1,9 +1,9 @@
 package com.ssafy.home.house.mapper;
 
-import com.ssafy.home.house.dto.HouseDealRow;
-import com.ssafy.home.house.dto.HouseDetailRow;
-import com.ssafy.home.house.dto.HouseSearchCondition;
-import com.ssafy.home.house.dto.HouseSummaryRow;
+import com.ssafy.home.house.mapper.dto.HouseDealResult;
+import com.ssafy.home.house.mapper.dto.HouseDetailResult;
+import com.ssafy.home.house.mapper.dto.HouseSearchParam;
+import com.ssafy.home.house.mapper.dto.HouseSummaryResult;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -13,11 +13,11 @@ public interface HouseMapper {
 
     boolean existsRegionCode(@Param("regionCode") String regionCode);
 
-    long countHouses(HouseSearchCondition condition);
+    long count(HouseSearchParam condition);
 
-    List<HouseSummaryRow> findHouseSummaries(HouseSearchCondition condition);
+    List<HouseSummaryResult> findSummaries(HouseSearchParam condition);
 
-    HouseDetailRow findHouseById(@Param("houseId") Long houseId);
+    HouseDetailResult findById(@Param("houseId") Long houseId);
 
-    List<HouseDealRow> findHouseDealsByHouseId(@Param("houseId") Long houseId);
+    List<HouseDealResult> findDealsByHouseId(@Param("houseId") Long houseId);
 }

@@ -1,11 +1,11 @@
-package com.ssafy.home.house.dto;
+package com.ssafy.home.house.mapper.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class HouseSearchCondition {
+public class HouseSearchParam {
 
     private String regionCode;
     private String houseType;

@@ -38,18 +38,18 @@ public class MemberController implements MemberApiDocs {
     @LoginRequired
     @GetMapping("/me")
     @Override
-    public MemberResponse getMyMember(@LoginMemberId Long memberId) {
-        return memberService.getMyMember(memberId);
+    public ResponseEntity<MemberResponse> getMyMember(@LoginMemberId Long memberId) {
+        return ResponseEntity.ok(memberService.getMyMember(memberId));
     }
 
     @LoginRequired
     @PutMapping("/me")
     @Override
-    public MemberUpdateResponse updateMyMember(
+    public ResponseEntity<MemberUpdateResponse> updateMyMember(
             @Valid @RequestBody UpdateMemberRequest request,
             @LoginMemberId Long memberId
     ) {
-        return memberService.updateMyMember(memberId, request);
+        return ResponseEntity.ok(memberService.updateMyMember(memberId, request));
     }
 
     @LoginRequired

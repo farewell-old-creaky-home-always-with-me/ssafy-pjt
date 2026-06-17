@@ -4,16 +4,17 @@ import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import com.ssafy.home.global.response.PageResponse;
-import com.ssafy.home.house.dto.HouseDealRow;
+import com.ssafy.home.house.mapper.dto.HouseDealResult;
 import com.ssafy.home.house.dto.HouseDetailResponse;
-import com.ssafy.home.house.dto.HouseDetailRow;
-import com.ssafy.home.house.dto.HouseSearchCondition;
+import com.ssafy.home.house.mapper.dto.HouseDetailResult;
+import com.ssafy.home.house.mapper.dto.HouseSearchParam;
 import com.ssafy.home.house.dto.HouseSummaryResponse;
-import com.ssafy.home.house.dto.HouseSummaryRow;
+import com.ssafy.home.house.mapper.dto.HouseSummaryResult;
 import com.ssafy.home.house.mapper.HouseMapper;
 import java.util.List;
 import java.util.Set;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +25,7 @@ public class HouseService {
 
     private final HouseMapper houseMapper;
 
+    @Transactional(readOnly = true)
     public PageResponse<HouseSummaryResponse> searchHouses(
             String regionCode,
             String houseType,
@@ -40,7 +42,7 @@ public class HouseService {
         validateAmounts(minAmount, maxAmount);
         validatePage(page, size);
 
-        HouseSearchCondition condition = new HouseSearchCondition();
+        HouseSearchParam condition = new HouseSearchParam();
         condition.setRegionCode(normalizedRegionCode);
         condition.setHouseType(normalizeNullable(houseType));
         condition.setDealType(normalizeNullable(dealType));
@@ -50,8 +52,8 @@ public class HouseService {
         condition.setSize(size);
         condition.setOffset((page - 1) * size);
 
-        long total = houseMapper.countHouses(condition);
-        List<HouseSummaryResponse> items = houseMapper.findHouseSummaries(condition)
+        long total = houseMapper.count(condition);
+        List<HouseSummaryResponse> items = houseMapper.findSummaries(condition)
                 .stream()
                 .map(this::toSummaryResponse)
                 .toList();
@@ -59,13 +61,14 @@ public class HouseService {
         return new PageResponse<>(items, total, page, size);
     }
 
+    @Transactional(readOnly = true)
     public HouseDetailResponse getHouseDetail(Long houseId) {
-        HouseDetailRow house = houseMapper.findHouseById(houseId);
+        HouseDetailResult house = houseMapper.findById(houseId);
         if (house == null) {
             throw new CustomException(ErrorCode.HOUSE_NOT_FOUND);
         }
 
-        List<HouseDetailResponse.HouseDealResponse> deals = houseMapper.findHouseDealsByHouseId(houseId)
+        List<HouseDetailResponse.HouseDealResponse> deals = houseMapper.findDealsByHouseId(houseId)
                 .stream()
                 .map(this::toDealResponse)
                 .toList();
@@ -134,7 +137,7 @@ public class HouseService {
         return value == null ? null : value.trim();
     }
 
-    private HouseSummaryResponse toSummaryResponse(HouseSummaryRow row) {
+    private HouseSummaryResponse toSummaryResponse(HouseSummaryResult row) {
         return new HouseSummaryResponse(
                 row.getHouseId(),
                 row.getAptName(),
@@ -153,7 +156,7 @@ public class HouseService {
         );
     }
 
-    private HouseDetailResponse.HouseDealResponse toDealResponse(HouseDealRow row) {
+    private HouseDetailResponse.HouseDealResponse toDealResponse(HouseDealResult row) {
         return new HouseDetailResponse.HouseDealResponse(
                 row.getDealId(),
                 row.getDealType(),

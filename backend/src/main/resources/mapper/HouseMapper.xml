@@ -42,7 +42,7 @@
         )
     </select>
 
-    <select id="countHouses" resultType="long">
+    <select id="count" resultType="long">
         SELECT COUNT(*)
         FROM house h
         INNER JOIN (
@@ -51,7 +51,7 @@
         <include refid="searchConditions"/>
     </select>
 
-    <select id="findHouseSummaries" resultType="com.ssafy.home.house.dto.HouseSummaryRow">
+    <select id="findSummaries" resultType="com.ssafy.home.house.mapper.dto.HouseSummaryResult">
         SELECT
             h.id AS houseId,
             h.apt_name AS aptName,
@@ -74,7 +74,7 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <select id="findHouseById" resultType="com.ssafy.home.house.dto.HouseDetailRow">
+    <select id="findById" resultType="com.ssafy.home.house.mapper.dto.HouseDetailResult">
         SELECT
             id AS houseId,
             apt_name AS aptName,
@@ -88,7 +88,7 @@
         WHERE id = #{houseId}
     </select>
 
-    <select id="findHouseDealsByHouseId" resultType="com.ssafy.home.house.dto.HouseDealRow">
+    <select id="findDealsByHouseId" resultType="com.ssafy.home.house.mapper.dto.HouseDealResult">
         SELECT
             id AS dealId,
             deal_type AS dealType,

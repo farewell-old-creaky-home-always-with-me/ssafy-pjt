@@ -22,7 +22,7 @@ public interface NoticeApiDocs {
             summary = "공지사항 목록 조회",
             description = "공지사항 목록을 페이지 단위로 조회합니다."
     )
-    PageResponse<NoticeListItemResponse> getNotices(
+    ResponseEntity<PageResponse<NoticeListItemResponse>> getNotices(
             @Parameter(description = "페이지 번호", example = "1")
             @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 크기", example = "20")
@@ -33,7 +33,7 @@ public interface NoticeApiDocs {
             summary = "공지사항 상세 조회",
             description = "공지사항 ID로 상세 정보를 조회합니다."
     )
-    NoticeDetailResponse getNotice(
+    ResponseEntity<NoticeDetailResponse> getNotice(
             @Parameter(description = "공지사항 ID", example = "1")
             @PathVariable Long noticeId
     );
@@ -52,7 +52,7 @@ public interface NoticeApiDocs {
             summary = "공지사항 수정",
             description = "관리자가 공지사항을 수정합니다."
     )
-    NoticeIdResponse updateNotice(
+    ResponseEntity<NoticeIdResponse> updateNotice(
             @Parameter(description = "공지사항 ID", example = "1")
             @PathVariable Long noticeId,
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "공지사항 요청", required = true)

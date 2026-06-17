@@ -1,4 +1,4 @@
-package com.ssafy.home.favorite.dto;
+package com.ssafy.home.favorite.mapper.dto;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FavoriteEntity {
+public class FavoriteDetailResult {
 
     private Long id;
     private Long memberId;

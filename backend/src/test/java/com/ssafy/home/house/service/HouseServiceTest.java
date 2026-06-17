@@ -39,7 +39,7 @@ class HouseServiceTest {
 
     @Test
     void getHouseDetailThrowsWhenHouseDoesNotExist() {
-        when(houseMapper.findHouseById(99L)).thenReturn(null);
+        when(houseMapper.findById(99L)).thenReturn(null);
 
         assertThatThrownBy(() -> houseService.getHouseDetail(99L))
                 .isInstanceOf(CustomException.class)

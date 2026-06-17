@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +16,7 @@ public class EnvironmentService {
 
     private final EnvironmentMapper environmentMapper;
 
+    @Transactional(readOnly = true)
     public List<EnvironmentResponse> getEnvironmentInfos(BigDecimal lat, BigDecimal lng, Integer radius) {
         validateCoordinate(lat, lng);
         int normalizedRadius = radius == null ? 1000 : radius;
@@ -22,7 +24,7 @@ public class EnvironmentService {
             throw new CustomException(ErrorCode.ENV_INVALID_RADIUS);
         }
 
-        return environmentMapper.findEnvironmentInfos(lat, lng, normalizedRadius)
+        return environmentMapper.findByLocation(lat, lng, normalizedRadius)
                 .stream()
                 .map(entity -> new EnvironmentResponse(
                         entity.getId(),

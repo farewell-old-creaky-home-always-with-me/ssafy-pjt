@@ -29,8 +29,8 @@ public class FavoriteController implements FavoriteApiDocs {
 
     @GetMapping
     @Override
-    public List<FavoriteResponse> getFavorites(@LoginMemberId Long memberId) {
-        return favoriteService.getFavorites(memberId);
+    public ResponseEntity<List<FavoriteResponse>> getFavorites(@LoginMemberId Long memberId) {
+        return ResponseEntity.ok(favoriteService.getFavorites(memberId));
     }
 
     @PostMapping

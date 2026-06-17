@@ -1,4 +1,4 @@
-package com.ssafy.home.house.dto;
+package com.ssafy.home.house.mapper.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HouseSummaryRow {
+public class HouseSummaryResult {
 
     private Long houseId;
     private String aptName;

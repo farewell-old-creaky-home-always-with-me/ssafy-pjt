@@ -1,4 +1,4 @@
-package com.ssafy.home.commercial.dto;
+package com.ssafy.home.commercial.mapper.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CommercialEntity {
+public class CommercialResult {
 
     private Long id;
     private String bizName;

@@ -1,4 +1,4 @@
-package com.ssafy.home.member.dto;
+package com.ssafy.home.member.mapper.dto;
 
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MemberEntity {
+public class MemberDetailResult {
 
     private Long id;
     private String email;

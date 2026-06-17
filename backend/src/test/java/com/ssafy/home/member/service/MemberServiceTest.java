@@ -10,10 +10,12 @@ import static org.mockito.Mockito.when;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.member.dto.CreateMemberRequest;
-import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.dto.MemberResponse;
 import com.ssafy.home.member.dto.UpdateMemberRequest;
 import com.ssafy.home.member.mapper.MemberMapper;
+import com.ssafy.home.member.mapper.dto.MemberCreateParam;
+import com.ssafy.home.member.mapper.dto.MemberDetailResult;
+import com.ssafy.home.member.mapper.dto.MemberUpdateParam;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -53,12 +55,12 @@ class MemberServiceTest {
         when(memberMapper.existsByEmail("user@example.com")).thenReturn(false);
         when(passwordEncoder.encode("password1234")).thenReturn("encoded-password");
         doAnswer(invocation -> {
-            MemberEntity member = invocation.getArgument(0);
-            member.setId(10L);
+            MemberCreateParam param = invocation.getArgument(0);
+            param.setId(10L);
             return null;
-        }).when(memberMapper).insertMember(any(MemberEntity.class));
+        }).when(memberMapper).insert(any(MemberCreateParam.class));
 
-        MemberEntity saved = new MemberEntity();
+        MemberDetailResult saved = new MemberDetailResult();
         saved.setId(10L);
         saved.setEmail("user@example.com");
         saved.setName("홍길동");
@@ -72,8 +74,8 @@ class MemberServiceTest {
     }
 
     @Test
-    void updateMemberReplacesNameAndPassword() {
-        MemberEntity member = new MemberEntity();
+    void updateReplacesNameAndPassword() {
+        MemberDetailResult member = new MemberDetailResult();
         member.setId(1L);
         member.setName("기존 이름");
         member.setPassword("old");
@@ -84,7 +86,6 @@ class MemberServiceTest {
 
         assertThat(response.memberId()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("새 이름");
-        verify(memberMapper).updateMember(member);
-        assertThat(member.getPassword()).isEqualTo("encoded");
+        verify(memberMapper).update(any(MemberUpdateParam.class));
     }
 }

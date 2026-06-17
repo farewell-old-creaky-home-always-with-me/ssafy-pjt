@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -20,7 +21,7 @@ public interface FavoriteApiDocs {
             summary = "관심 매물 목록 조회",
             description = "현재 로그인한 회원의 관심 매물 목록을 조회합니다."
     )
-    List<FavoriteResponse> getFavorites(@Parameter(hidden = true) @LoginMemberId Long memberId);
+    ResponseEntity<List<FavoriteResponse>> getFavorites(@Parameter(hidden = true) @LoginMemberId Long memberId);
 
     @Operation(
             summary = "관심 매물 등록",

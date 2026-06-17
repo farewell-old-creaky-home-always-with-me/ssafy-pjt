@@ -10,7 +10,8 @@ import static org.mockito.Mockito.when;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.place.dto.CreatePlaceRequest;
-import com.ssafy.home.place.dto.PlaceEntity;
+import com.ssafy.home.place.mapper.dto.PlaceParam;
+import com.ssafy.home.place.mapper.dto.PlaceResult;
 import com.ssafy.home.place.dto.PlaceType;
 import com.ssafy.home.place.dto.UpdatePlaceRequest;
 import com.ssafy.home.place.mapper.PlaceMapper;
@@ -90,10 +91,10 @@ class PlaceServiceTest {
     void createPlaceReturnsSavedPlace() {
         when(placeMapper.countByMemberIdAndType(1L, PlaceType.HOME.name())).thenReturn(0);
         doAnswer(invocation -> {
-            PlaceEntity entity = invocation.getArgument(0);
+            PlaceParam entity = invocation.getArgument(0);
             entity.setId(10L);
             return null;
-        }).when(placeMapper).insertPlace(any(PlaceEntity.class));
+        }).when(placeMapper).insert(any(PlaceParam.class));
 
         var response = placeService.createPlace(1L, new CreatePlaceRequest(
                 "HOME",
@@ -111,8 +112,8 @@ class PlaceServiceTest {
     }
 
     @Test
-    void updatePlaceThrowsWhenOwnerDiffers() {
-        PlaceEntity existing = new PlaceEntity();
+    void updateThrowsWhenOwnerDiffers() {
+        PlaceResult existing = new PlaceResult();
         existing.setId(3L);
         existing.setMemberId(2L);
         existing.setPlaceType(PlaceType.OTHER.name());
@@ -134,7 +135,7 @@ class PlaceServiceTest {
 
     @Test
     void deletePlaceDeletesOnlyOwnerPlace() {
-        PlaceEntity existing = new PlaceEntity();
+        PlaceResult existing = new PlaceResult();
         existing.setId(3L);
         existing.setMemberId(1L);
         existing.setPlaceType(PlaceType.OTHER.name());

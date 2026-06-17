@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.home.notice.mapper.NoticeMapper">
 
-    <resultMap id="noticeResultMap" type="com.ssafy.home.notice.dto.NoticeEntity">
+    <resultMap id="noticeResultMap" type="com.ssafy.home.notice.mapper.dto.NoticeResult">
         <id property="id" column="id"/>
         <result property="memberId" column="member_id"/>
         <result property="title" column="title"/>
@@ -14,12 +14,12 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
 
-    <select id="countNotices" resultType="long">
+    <select id="count" resultType="long">
         SELECT COUNT(*)
         FROM notice
     </select>
 
-    <select id="findNotices" resultMap="noticeResultMap">
+    <select id="findAll" resultMap="noticeResultMap">
         SELECT
             n.id,
             n.member_id,
@@ -34,7 +34,7 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <select id="findNoticeById" resultMap="noticeResultMap">
+    <select id="findById" resultMap="noticeResultMap">
         SELECT
             n.id,
             n.member_id,
@@ -48,7 +48,7 @@
         WHERE n.id = #{noticeId}
     </select>
 
-    <insert id="insertNotice" parameterType="com.ssafy.home.notice.dto.NoticeEntity" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.ssafy.home.notice.mapper.dto.NoticeParam" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO notice (
             member_id,
             title,
@@ -60,7 +60,7 @@
         )
     </insert>
 
-    <update id="updateNotice" parameterType="com.ssafy.home.notice.dto.NoticeEntity">
+    <update id="update" parameterType="com.ssafy.home.notice.mapper.dto.NoticeParam">
         UPDATE notice
         SET
             title = #{title},
@@ -69,7 +69,7 @@
         WHERE id = #{id}
     </update>
 
-    <delete id="deleteNoticeById">
+    <delete id="delete">
         DELETE FROM notice
         WHERE id = #{noticeId}
     </delete>

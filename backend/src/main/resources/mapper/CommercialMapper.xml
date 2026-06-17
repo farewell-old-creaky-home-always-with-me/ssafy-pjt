@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.home.commercial.mapper.CommercialMapper">
 
-    <select id="findCommercials" resultType="com.ssafy.home.commercial.dto.CommercialEntity">
+    <select id="findByLocation" resultType="com.ssafy.home.commercial.mapper.dto.CommercialResult">
         SELECT
             id AS id,
             biz_name AS bizName,

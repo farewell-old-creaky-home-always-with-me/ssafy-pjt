@@ -3,7 +3,8 @@ package com.ssafy.home.place.service;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.place.dto.CreatePlaceRequest;
-import com.ssafy.home.place.dto.PlaceEntity;
+import com.ssafy.home.place.mapper.dto.PlaceParam;
+import com.ssafy.home.place.mapper.dto.PlaceResult;
 import com.ssafy.home.place.dto.PlaceResponse;
 import com.ssafy.home.place.dto.PlaceType;
 import com.ssafy.home.place.dto.UpdatePlaceRequest;
@@ -12,6 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class PlaceService {
 
     private final PlaceMapper placeMapper;
 
+    @Transactional(readOnly = true)
     public List<PlaceResponse> getPlaces(Long memberId) {
         return placeMapper.findByMemberId(memberId)
                 .stream()
@@ -28,33 +31,39 @@ public class PlaceService {
                 .toList();
     }
 
+    @Transactional
     public PlaceResponse createPlace(Long memberId, CreatePlaceRequest request) {
-        PlaceEntity place = new PlaceEntity();
+        PlaceParam place = new PlaceParam();
         place.setMemberId(memberId);
         applyRequest(place, request.placeType(), request.name(), request.address(),
                 request.regionCode(), request.latitude(), request.longitude());
         validateCreateLimit(memberId, PlaceType.valueOf(place.getPlaceType()));
-        placeMapper.insertPlace(place);
+        placeMapper.insert(place);
         return toResponse(place);
     }
 
+    @Transactional
     public PlaceResponse updatePlace(Long memberId, Long placeId, UpdatePlaceRequest request) {
-        PlaceEntity place = requireOwnedPlace(memberId, placeId);
-        String previousType = place.getPlaceType();
+        PlaceResult existing = requireOwnedPlace(memberId, placeId);
+        String previousType = existing.getPlaceType();
+        PlaceParam place = new PlaceParam();
+        place.setId(existing.getId());
+        place.setMemberId(existing.getMemberId());
         applyRequest(place, request.placeType(), request.name(), request.address(),
                 request.regionCode(), request.latitude(), request.longitude());
         validateUpdateLimit(memberId, previousType, PlaceType.valueOf(place.getPlaceType()));
-        placeMapper.updatePlace(place);
-        return toResponse(place);
+        placeMapper.update(place);
+        return toResponse(requireOwnedPlace(memberId, placeId));
     }
 
+    @Transactional
     public void deletePlace(Long memberId, Long placeId) {
         requireOwnedPlace(memberId, placeId);
         placeMapper.deleteByIdAndMemberId(placeId, memberId);
     }
 
     private void applyRequest(
-            PlaceEntity place,
+            PlaceParam place,
             String placeType,
             String name,
             String address,
@@ -142,8 +151,8 @@ public class PlaceService {
         validateCreateLimit(memberId, nextType);
     }
 
-    private PlaceEntity requireOwnedPlace(Long memberId, Long placeId) {
-        PlaceEntity place = placeMapper.findById(placeId);
+    private PlaceResult requireOwnedPlace(Long memberId, Long placeId) {
+        PlaceResult place = placeMapper.findById(placeId);
         if (place == null) {
             throw new CustomException(ErrorCode.PLACE_NOT_FOUND);
         }
@@ -153,7 +162,21 @@ public class PlaceService {
         return place;
     }
 
-    private PlaceResponse toResponse(PlaceEntity place) {
+    private PlaceResponse toResponse(PlaceParam place) {
+        return new PlaceResponse(
+                place.getId(),
+                place.getPlaceType(),
+                place.getName(),
+                place.getAddress(),
+                place.getRegionCode(),
+                place.getLatitude(),
+                place.getLongitude(),
+                null,
+                null
+        );
+    }
+
+    private PlaceResponse toResponse(PlaceResult place) {
         return new PlaceResponse(
                 place.getId(),
                 place.getPlaceType(),

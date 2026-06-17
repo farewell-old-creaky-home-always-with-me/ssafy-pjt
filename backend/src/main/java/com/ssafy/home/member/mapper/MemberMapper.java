@@ -1,6 +1,8 @@
 package com.ssafy.home.member.mapper;
 
-import com.ssafy.home.member.dto.MemberEntity;
+import com.ssafy.home.member.mapper.dto.MemberCreateParam;
+import com.ssafy.home.member.mapper.dto.MemberDetailResult;
+import com.ssafy.home.member.mapper.dto.MemberUpdateParam;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -9,13 +11,13 @@ public interface MemberMapper {
 
     boolean existsByEmail(@Param("email") String email);
 
-    void insertMember(MemberEntity member);
+    void insert(MemberCreateParam member);
 
-    MemberEntity findById(@Param("memberId") Long memberId);
+    MemberDetailResult findById(@Param("memberId") Long memberId);
 
-    MemberEntity findByEmail(@Param("email") String email);
+    MemberDetailResult findByEmail(@Param("email") String email);
 
-    int updateMember(MemberEntity member);
+    int update(MemberUpdateParam member);
 
-    int deleteMember(@Param("memberId") Long memberId);
+    int delete(@Param("memberId") Long memberId);
 }
