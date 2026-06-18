@@ -23,24 +23,19 @@ mybatis:
     map-underscore-to-camel-case: true
 
 molit:
-  apartment-sale-url: ${MOLIT_APARTMENT_SALE_URL}
-  multi-family-sale-url: ${MOLIT_MULTI_FAMILY_SALE_URL}
-  service-key: ${MOLIT_SERVICE_KEY}
-  page-size: ${MOLIT_PAGE_SIZE:100}
-  timeout: ${MOLIT_TIMEOUT:10s}
-  retry-count: ${MOLIT_RETRY_COUNT:2}
-  skip-limit: ${MOLIT_SKIP_LIMIT:1000}
+  page-size: 100
+  timeout: 10s
+  retry-count: 2
+  skip-limit: 1000
 
 vworld:
-  data-url: ${VWORLD_DATA_URL:https://api.vworld.kr/req/data}
-  api-key: ${VWORLD_API_KEY}
-  domain: ${VWORLD_DOMAIN:localhost}
-  legal-emd-layer: ${VWORLD_LEGAL_EMD_LAYER:LT_C_ADLEGAL_EMD}
-  page-size: ${VWORLD_PAGE_SIZE:1000}
-  timeout: ${VWORLD_TIMEOUT:10s}
-  retry-count: ${VWORLD_RETRY_COUNT:2}
-  sido-retry-count: ${VWORLD_SIDO_RETRY_COUNT:3}
-  skip-limit: ${VWORLD_SKIP_LIMIT:1000}
+  data-url: https://api.vworld.kr/req/data
+  legal-emd-layer: LT_C_ADLEGAL_EMD
+  page-size: 1000
+  timeout: 10s
+  retry-count: 2
+  sido-retry-count: 3
+  skip-limit: 1000
 
 cors:
   allowed-origins:
