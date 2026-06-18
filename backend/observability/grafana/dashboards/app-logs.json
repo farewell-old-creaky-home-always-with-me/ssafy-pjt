@@ -48,9 +48,29 @@
     },
     {
       "id": 3,
-      "title": "Error Logs",
+      "title": "Batch Job Logs",
       "type": "logs",
       "gridPos": { "x": 0, "y": 16, "w": 24, "h": 8 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{app=\"backend\", env=\"local\"} |= \"[BATCH]\"",
+          "legendFormat": "",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "dedupStrategy": "none",
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": true
+      }
+    },
+    {
+      "id": 4,
+      "title": "Error Logs",
+      "type": "logs",
+      "gridPos": { "x": 0, "y": 24, "w": 24, "h": 8 },
       "datasource": { "type": "loki", "uid": "loki" },
       "targets": [
         {
