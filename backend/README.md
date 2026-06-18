@@ -28,14 +28,21 @@
 
 ## 환경 설정
 
-아래 환경 변수를 설정하거나 `application.yml`에서 직접 수정한다.
+민감 정보(DB, API 키)는 `secret/` **서브모듈**의 `application-secret.yml`에서 관리한다.
+템플릿은 `application-secret.example.yml`을 참고한다.
 
-| 환경 변수 | 설명 | 기본값 |
-|-----------|------|--------|
-| `DB_URL` | MySQL 접속 URL | `jdbc:mysql://localhost:3306/ssafy_home` |
-| `DB_USERNAME` | DB 사용자명 | `ssafy` |
-| `DB_PASSWORD` | DB 비밀번호 | `ssafy` |
-| `SQL_INIT_MODE` | SQL 초기화 모드 | `always` |
+```bash
+git submodule update --init backend/src/main/resources/secret
+# submodule 내 application-secret.yml에 molit/vworld 키 추가
+```
+
+| 항목 | secret yml 키 | 설명 |
+|------|---------------|------|
+| MySQL | `spring.datasource.*` | 접속 URL, 사용자, 비밀번호 |
+| 국토부 API | `molit.service-key`, `molit.apartment-sale-url`, `molit.multi-family-sale-url` | 공공데이터포털 인증키·endpoint |
+| VWorld | `vworld.api-key`, `vworld.domain` | Open API 키·등록 도메인 |
+
+Spring Batch 메타 테이블(`BATCH_*`)은 `application.yml`의 `spring.batch.jdbc.initialize-schema: always`로 기동 시 자동 생성된다.
 
 ---
 

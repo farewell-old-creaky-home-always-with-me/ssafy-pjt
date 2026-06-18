@@ -60,7 +60,10 @@ CREATE TABLE IF NOT EXISTS house_deal (
     INDEX idx_deal_house (house_id),
     INDEX idx_deal_type (deal_type),
     INDEX idx_deal_date (deal_date),
-    INDEX idx_deal_amount (deal_amount)
+    INDEX idx_deal_amount (deal_amount),
+    UNIQUE KEY uq_house_deal_identity (
+        house_id, deal_type, deal_date, area, floor, deal_amount
+    )
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='주택 거래 이력';
 
 -- ============================================================
@@ -87,7 +90,6 @@ CREATE TABLE IF NOT EXISTS batch_collection_log (
     created_at        DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '로그 생성 시각',
 
     PRIMARY KEY (id),
-    FOREIGN KEY (region_code) REFERENCES region_code(region_code) ON UPDATE CASCADE,
     INDEX idx_collection_job_execution (job_execution_id),
     INDEX idx_collection_condition (region_code, `year_month`, house_type, deal_type),
     INDEX idx_collection_status (status)
