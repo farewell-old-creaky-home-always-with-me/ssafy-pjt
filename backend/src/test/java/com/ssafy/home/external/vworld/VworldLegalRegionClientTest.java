@@ -32,7 +32,8 @@ class VworldLegalRegionClientTest {
                 10,
                 Duration.ofSeconds(5),
                 0,
-                1
+                1,
+                1000
         );
         client = new VworldLegalRegionClient(
                 builder.build(),
@@ -99,5 +100,56 @@ class VworldLegalRegionClientTest {
         // when / then
         assertThatThrownBy(() -> client.fetch("11", 1))
                 .isInstanceOf(VworldApiException.class);
+    }
+
+    @Test
+    @DisplayName("record.total이 없으면 예외를 던진다")
+    void fetchThrowsWhenTotalIsMissing() {
+        // given
+        String body = """
+                {
+                  "response": {
+                    "status": "OK",
+                    "result": {
+                      "featureCollection": {
+                        "features": []
+                      }
+                    }
+                  }
+                }
+                """;
+        server.expect(MockRestRequestMatchers.requestTo(org.hamcrest.Matchers.containsString("/vworld")))
+                .andRespond(MockRestResponseCreators.withSuccess(body, MediaType.APPLICATION_JSON));
+
+        // when / then
+        assertThatThrownBy(() -> client.fetch("11", 1))
+                .isInstanceOf(VworldApiException.class)
+                .satisfies(throwable -> assertThat(((VworldApiException) throwable).retryable()).isFalse());
+    }
+
+    @Test
+    @DisplayName("record.total 형식이 잘못되면 재시도하지 않는 예외를 던진다")
+    void fetchThrowsWhenTotalFormatIsInvalid() {
+        // given
+        String body = """
+                {
+                  "response": {
+                    "status": "OK",
+                    "record": { "total": "not-a-number" },
+                    "result": {
+                      "featureCollection": {
+                        "features": []
+                      }
+                    }
+                  }
+                }
+                """;
+        server.expect(MockRestRequestMatchers.requestTo(org.hamcrest.Matchers.containsString("/vworld")))
+                .andRespond(MockRestResponseCreators.withSuccess(body, MediaType.APPLICATION_JSON));
+
+        // when / then
+        assertThatThrownBy(() -> client.fetch("11", 1))
+                .isInstanceOf(VworldApiException.class)
+                .satisfies(throwable -> assertThat(((VworldApiException) throwable).retryable()).isFalse());
     }
 }

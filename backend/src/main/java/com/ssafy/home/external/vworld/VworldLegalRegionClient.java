@@ -137,14 +137,20 @@ public class VworldLegalRegionClient {
     }
 
     private int integer(JsonNode node) {
-        String text = node.asText("0").trim();
+        if (node == null || node.isMissingNode() || node.isNull()) {
+            throw new VworldApiException("Missing totalCount from VWorld API");
+        }
+        String text = node.asText().trim();
+        if (text.isEmpty()) {
+            throw new VworldApiException("Missing totalCount from VWorld API");
+        }
         try {
             return Integer.parseInt(text);
         } catch (NumberFormatException exception) {
             throw new VworldApiException(
                     "Unexpected totalCount format from VWorld API: '" + text + "'",
                     exception,
-                    true
+                    false
             );
         }
     }

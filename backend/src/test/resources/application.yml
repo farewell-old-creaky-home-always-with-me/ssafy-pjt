@@ -24,6 +24,7 @@ molit:
   page-size: 10
   timeout: 5s
   retry-count: 0
+  skip-limit: 1000
 
 vworld:
   data-url: http://localhost/vworld
@@ -34,3 +35,4 @@ vworld:
   timeout: 5s
   retry-count: 0
   sido-retry-count: 1
+  skip-limit: 1000

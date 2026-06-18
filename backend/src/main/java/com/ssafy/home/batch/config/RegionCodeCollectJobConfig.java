@@ -63,7 +63,7 @@ public class RegionCodeCollectJobConfig {
                 .faultTolerant()
                 .retryPolicy(vworldRetryPolicy(properties))
                 .skip(InvalidRegionCodeException.class)
-                .skipLimit(Integer.MAX_VALUE)
+                .skipLimit(properties.skipLimit())
                 .listener(regionCodeWriter)
                 .build();
     }

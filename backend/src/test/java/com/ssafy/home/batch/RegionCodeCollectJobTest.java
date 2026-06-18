@@ -50,7 +50,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         "vworld.page-size=100",
         "vworld.timeout=1s",
         "vworld.retry-count=0",
-        "vworld.sido-retry-count=1"
+        "vworld.sido-retry-count=1",
+        "vworld.skip-limit=1000"
 })
 class RegionCodeCollectJobTest {
 
@@ -90,7 +91,7 @@ class RegionCodeCollectJobTest {
         JobParameters parameters = new JobParametersBuilder()
                 .addString("syncScope", "FULL")
                 .addLong("requestedMemberId", 1L, false)
-                .addLong("requestedAt", System.currentTimeMillis())
+                .addLong("requestedAt", System.currentTimeMillis(), false)
                 .toJobParameters();
 
         // when

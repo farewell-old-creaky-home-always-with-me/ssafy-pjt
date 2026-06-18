@@ -19,7 +19,8 @@ public record VworldProperties(
         @Positive int pageSize,
         @NotNull Duration timeout,
         @PositiveOrZero int retryCount,
-        @PositiveOrZero int sidoRetryCount
+        @PositiveOrZero int sidoRetryCount,
+        @Positive int skipLimit
 ) {
     public VworldProperties {
         if (timeout != null && (timeout.isZero() || timeout.isNegative())) {

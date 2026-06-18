@@ -5,6 +5,9 @@
 .claude/
 .codex/
 
+# Superpowers (agent workflow artifacts)
+docs/superpowers/
+
 # Node
 node_modules/
 dist/

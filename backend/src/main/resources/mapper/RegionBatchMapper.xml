@@ -11,8 +11,8 @@
             #{regionCode}, #{sidoName}, #{sigunguName}, #{dongName}
         )
         ON DUPLICATE KEY UPDATE
-            sido_name = VALUES(sido_name),
-            sigungu_name = VALUES(sigungu_name),
-            dong_name = VALUES(dong_name)
+            sido_name = #{sidoName},
+            sigungu_name = #{sigunguName},
+            dong_name = #{dongName}
     </insert>
 </mapper>

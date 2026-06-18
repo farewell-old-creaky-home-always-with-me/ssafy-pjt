@@ -87,7 +87,7 @@ public class BatchJobService {
         JobParameters parameters = new JobParametersBuilder()
                 .addString("syncScope", REGION_SYNC_SCOPE)
                 .addLong("requestedMemberId", memberId, false)
-                .addLong("requestedAt", clock.millis())
+                .addLong("requestedAt", clock.millis(), false)
                 .toJobParameters();
         return launch(regionCodeCollectJob, parameters, execution -> new RegionCodeCollectResponse(
                 execution.getId(),

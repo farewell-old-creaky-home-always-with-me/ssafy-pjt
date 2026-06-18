@@ -67,7 +67,7 @@ public class HouseDealCollectJobConfig {
                 .faultTolerant()
                 .retryPolicy(molitRetryPolicy(properties))
                 .skip(InvalidHouseDealException.class)
-                .skipLimit(Integer.MAX_VALUE)
+                .skipLimit(properties.skipLimit())
                 .listener(houseDealWriter)
                 .build();
     }

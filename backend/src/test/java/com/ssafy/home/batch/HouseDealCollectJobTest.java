@@ -41,6 +41,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         "molit.page-size=100",
         "molit.timeout=1s",
         "molit.retry-count=1",
+        "molit.skip-limit=1000",
         "vworld.data-url=http://localhost/vworld",
         "vworld.api-key=test-key",
         "vworld.domain=localhost",
@@ -48,7 +49,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         "vworld.page-size=100",
         "vworld.timeout=1s",
         "vworld.retry-count=0",
-        "vworld.sido-retry-count=1"
+        "vworld.sido-retry-count=1",
+        "vworld.skip-limit=1000"
 })
 class HouseDealCollectJobTest {
 

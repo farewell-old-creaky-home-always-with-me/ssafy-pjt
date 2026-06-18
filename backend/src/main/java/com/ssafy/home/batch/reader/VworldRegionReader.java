@@ -17,7 +17,7 @@ public class VworldRegionReader implements ItemStreamReader<VworldRawRegion> {
     private final int sidoRetryCount;
     private final int pageSize;
     private int sidoIndex;
-    private int pageNumber;
+    private int pageNumber = 1;
     private Iterator<VworldRawRegion> buffer = List.<VworldRawRegion>of().iterator();
     private boolean finished;
 

@@ -17,7 +17,8 @@ public record MolitProperties(
         @NotBlank String serviceKey,
         @Positive int pageSize,
         @NotNull Duration timeout,
-        @PositiveOrZero int retryCount
+        @PositiveOrZero int retryCount,
+        @Positive int skipLimit
 ) {
     public MolitProperties {
         if (timeout != null && (timeout.isZero() || timeout.isNegative())) {
