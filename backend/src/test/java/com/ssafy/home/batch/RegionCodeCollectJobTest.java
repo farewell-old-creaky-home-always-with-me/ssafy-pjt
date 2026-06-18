@@ -46,7 +46,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         "vworld.data-url=http://localhost/vworld",
         "vworld.api-key=test-key",
         "vworld.domain=localhost",
-        "vworld.legal-emd-layer=LT_C_ADLEGAL_EMD",
+        "vworld.legal-emd-layer=LT_C_ADEMD_INFO",
         "vworld.page-size=100",
         "vworld.timeout=1s",
         "vworld.retry-count=0",
@@ -84,7 +84,8 @@ class RegionCodeCollectJobTest {
         // given
         VworldRawRegion valid = rawRegion("1111010100", false);
         VworldRawRegion invalid = rawRegion("11110", false);
-        given(vworldLegalRegionClient.fetch(eq("11"), anyInt()))
+        given(vworldLegalRegionClient.fetchSigunguCodes("11")).willReturn(List.of("11110"));
+        given(vworldLegalRegionClient.fetch(eq("11110"), anyInt()))
                 .willReturn(new VworldRegionPage(List.of(valid, invalid), 2));
         stubEmptySidoResponsesExcept("11");
 
@@ -117,8 +118,7 @@ class RegionCodeCollectJobTest {
             if (sidoCode.equals(excludedSidoCode)) {
                 continue;
             }
-            given(vworldLegalRegionClient.fetch(eq(sidoCode), anyInt()))
-                    .willReturn(new VworldRegionPage(List.of(), 0));
+            given(vworldLegalRegionClient.fetchSigunguCodes(sidoCode)).willReturn(List.of());
         }
     }
 

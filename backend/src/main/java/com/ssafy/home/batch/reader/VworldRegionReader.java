@@ -17,6 +17,8 @@ public class VworldRegionReader implements ItemStreamReader<VworldRawRegion> {
     private final int sidoRetryCount;
     private final int pageSize;
     private int sidoIndex;
+    private List<String> sigunguCodes = List.of();
+    private int sigunguIndex;
     private int pageNumber = 1;
     private Iterator<VworldRawRegion> buffer = List.<VworldRawRegion>of().iterator();
     private boolean finished;
@@ -43,15 +45,39 @@ public class VworldRegionReader implements ItemStreamReader<VworldRawRegion> {
     }
 
     private void loadNextPage() {
-        String sidoCode = VworldSidoCodes.ALL.get(sidoIndex);
-        VworldRegionPage page = fetchWithSidoRetry(sidoCode, pageNumber);
+        if (sigunguIndex >= sigunguCodes.size()) {
+            loadSigunguCodes();
+            if (sigunguCodes.isEmpty()) {
+                advanceSido();
+                return;
+            }
+        }
+        String sigunguCode = sigunguCodes.get(sigunguIndex);
+        VworldRegionPage page = fetchWithRetry(sigunguCode, pageNumber);
         buffer = page.regions().iterator();
         if (page.regions().isEmpty() || isLastPage(page)) {
-            sidoIndex++;
+            sigunguIndex++;
             pageNumber = 1;
+            if (sigunguIndex >= sigunguCodes.size()) {
+                advanceSido();
+            }
             return;
         }
         pageNumber++;
+    }
+
+    private void loadSigunguCodes() {
+        String sidoCode = VworldSidoCodes.ALL.get(sidoIndex);
+        sigunguCodes = fetchSigunguCodesWithRetry(sidoCode);
+        sigunguIndex = 0;
+        pageNumber = 1;
+    }
+
+    private void advanceSido() {
+        sidoIndex++;
+        sigunguCodes = List.of();
+        sigunguIndex = 0;
+        pageNumber = 1;
     }
 
     private boolean isLastPage(VworldRegionPage page) {
@@ -59,24 +85,46 @@ public class VworldRegionReader implements ItemStreamReader<VworldRawRegion> {
                 || pageNumber * pageSize >= page.totalCount();
     }
 
-    private VworldRegionPage fetchWithSidoRetry(String sidoCode, int page) {
+    private List<String> fetchSigunguCodesWithRetry(String sidoCode) {
         VworldApiException last = null;
         int attempts = sidoRetryCount + 1;
         for (int attempt = 0; attempt < attempts; attempt++) {
             try {
-                return client.fetch(sidoCode, page);
+                return client.fetchSigunguCodes(sidoCode);
             } catch (VworldApiException exception) {
                 last = exception;
                 if (!exception.retryable() || attempt == attempts - 1) {
                     throw new ItemStreamException(
-                            "Failed to fetch sido " + sidoCode + " page " + page,
+                            "Failed to fetch sigungu codes for sido " + sidoCode,
                             exception
                     );
                 }
             }
         }
         throw new ItemStreamException(
-                "Failed to fetch sido " + sidoCode + " page " + page,
+                "Failed to fetch sigungu codes for sido " + sidoCode,
+                last
+        );
+    }
+
+    private VworldRegionPage fetchWithRetry(String sigunguCode, int page) {
+        VworldApiException last = null;
+        int attempts = sidoRetryCount + 1;
+        for (int attempt = 0; attempt < attempts; attempt++) {
+            try {
+                return client.fetch(sigunguCode, page);
+            } catch (VworldApiException exception) {
+                last = exception;
+                if (!exception.retryable() || attempt == attempts - 1) {
+                    throw new ItemStreamException(
+                            "Failed to fetch sigungu " + sigunguCode + " page " + page,
+                            exception
+                    );
+                }
+            }
+        }
+        throw new ItemStreamException(
+                "Failed to fetch sigungu " + sigunguCode + " page " + page,
                 last
         );
     }

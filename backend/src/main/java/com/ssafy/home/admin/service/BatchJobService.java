@@ -26,7 +26,6 @@ import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteExcep
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BatchJobService {
@@ -54,7 +53,6 @@ public class BatchJobService {
         this.clock = clock;
     }
 
-    @Transactional
     public HouseDealCollectResponse collectHouseDeals(
             Long memberId,
             HouseDealCollectRequest request
@@ -82,7 +80,6 @@ public class BatchJobService {
         ));
     }
 
-    @Transactional
     public RegionCodeCollectResponse collectRegionCodes(Long memberId) {
         JobParameters parameters = new JobParametersBuilder()
                 .addString("syncScope", REGION_SYNC_SCOPE)

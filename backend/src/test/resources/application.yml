@@ -30,7 +30,7 @@ vworld:
   data-url: http://localhost/vworld
   api-key: test-key
   domain: localhost
-  legal-emd-layer: LT_C_ADLEGAL_EMD
+  legal-emd-layer: LT_C_ADEMD_INFO
   page-size: 10
   timeout: 5s
   retry-count: 0

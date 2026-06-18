@@ -45,7 +45,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         "vworld.data-url=http://localhost/vworld",
         "vworld.api-key=test-key",
         "vworld.domain=localhost",
-        "vworld.legal-emd-layer=LT_C_ADLEGAL_EMD",
+        "vworld.legal-emd-layer=LT_C_ADEMD_INFO",
         "vworld.page-size=100",
         "vworld.timeout=1s",
         "vworld.retry-count=0",

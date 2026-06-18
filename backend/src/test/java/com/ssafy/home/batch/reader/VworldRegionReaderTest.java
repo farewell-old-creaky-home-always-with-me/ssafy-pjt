@@ -31,7 +31,7 @@ class VworldRegionReaderTest {
                 URI.create("http://localhost/vworld"),
                 "test-key",
                 "localhost",
-                "LT_C_ADLEGAL_EMD",
+                "LT_C_ADEMD_INFO",
                 100,
                 Duration.ofSeconds(5),
                 0,
@@ -42,13 +42,14 @@ class VworldRegionReaderTest {
     }
 
     @Test
-    @DisplayName("첫 페이지 요청은 page=1로 호출한다")
+    @DisplayName("시군구 목록 조회 후 첫 페이지를 page=1로 호출한다")
     void firstFetchUsesPageOne() {
         // given
         VworldRawRegion region = new VworldRawRegion(
                 "1111010100", "서울특별시", "종로구", "청운동", false
         );
-        given(client.fetch(eq("11"), eq(1)))
+        given(client.fetchSigunguCodes("11")).willReturn(List.of("11110"));
+        given(client.fetch(eq("11110"), eq(1)))
                 .willReturn(new VworldRegionPage(List.of(region), 1));
         stubEmptySidoResponsesExcept("11");
 
@@ -57,7 +58,8 @@ class VworldRegionReaderTest {
 
         // then
         assertThat(result).isEqualTo(region);
-        verify(client).fetch(eq("11"), eq(1));
+        verify(client).fetchSigunguCodes("11");
+        verify(client).fetch(eq("11110"), eq(1));
     }
 
     private void stubEmptySidoResponsesExcept(String excludedSidoCode) {
@@ -65,8 +67,7 @@ class VworldRegionReaderTest {
             if (sidoCode.equals(excludedSidoCode)) {
                 continue;
             }
-            given(client.fetch(eq(sidoCode), anyInt()))
-                    .willReturn(new VworldRegionPage(List.of(), 0));
+            given(client.fetchSigunguCodes(sidoCode)).willReturn(List.of());
         }
     }
 }
