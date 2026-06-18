@@ -42,8 +42,7 @@ git submodule update --init backend/src/main/resources/secret
 | 국토부 API | `molit.service-key`, `molit.apartment-sale-url`, `molit.multi-family-sale-url` | 공공데이터포털 인증키·endpoint |
 | VWorld | `vworld.api-key`, `vworld.domain` | Open API 키·등록 도메인 |
 
-배치 메타 테이블을 처음 생성할 때만 `BATCH_JDBC_INITIALIZE_SCHEMA=always` 환경 변수를 설정한다.
-(기본값 `never`, `application.yml` 참고)
+Spring Batch 메타 테이블(`BATCH_*`)은 `application.yml`의 `spring.batch.jdbc.initialize-schema: always`로 기동 시 자동 생성된다.
 
 ---
 

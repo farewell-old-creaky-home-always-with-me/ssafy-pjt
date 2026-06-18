@@ -5,7 +5,7 @@ spring:
     job:
       enabled: false
     jdbc:
-      initialize-schema: ${BATCH_JDBC_INITIALIZE_SCHEMA:never}
+      initialize-schema: always
   config:
     import: classpath:secret/application-secret.yml
   sql:
