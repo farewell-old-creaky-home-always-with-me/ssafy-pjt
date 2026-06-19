@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
 
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
     <!-- 콘솔 Appender: 개발 편의용 패턴 출력 -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%clr(%d{HH:mm:ss.SSS}){faint} %clr(%-5level){highlight} %clr([%15.15t]){faint} %clr(%logger{36}){cyan} %clr(-){faint} %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
