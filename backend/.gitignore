@@ -35,7 +35,7 @@ nbdist/
 
 # Logs and runtime files
 *.log
-logs/
+logs/*.log
 docs/
 tmp/
 temp/

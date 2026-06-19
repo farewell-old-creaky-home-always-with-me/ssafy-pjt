@@ -2,12 +2,14 @@ package com.ssafy.home.batch.listener;
 
 import com.ssafy.home.batch.domain.BatchCollectionLog;
 import com.ssafy.home.batch.mapper.BatchCollectionLogMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepExecution;
 
+@Slf4j
 public class BatchCollectionLogListener implements JobExecutionListener {
 
     private final BatchCollectionLogMapper mapper;
@@ -66,6 +68,12 @@ public class BatchCollectionLogListener implements JobExecutionListener {
                 jobExecution.getStartTime(),
                 jobExecution.getEndTime()
         ));
+
+        if (jobExecution.getStatus() == BatchStatus.FAILED) {
+            jobExecution.getAllFailureExceptions().forEach(e ->
+                    log.error("[BATCH] job={} dataType={} status=FAILED collected={} skipped={} failed={} exception={}",
+                            jobName, dataType, collectedCount, skippedCount, failedCount, e.getMessage()));
+        }
     }
 
     private long collectedCount(StepExecution stepExecution) {
