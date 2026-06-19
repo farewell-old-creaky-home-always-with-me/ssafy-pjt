@@ -54,8 +54,26 @@ services:
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - loki
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:v3.4.0
+    container_name: ssafy-home-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
 volumes:
   mysql_data:
   loki_data:
   grafana_data:
+  prometheus_data:
