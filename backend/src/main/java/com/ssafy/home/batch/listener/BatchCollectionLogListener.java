@@ -70,11 +70,9 @@ public class BatchCollectionLogListener implements JobExecutionListener {
         ));
 
         if (jobExecution.getStatus() == BatchStatus.FAILED) {
-            log.error("[BATCH] job={} dataType={} status=FAILED collected={} skipped={} failed={}",
-                    jobName, dataType, collectedCount, skippedCount, failedCount);
-        } else {
-            log.info("[BATCH] job={} dataType={} status={} collected={} skipped={}",
-                    jobName, dataType, jobExecution.getStatus().name(), collectedCount, skippedCount);
+            jobExecution.getAllFailureExceptions().forEach(e ->
+                    log.error("[BATCH] job={} dataType={} status=FAILED collected={} skipped={} failed={} exception={}",
+                            jobName, dataType, collectedCount, skippedCount, failedCount, e.getMessage()));
         }
     }
 

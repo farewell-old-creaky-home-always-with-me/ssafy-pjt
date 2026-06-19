@@ -26,20 +26,22 @@ public class HttpLoggingInterceptor implements HandlerInterceptor {
             return;
         }
 
-        Long startTime = (Long) request.getAttribute(START_TIME_ATTR);
-        long executionTime = 0;
-        if (startTime != null) {
-            executionTime = System.currentTimeMillis() - startTime;
+        int status = response.getStatus();
+        if (status < 400) {
+            return;
         }
 
+        Long startTime = (Long) request.getAttribute(START_TIME_ATTR);
+        long executionTime = startTime != null ? System.currentTimeMillis() - startTime : 0;
+
         String method = request.getMethod();
-        int status = response.getStatus();
-
         HttpStatus httpStatus = HttpStatus.resolve(status);
-        String statusStr = httpStatus != null 
-                ? status + " " + httpStatus.name() 
-                : String.valueOf(status);
+        String statusStr = httpStatus != null ? status + " " + httpStatus.name() : String.valueOf(status);
 
-        log.info("[HTTP] {} {} - {} [Execution Time: {}ms]", method, uri, statusStr, executionTime);
+        if (status >= 500) {
+            log.error("[HTTP] {} {} - {} [Execution Time: {}ms]", method, uri, statusStr, executionTime);
+        } else {
+            log.warn("[HTTP] {} {} - {} [Execution Time: {}ms]", method, uri, statusStr, executionTime);
+        }
     }
 }
