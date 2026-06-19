@@ -67,7 +67,7 @@
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, UserCircle } from 'lucide-vue-next'
-import { api } from '../api/index.js'
+import { membersApi } from '../api/index.js'
 import '../../css/pages/auth.css'
 
 const router = useRouter()
@@ -101,7 +101,7 @@ async function handleSubmit() {
   if (!ok) return
   loading.value = true
   try {
-    await api.post('/api/members', { email: email.value.trim(), password: password.value, name: name.value.trim() })
+    await membersApi.createMember({ email: email.value.trim(), password: password.value, name: name.value.trim() })
     alert('회원가입이 완료되었습니다. 로그인해 주세요.')
     router.push('/login')
   } catch (err) {

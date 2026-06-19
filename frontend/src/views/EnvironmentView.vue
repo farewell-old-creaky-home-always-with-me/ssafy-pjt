@@ -55,7 +55,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { TreePine, Droplets, Wind, MapPin, Eye, EyeOff, Info } from 'lucide-vue-next'
-import { api } from '../api/index.js'
+import { environmentApi } from '../api/index.js'
 import { escapeHtml } from '../utils/html.js'
 
 const LAYERS = [
@@ -75,7 +75,7 @@ const activeCount = computed(() => Object.values(active.value).filter(Boolean).l
 async function fetchLayer(key) {
   if (!map) return
   const center = map.getCenter()
-  const all = await api.get('/api/environment', { lat: center.getLat(), lng: center.getLng(), radius: 5000 })
+  const all = await environmentApi.getEnvironment({ lat: center.getLat(), lng: center.getLng(), radius: 5000 })
   const layer = LAYERS.find(l => l.key === key)
   layerData.value[key] = all.filter(item =>
     layer.keywords.some(kw => item.itemName?.includes(kw))

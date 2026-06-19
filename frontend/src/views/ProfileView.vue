@@ -95,7 +95,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2 } from 'lucide-vue-next'
-import { api } from '../api/index.js'
+import { membersApi } from '../api/index.js'
 import { useAuthStore } from '../stores/auth.js'
 import '../../css/pages/profile.css'
 
@@ -113,7 +113,7 @@ const deleting = ref(false)
 
 onMounted(async () => {
   try {
-    profile.value = await api.get('/api/members/me')
+    profile.value = await membersApi.getMyMember()
   } catch {
     profileError.value = '프로필 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
   }
@@ -129,8 +129,8 @@ async function handleUpdate() {
   if (!editName.value.trim() || editPassword.value.length < 8) return
   saving.value = true
   try {
-    await api.put('/api/members/me', { name: editName.value.trim(), password: editPassword.value })
-    profile.value = await api.get('/api/members/me')
+    await membersApi.updateMyMember({ name: editName.value.trim(), password: editPassword.value })
+    profile.value = await membersApi.getMyMember()
     authStore.patchUser({ name: profile.value.name })
     editMode.value = false
   } catch (err) {
@@ -143,7 +143,7 @@ async function handleUpdate() {
 async function handleDelete() {
   deleting.value = true
   try {
-    await api.delete('/api/members/me')
+    await membersApi.deleteMyMember()
     await authStore.logout()
     router.push('/login')
   } catch (err) {
