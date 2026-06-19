@@ -11,7 +11,7 @@
         </encoder>
     </appender>
 
-    <!-- 파일 Appender: Promtail 수집 대상 JSON 출력 -->
+    <!-- 파일 Appender: Alloy 수집 대상 JSON 출력 -->
     <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">

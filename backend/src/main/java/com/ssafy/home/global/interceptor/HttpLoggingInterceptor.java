@@ -21,6 +21,11 @@ public class HttpLoggingInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        String uri = request.getRequestURI();
+        if (uri.startsWith("/actuator")) {
+            return;
+        }
+
         Long startTime = (Long) request.getAttribute(START_TIME_ATTR);
         long executionTime = 0;
         if (startTime != null) {
@@ -28,7 +33,6 @@ public class HttpLoggingInterceptor implements HandlerInterceptor {
         }
 
         String method = request.getMethod();
-        String uri = request.getRequestURI();
         int status = response.getStatus();
 
         HttpStatus httpStatus = HttpStatus.resolve(status);
