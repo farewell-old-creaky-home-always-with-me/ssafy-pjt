@@ -35,7 +35,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { UtensilsCrossed, Store, Hospital, BookOpen, LayoutGrid, X } from 'lucide-vue-next'
-import { api } from '../api/index.js'
+import { commercialApi } from '../api/index.js'
 import '../../css/pages/commercial.css'
 
 const CATEGORIES = [
@@ -61,7 +61,7 @@ async function fetchAndRender() {
   const params = { lat: center.getLat(), lng: center.getLng(), radius: 1000 }
   if (activeCategory.value) params.category = activeCategory.value
   try {
-    storesData.value = await api.get('/api/commercial', params)
+    storesData.value = await commercialApi.getCommercials(params)
   } catch { storesData.value = [] }
 
   clearMarkers()

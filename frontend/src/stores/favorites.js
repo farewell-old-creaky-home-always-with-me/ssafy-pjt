@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import { api } from '../api/index.js'
+import { favoritesApi } from '../api/index.js'
 import { useAuthStore } from './auth.js'
 
 export const useFavoritesStore = defineStore('favorites', () => {
@@ -17,7 +17,7 @@ export const useFavoritesStore = defineStore('favorites', () => {
     }
     error.value = null
     try {
-      items.value = await api.get('/api/favorites')
+      items.value = await favoritesApi.getFavorites()
     } catch {
       items.value = []
       error.value = '관심지역 목록을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
@@ -25,13 +25,13 @@ export const useFavoritesStore = defineStore('favorites', () => {
   }
 
   async function addFavorite(regionCode) {
-    const created = await api.post('/api/favorites', { regionCode })
+    const created = await favoritesApi.createFavorite({ regionCode })
     await fetchFavorites()
     return created
   }
 
   async function removeFavorite(favoriteId) {
-    await api.delete(`/api/favorites/${favoriteId}`)
+    await favoritesApi.deleteFavorite(favoriteId)
     items.value = items.value.filter(f => f.favoriteId !== favoriteId)
   }
 

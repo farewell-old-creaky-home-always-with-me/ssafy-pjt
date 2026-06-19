@@ -47,7 +47,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-vue-next'
-import { api } from '../api/index.js'
+import { noticesApi } from '../api/index.js'
 import { formatDate } from '../utils/date.js'
 
 const router = useRouter()
@@ -71,7 +71,7 @@ const pageRange = computed(() => {
 async function loadPage(p) {
   loading.value = true
   try {
-    const res = await api.get('/api/notices', { page: p, size: 20 })
+    const res = await noticesApi.getNotices({ page: p, size: 20 })
     notices.value = res.content ?? res
     totalPages.value = res.totalPages ?? 1
     page.value = p
