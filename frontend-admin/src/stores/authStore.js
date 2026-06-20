@@ -19,6 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function login(email, password) {
     const data = await apiLogin({ email, password })
     if (!data.isAdmin) {
+      user.value = null
       throw Object.assign(new Error('관리자 계정이 아닙니다.'), { status: 403 })
     }
     user.value = { memberId: data.memberId, name: data.name, isAdmin: true }

@@ -133,7 +133,7 @@ export const http = axios.create({
   withCredentials: true,
 })
 
-// api/memberApi.js
+// api/membersApi.js
 export async function getMember(memberId) {
   const response = await http.get(`/api/members/${memberId}`)
   return response.data

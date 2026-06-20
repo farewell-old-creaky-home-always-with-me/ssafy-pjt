@@ -1,13 +1,14 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { Search, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Search, FileText, Calendar, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-vue-next'
 import { noticesApi } from '@/api/index.js'
 import { formatDate } from '@/utils/date.js'
 
 const router = useRouter()
 const notices = ref([])
 const loading = ref(false)
+const error = ref('')
 const searchQuery = ref('')
 const page = ref(1)
 const totalPages = ref(1)
@@ -25,15 +26,14 @@ const pageRange = computed(() => {
 
 async function loadPage(p) {
   loading.value = true
+  error.value = ''
   try {
     const res = await noticesApi.getNotices({ page: p, size: 20 })
     notices.value = res.content ?? res
     totalPages.value = res.totalPages ?? 1
     page.value = p
   } catch {
-    notices.value = []
-    page.value = 1
-    totalPages.value = 1
+    error.value = '공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
   } finally { loading.value = false }
 }
 
@@ -53,6 +53,10 @@ onMounted(() => loadPage(1))
       <div class="notice-search">
         <Search :size="18" />
         <input v-model="searchQuery" type="text" placeholder="제목으로 검색..." />
+      </div>
+
+      <div v-if="error" class="general-error" style="display:flex">
+        <AlertCircle :size="16" /><span>{{ error }}</span>
       </div>
 
       <div v-if="loading" style="padding:4rem;text-align:center;color:#9ca3af">불러오는 중...</div>
