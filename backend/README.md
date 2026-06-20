@@ -42,7 +42,11 @@ git submodule update --init backend/src/main/resources/secret
 | 국토부 API | `molit.service-key`, `molit.apartment-sale-url`, `molit.multi-family-sale-url` | 공공데이터포털 인증키·endpoint |
 | VWorld | `vworld.api-key`, `vworld.domain` | Open API 키·등록 도메인 |
 
-Spring Batch 메타 테이블(`BATCH_*`)은 `application.yml`의 `spring.batch.jdbc.initialize-schema: always`로 기동 시 자동 생성된다.
+현재 초기화 방식은 새로 만든 빈 DB를 전제로 한다.
+
+애플리케이션 기동 시 Flyway가 먼저 `src/main/resources/db/migration`의 아직 적용되지 않은 마이그레이션을 실행한다. Spring Batch 메타 테이블(`BATCH_*`)도 Flyway가 관리하며, `spring.batch.jdbc.initialize-schema`는 `never`로 유지한다.
+
+기본 설정에서는 이후 매 기동마다 `src/main/resources/data.sql`의 목업 데이터를 트랜잭션으로 반영하며, `app.database.seed-enabled`를 `false`로 설정하면 생략할 수 있다. 목업 데이터는 Flyway 이력에 포함하지 않으며, 반복 실행할 수 있도록 UPSERT로 관리한다.
 
 ---
 
