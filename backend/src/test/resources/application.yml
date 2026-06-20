@@ -1,3 +1,7 @@
+app:
+  database:
+    seed-enabled: false
+
 spring:
   flyway:
     enabled: false

@@ -1,11 +1,14 @@
 package com.ssafy.home;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.ssafy.home.batch.mapper.BatchCollectionLogMapper;
 import com.ssafy.home.batch.mapper.HouseDealBatchMapper;
 import com.ssafy.home.batch.mapper.RegionBatchMapper;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
+import com.ssafy.home.global.config.database.InitialDataLoader;
 import com.ssafy.home.house.mapper.HouseMapper;
 import com.ssafy.home.member.mapper.MemberMapper;
 import com.ssafy.home.notice.mapper.NoticeMapper;
@@ -13,9 +16,12 @@ import com.ssafy.home.place.mapper.PlaceMapper;
 import com.ssafy.home.route.mapper.FacilityMapper;
 import com.ssafy.home.route.mapper.RouteMapper;
 import com.ssafy.home.stats.mapper.StatsMapper;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -29,6 +35,9 @@ import org.springframework.transaction.PlatformTransactionManager;
         "vworld.api-key=test-key"
 })
 class SsafyHomeApplicationTests {
+
+    @Autowired
+    ApplicationContext applicationContext;
 
     @MockitoBean
     MemberMapper memberMapper;
@@ -77,5 +86,18 @@ class SsafyHomeApplicationTests {
 
     @Test
     void contextLoads() {
+    }
+
+    @Test
+    @DisplayName("공유 테스트 설정은 초기 데이터 로더를 비활성화한다")
+    void sharedTestConfigurationDisablesInitialDataLoader() {
+        // Given
+        // The application context uses the shared test configuration.
+
+        // When
+        var initialDataLoaders = applicationContext.getBeansOfType(InitialDataLoader.class);
+
+        // Then
+        assertThat(initialDataLoaders).isEmpty();
     }
 }
