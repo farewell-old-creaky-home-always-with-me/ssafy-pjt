@@ -1,8 +1,6 @@
 -- SSAFY HOME mock data
 -- Demo account password for all members: password
 
-SET FOREIGN_KEY_CHECKS = 0;
-
 INSERT INTO region_code (region_code, sido_name, sigungu_name, dong_name) VALUES
 ('1111010100', '서울특별시', '종로구', '청운동'),
 ('1111010200', '서울특별시', '종로구', '신교동'),
@@ -166,5 +164,3 @@ unit = VALUES(unit),
 measured_date = VALUES(measured_date),
 latitude = VALUES(latitude),
 longitude = VALUES(longitude);
-
-SET FOREIGN_KEY_CHECKS = 1;

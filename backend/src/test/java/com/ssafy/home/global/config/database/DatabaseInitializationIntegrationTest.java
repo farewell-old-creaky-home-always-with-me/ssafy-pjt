@@ -1,11 +1,15 @@
 package com.ssafy.home.global.config.database;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.catchThrowable;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -19,7 +23,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
         "spring.sql.init.mode=never",
         "spring.batch.job.enabled=false",
         "spring.batch.jdbc.initialize-schema=never",
-        "app.database.seed-enabled=false"
+        "app.database.seed-enabled=true"
 })
 class DatabaseInitializationIntegrationTest {
 
@@ -29,7 +33,8 @@ class DatabaseInitializationIntegrationTest {
     }
 
     @Container
-    static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.0");
+    static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.0")
+            .withCommand("--log-bin-trust-function-creators=1");
 
     @DynamicPropertySource
     static void configureDataSource(DynamicPropertyRegistry registry) {
@@ -41,6 +46,9 @@ class DatabaseInitializationIntegrationTest {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private InitialDataLoader initialDataLoader;
 
     @Test
     @DisplayName("Flyway가 애플리케이션과 배치 스키마를 생성한다")
@@ -105,5 +113,65 @@ class DatabaseInitializationIntegrationTest {
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("초기 데이터를 Flyway 이후에 적재하고 반복 실행해도 중복되지 않는다")
+    void loadsSeedDataAfterFlywayAndRemainsIdempotent() throws Exception {
+        // Given
+        long orphanFavoriteAreaId = Long.MAX_VALUE;
+        Integer initialMemberCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM member", Integer.class);
+
+        // When
+        initialDataLoader.run(null);
+        Integer repeatedMemberCount = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM member", Integer.class);
+
+        // Then
+        assertThat(initialMemberCount).isEqualTo(3);
+        assertThat(repeatedMemberCount).isEqualTo(initialMemberCount);
+        try {
+            assertThatThrownBy(() -> jdbcTemplate.update("""
+                    INSERT INTO favorite_area (id, member_id, region_code)
+                    VALUES (?, ?, ?)
+                    """, orphanFavoriteAreaId, Long.MAX_VALUE, "9999999999"))
+                    .isInstanceOf(DataIntegrityViolationException.class);
+        } finally {
+            jdbcTemplate.update(
+                    "DELETE FROM favorite_area WHERE id = ?", orphanFavoriteAreaId);
+        }
+    }
+
+    @Test
+    @DisplayName("초기 데이터 적재 중 실패하면 예외를 전파하고 이전 변경을 롤백한다")
+    void propagatesSeedFailureAndRollsBackEarlierChanges() {
+        // Given
+        String rollbackMarker = "rollback-marker";
+        jdbcTemplate.execute("DROP TRIGGER IF EXISTS test_fail_environment_info_insert");
+        jdbcTemplate.execute("""
+                CREATE TRIGGER test_fail_environment_info_insert
+                BEFORE INSERT ON environment_info
+                FOR EACH ROW
+                SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'forced seed failure'
+                """);
+        jdbcTemplate.update(
+                "UPDATE member SET name = ? WHERE id = 2", rollbackMarker);
+
+        try {
+            // When
+            Throwable thrown = catchThrowable(() -> initialDataLoader.run(null));
+            String memberName = jdbcTemplate.queryForObject(
+                    "SELECT name FROM member WHERE id = 2", String.class);
+
+            // Then
+            assertThat(thrown)
+                    .isInstanceOf(DataAccessException.class)
+                    .hasMessageContaining("environment_info");
+            assertThat(memberName).isEqualTo(rollbackMarker);
+        } finally {
+            jdbcTemplate.execute("DROP TRIGGER IF EXISTS test_fail_environment_info_insert");
+            initialDataLoader.run(null);
+        }
     }
 }
