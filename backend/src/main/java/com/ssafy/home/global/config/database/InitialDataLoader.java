@@ -1,5 +1,6 @@
 package com.ssafy.home.global.config.database;
 
+import java.nio.charset.StandardCharsets;
 import javax.sql.DataSource;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class InitialDataLoader implements ApplicationRunner {
         transactionTemplate.executeWithoutResult(status -> {
             ResourceDatabasePopulator populator =
                     new ResourceDatabasePopulator(new ClassPathResource("data.sql"));
+            populator.setSqlScriptEncoding(StandardCharsets.UTF_8.name());
             populator.setContinueOnError(false);
             populator.execute(dataSource);
         });

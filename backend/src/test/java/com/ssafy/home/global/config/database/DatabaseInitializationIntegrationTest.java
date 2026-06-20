@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 })
 class DatabaseInitializationIntegrationTest {
 
+    private static final String ORIGINAL_API_VERSION = System.getProperty("api.version");
+
     static {
         // Docker Engine 29 requires API 1.44 or newer for Testcontainers discovery.
         System.setProperty("api.version", "1.44");
@@ -35,6 +38,19 @@ class DatabaseInitializationIntegrationTest {
     @Container
     static final MySQLContainer<?> MYSQL = new MySQLContainer<>("mysql:8.0")
             .withCommand("--log-bin-trust-function-creators=1");
+
+    @AfterAll
+    static void restoreDockerApiVersion() {
+        restoreApiVersion();
+    }
+
+    private static void restoreApiVersion() {
+        if (ORIGINAL_API_VERSION == null) {
+            System.clearProperty("api.version");
+            return;
+        }
+        System.setProperty("api.version", ORIGINAL_API_VERSION);
+    }
 
     @DynamicPropertySource
     static void configureDataSource(DynamicPropertyRegistry registry) {
