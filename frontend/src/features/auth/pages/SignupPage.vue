@@ -1,3 +1,52 @@
+<script setup>
+import { ref } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
+import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, UserCircle } from 'lucide-vue-next'
+import { membersApi } from '@/api/index.js'
+import '@css/pages/auth.css'
+
+const router = useRouter()
+const name = ref('')
+const email = ref('')
+const password = ref('')
+const showPw = ref(false)
+const loading = ref(false)
+const generalError = ref('')
+const nameError = ref('')
+const emailError = ref('')
+const passwordError = ref('')
+
+function validateName() {
+  if (!name.value.trim()) { nameError.value = '이름을 입력해 주세요'; return false }
+  nameError.value = ''; return true
+}
+function validateEmail() {
+  if (!email.value.trim()) { emailError.value = '이메일을 입력해 주세요'; return false }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { emailError.value = '올바른 이메일 형식이 아닙니다'; return false }
+  emailError.value = ''; return true
+}
+function validatePassword() {
+  if (!password.value) { passwordError.value = '비밀번호를 입력해 주세요'; return false }
+  if (password.value.length < 8) { passwordError.value = '비밀번호는 8자 이상이어야 합니다'; return false }
+  passwordError.value = ''; return true
+}
+
+async function handleSubmit() {
+  const ok = validateName() & validateEmail() & validatePassword()
+  if (!ok) return
+  loading.value = true
+  try {
+    await membersApi.createMember({ email: email.value.trim(), password: password.value, name: name.value.trim() })
+    alert('회원가입이 완료되었습니다. 로그인해 주세요.')
+    router.push('/login')
+  } catch (err) {
+    generalError.value = err.data?.message ?? '회원가입에 실패했습니다'
+  } finally {
+    loading.value = false
+  }
+}
+</script>
+
 <template>
   <div class="auth-page">
     <div class="auth-wrap-md">
@@ -63,51 +112,3 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { useRouter, RouterLink } from 'vue-router'
-import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, UserCircle } from 'lucide-vue-next'
-import { membersApi } from '../api/index.js'
-import '../../css/pages/auth.css'
-
-const router = useRouter()
-const name = ref('')
-const email = ref('')
-const password = ref('')
-const showPw = ref(false)
-const loading = ref(false)
-const generalError = ref('')
-const nameError = ref('')
-const emailError = ref('')
-const passwordError = ref('')
-
-function validateName() {
-  if (!name.value.trim()) { nameError.value = '이름을 입력해 주세요'; return false }
-  nameError.value = ''; return true
-}
-function validateEmail() {
-  if (!email.value.trim()) { emailError.value = '이메일을 입력해 주세요'; return false }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) { emailError.value = '올바른 이메일 형식이 아닙니다'; return false }
-  emailError.value = ''; return true
-}
-function validatePassword() {
-  if (!password.value) { passwordError.value = '비밀번호를 입력해 주세요'; return false }
-  if (password.value.length < 8) { passwordError.value = '비밀번호는 8자 이상이어야 합니다'; return false }
-  passwordError.value = ''; return true
-}
-
-async function handleSubmit() {
-  const ok = validateName() & validateEmail() & validatePassword()
-  if (!ok) return
-  loading.value = true
-  try {
-    await membersApi.createMember({ email: email.value.trim(), password: password.value, name: name.value.trim() })
-    alert('회원가입이 완료되었습니다. 로그인해 주세요.')
-    router.push('/login')
-  } catch (err) {
-    generalError.value = err.data?.message ?? '회원가입에 실패했습니다'
-  } finally {
-    loading.value = false
-  }
-}
-</script>

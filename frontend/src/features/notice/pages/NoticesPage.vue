@@ -1,3 +1,41 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { Search, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { noticesApi } from '@/api/index.js'
+import { formatDate } from '@/utils/date.js'
+
+const router = useRouter()
+const notices = ref([])
+const loading = ref(false)
+const searchQuery = ref('')
+const page = ref(1)
+const totalPages = ref(1)
+
+
+const filtered = computed(() =>
+  notices.value.filter(n => n.title.toLowerCase().includes(searchQuery.value.toLowerCase()))
+)
+
+const pageRange = computed(() => {
+  const start = Math.max(1, page.value - 2)
+  const end = Math.min(totalPages.value, start + 4)
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
+})
+
+async function loadPage(p) {
+  loading.value = true
+  try {
+    const res = await noticesApi.getNotices({ page: p, size: 20 })
+    notices.value = res.content ?? res
+    totalPages.value = res.totalPages ?? 1
+    page.value = p
+  } catch { notices.value = [] } finally { loading.value = false }
+}
+
+onMounted(() => loadPage(1))
+</script>
+
 <template>
   <div class="notices-page">
     <div class="notices-wrap">
@@ -42,44 +80,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Search, FileText, Calendar, ChevronLeft, ChevronRight } from 'lucide-vue-next'
-import { noticesApi } from '../api/index.js'
-import { formatDate } from '../utils/date.js'
-
-const router = useRouter()
-const notices = ref([])
-const loading = ref(false)
-const searchQuery = ref('')
-const page = ref(1)
-const totalPages = ref(1)
-
-
-const filtered = computed(() =>
-  notices.value.filter(n => n.title.toLowerCase().includes(searchQuery.value.toLowerCase()))
-)
-
-const pageRange = computed(() => {
-  const start = Math.max(1, page.value - 2)
-  const end = Math.min(totalPages.value, start + 4)
-  return Array.from({ length: end - start + 1 }, (_, i) => start + i)
-})
-
-async function loadPage(p) {
-  loading.value = true
-  try {
-    const res = await noticesApi.getNotices({ page: p, size: 20 })
-    notices.value = res.content ?? res
-    totalPages.value = res.totalPages ?? 1
-    page.value = p
-  } catch { notices.value = [] } finally { loading.value = false }
-}
-
-onMounted(() => loadPage(1))
-</script>
 
 <style scoped>
 .notices-page { min-height:calc(100vh - 64px); background:#F4F6F9; padding:2rem 1rem; }

@@ -1,42 +1,8 @@
-<template>
-  <div class="commercial-page">
-    <div id="map" style="width:100%;height:calc(100vh - 64px)"></div>
-
-    <!-- Category tabs -->
-    <div id="cat-tabs" style="position:absolute;top:80px;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:10;flex-wrap:wrap;justify-content:center">
-      <button v-for="cat in CATEGORIES" :key="cat.key"
-        class="cat-tab" :class="{ active: activeCategory === cat.key }"
-        :style="activeCategory === cat.key ? `background-color:${cat.color}` : ''"
-        @click="selectCategory(cat.key)">
-        <component :is="cat.icon" :size="14" />
-        {{ cat.label }}
-        <span class="cat-tab-count" :style="activeCategory === cat.key ? 'background:rgba(255,255,255,0.2)' : 'background:rgba(156,163,175,0.4)'">
-          {{ activeCategory === cat.key ? storesData.length : '-' }}
-        </span>
-      </button>
-    </div>
-
-    <!-- Bottom sheet -->
-    <div v-if="selectedShop" id="bottom-sheet" class="bottom-sheet expanded">
-      <div style="padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem">
-        <div id="sheet-icon" :style="`background:${activeCat.color}15;width:2.5rem;height:2.5rem;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0`">
-          <component :is="activeCat.icon" :size="20" :style="`color:${activeCat.color}`" />
-        </div>
-        <div style="flex:1;min-width:0">
-          <h3 style="color:#1A3C6E;font-size:1rem;font-weight:700">{{ selectedShop.bizName }}</h3>
-          <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.125rem">{{ selectedShop.categoryMedium || selectedShop.categoryLarge }}</p>
-        </div>
-        <button @click="selectedShop = null" style="background:none;border:none;cursor:pointer"><X :size="18" /></button>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { UtensilsCrossed, Store, Hospital, BookOpen, LayoutGrid, X } from 'lucide-vue-next'
-import { commercialApi } from '../api/index.js'
-import '../../css/pages/commercial.css'
+import { commercialApi } from '@/api/index.js'
+import '@css/pages/commercial.css'
 
 const CATEGORIES = [
   { key: '', label: '전체', icon: LayoutGrid, color: '#4F46E5' },
@@ -102,3 +68,38 @@ function initMap() {
 
 onMounted(initMap)
 </script>
+
+<template>
+  <div class="commercial-page">
+    <div id="map" style="width:100%;height:calc(100vh - 64px)"></div>
+
+    <!-- Category tabs -->
+    <div id="cat-tabs" style="position:absolute;top:80px;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:10;flex-wrap:wrap;justify-content:center">
+      <button v-for="cat in CATEGORIES" :key="cat.key"
+        class="cat-tab" :class="{ active: activeCategory === cat.key }"
+        :style="activeCategory === cat.key ? `background-color:${cat.color}` : ''"
+        @click="selectCategory(cat.key)">
+        <component :is="cat.icon" :size="14" />
+        {{ cat.label }}
+        <span class="cat-tab-count" :style="activeCategory === cat.key ? 'background:rgba(255,255,255,0.2)' : 'background:rgba(156,163,175,0.4)'">
+          {{ activeCategory === cat.key ? storesData.length : '-' }}
+        </span>
+      </button>
+    </div>
+
+    <!-- Bottom sheet -->
+    <div v-if="selectedShop" id="bottom-sheet" class="bottom-sheet expanded">
+      <div style="padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem">
+        <div id="sheet-icon" :style="`background:${activeCat.color}15;width:2.5rem;height:2.5rem;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0`">
+          <component :is="activeCat.icon" :size="20" :style="`color:${activeCat.color}`" />
+        </div>
+        <div style="flex:1;min-width:0">
+          <h3 style="color:#1A3C6E;font-size:1rem;font-weight:700">{{ selectedShop.bizName }}</h3>
+          <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.125rem">{{ selectedShop.categoryMedium || selectedShop.categoryLarge }}</p>
+        </div>
+        <button @click="selectedShop = null" style="background:none;border:none;cursor:pointer"><X :size="18" /></button>
+      </div>
+    </div>
+  </div>
+</template>
+
