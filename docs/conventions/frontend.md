@@ -50,6 +50,8 @@ function handleSubmit() {}  // event handler
 function fetchMember() {}   // API call
 ```
 
+**CSS `@keyframes`:** Use kebab-case (`fade-scale-in`, not `fadeScaleIn`).
+
 **Path alias:** `@` maps to `src`. Use `@` when the relative path is two or more levels deep.
 
 ## SFC Order
