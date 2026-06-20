@@ -26,7 +26,6 @@ jobs:
           SYNC_ARTIFACT=false
           SYNC_BACKEND=false
           SYNC_FRONTEND=false
-          SYNC_FRONTEND_ADMIN=false
 
           if echo "$CHANGED" | grep -q "^artifact/"; then
             SYNC_ARTIFACT=true
@@ -37,14 +36,10 @@ jobs:
           if echo "$CHANGED" | grep -q "^frontend/"; then
             SYNC_FRONTEND=true
           fi
-          if echo "$CHANGED" | grep -q "^frontend-admin/"; then
-            SYNC_FRONTEND_ADMIN=true
-          fi
 
           echo "sync_artifact=$SYNC_ARTIFACT" >> "$GITHUB_OUTPUT"
           echo "sync_backend=$SYNC_BACKEND" >> "$GITHUB_OUTPUT"
           echo "sync_frontend=$SYNC_FRONTEND" >> "$GITHUB_OUTPUT"
-          echo "sync_frontend_admin=$SYNC_FRONTEND_ADMIN" >> "$GITHUB_OUTPUT"
 
       - name: Sync artifact to GitLab
         if: steps.detect.outputs.sync_artifact == 'true'
@@ -122,33 +117,6 @@ jobs:
 
           if git diff --cached --quiet; then
             echo "No changes to frontend, skipping push"
-          else
-            git commit -m "$COMMIT_MSG"
-            git push -u origin main
-          fi
-
-      - name: Sync frontend-admin to GitLab
-        if: steps.detect.outputs.sync_frontend_admin == 'true'
-        env:
-          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
-        run: |
-          COMMIT_MSG=$(git log -1 --pretty=%B)
-          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
-          COMMIT_EMAIL=$(git log -1 --pretty="%ae")
-
-          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/frontend-admin" /tmp/frontend-admin-gitlab
-
-          find /tmp/frontend-admin-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
-
-          rsync -av --exclude='.git' frontend-admin/ /tmp/frontend-admin-gitlab/
-
-          cd /tmp/frontend-admin-gitlab
-          git config user.name "$COMMIT_AUTHOR"
-          git config user.email "$COMMIT_EMAIL"
-          git add -A
-
-          if git diff --cached --quiet; then
-            echo "No changes to frontend-admin, skipping push"
           else
             git commit -m "$COMMIT_MSG"
             git push -u origin main
