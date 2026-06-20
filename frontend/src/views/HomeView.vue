@@ -112,7 +112,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, ChevronDown, BarChart3, Building2, Landmark, TrendingUp, TrendingDown } from 'lucide-vue-next'
-import { getStats } from '../api/stats.js'
+import { statsApi } from '../api/index.js'
 import '../../css/pages/home.css'
 
 const router = useRouter()
@@ -141,7 +141,7 @@ function formatKoreanManwon(won) {
 
 onMounted(async () => {
   try {
-    stats.value = await getStats()
+    stats.value = await statsApi.getStats()
   } catch {
     // Keep the placeholder stats when the backend is unavailable.
   }
