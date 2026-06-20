@@ -1,4 +1,3 @@
-export { apiClient, request, toApiError } from './client.js'
 export * as authApi from './auth.js'
 export * as membersApi from './members.js'
 export * as housesApi from './houses.js'

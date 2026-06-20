@@ -1,17 +1,17 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function getPlaces() {
-  return request({ method: 'GET', url: '/api/places' })
+export async function getPlaces() {
+  const res = await http.get('/api/places')
+  return res.data
 }
-
-export function createPlace(payload) {
-  return request({ method: 'POST', url: '/api/places', data: payload })
+export async function createPlace(payload) {
+  const res = await http.post('/api/places', payload)
+  return res.data
 }
-
-export function updatePlace(placeId, payload) {
-  return request({ method: 'PUT', url: `/api/places/${placeId}`, data: payload })
+export async function updatePlace(placeId, payload) {
+  const res = await http.put(`/api/places/${placeId}`, payload)
+  return res.data
 }
-
-export function deletePlace(placeId) {
-  return request({ method: 'DELETE', url: `/api/places/${placeId}` })
+export async function deletePlace(placeId) {
+  await http.delete(`/api/places/${placeId}`)
 }

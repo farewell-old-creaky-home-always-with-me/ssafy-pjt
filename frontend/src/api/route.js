@@ -1,5 +1,6 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function getAstarRoute(payload) {
-  return request({ method: 'POST', url: '/api/route/astar', data: payload })
+export async function getAstarRoute(payload) {
+  const res = await http.post('/api/route/astar', payload)
+  return res.data
 }

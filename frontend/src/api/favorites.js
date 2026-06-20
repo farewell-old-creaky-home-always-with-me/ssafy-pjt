@@ -1,13 +1,13 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function getFavorites() {
-  return request({ method: 'GET', url: '/api/favorites' })
+export async function getFavorites() {
+  const res = await http.get('/api/favorites')
+  return res.data
 }
-
-export function createFavorite(payload) {
-  return request({ method: 'POST', url: '/api/favorites', data: payload })
+export async function createFavorite(payload) {
+  const res = await http.post('/api/favorites', payload)
+  return res.data
 }
-
-export function deleteFavorite(favoriteId) {
-  return request({ method: 'DELETE', url: `/api/favorites/${favoriteId}` })
+export async function deleteFavorite(favoriteId) {
+  await http.delete(`/api/favorites/${favoriteId}`)
 }

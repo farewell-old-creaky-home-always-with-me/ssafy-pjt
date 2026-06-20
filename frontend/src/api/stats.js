@@ -1,5 +1,6 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function getStats() {
-  return request({ method: 'GET', url: '/api/stats' })
+export async function getStats() {
+  const res = await http.get('/api/stats')
+  return res.data
 }
