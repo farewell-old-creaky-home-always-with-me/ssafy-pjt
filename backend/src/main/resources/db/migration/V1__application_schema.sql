@@ -1,13 +1,9 @@
--- SSAFY HOME 초기 DDL 스크립트
--- 작성일: 2026-05-15
--- 상태: 완료
-
-SET FOREIGN_KEY_CHECKS = 0;
+-- SSAFY HOME application schema
 
 -- ============================================================
 -- 행정구역 코드 (VWorld 기준)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS region_code (
+CREATE TABLE region_code (
     region_code  VARCHAR(10)  NOT NULL COMMENT '행정구역 코드 (10자리)',
     sido_name    VARCHAR(20)  NOT NULL COMMENT '시도명',
     sigungu_name VARCHAR(30)           COMMENT '시군구명 (시도 단위이면 NULL)',
@@ -21,7 +17,7 @@ CREATE TABLE IF NOT EXISTS region_code (
 -- ============================================================
 -- 주택 단지 (아파트·다세대)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS house (
+CREATE TABLE house (
     id           BIGINT       NOT NULL AUTO_INCREMENT COMMENT '주택 ID',
     region_code  VARCHAR(10)  NOT NULL COMMENT '행정구역 코드',
     apt_name     VARCHAR(100) NOT NULL COMMENT '단지명',
@@ -43,7 +39,7 @@ CREATE TABLE IF NOT EXISTS house (
 -- ============================================================
 -- 주택 거래 이력 (국토교통부 실거래가 데이터)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS house_deal (
+CREATE TABLE house_deal (
     id             BIGINT       NOT NULL AUTO_INCREMENT COMMENT '거래 ID',
     house_id       BIGINT       NOT NULL COMMENT '주택 ID',
     deal_type      VARCHAR(20)  NOT NULL COMMENT '거래 유형: 매매, 전세, 월세',
@@ -69,10 +65,10 @@ CREATE TABLE IF NOT EXISTS house_deal (
 -- ============================================================
 -- Spring Batch 메타데이터 테이블
 -- ============================================================
--- Spring Batch 기본 메타데이터 테이블은 framework 기본 schema-mysql.sql을 사용해 생성한다.
--- 서비스 전용 로그만 아래 batch_collection_log 테이블로 별도 관리한다.
+-- Spring Batch metadata is managed by V2__spring_batch_schema.sql.
+-- This table stores application-specific collection history only.
 
-CREATE TABLE IF NOT EXISTS batch_collection_log (
+CREATE TABLE batch_collection_log (
     id                BIGINT       NOT NULL AUTO_INCREMENT COMMENT '수집 로그 ID',
     job_execution_id  BIGINT       NOT NULL COMMENT 'Spring Batch Job 실행 ID',
     job_name          VARCHAR(100) NOT NULL COMMENT 'Job 이름',
@@ -98,7 +94,7 @@ CREATE TABLE IF NOT EXISTS batch_collection_log (
 -- ============================================================
 -- 회원
 -- ============================================================
-CREATE TABLE IF NOT EXISTS member (
+CREATE TABLE member (
     id         BIGINT       NOT NULL AUTO_INCREMENT COMMENT '회원 ID',
     email      VARCHAR(100) NOT NULL COMMENT '이메일 (로그인 ID)',
     password   VARCHAR(255) NOT NULL COMMENT '비밀번호 (bcrypt 해시)',
@@ -114,7 +110,7 @@ CREATE TABLE IF NOT EXISTS member (
 -- ============================================================
 -- 관심 지역
 -- ============================================================
-CREATE TABLE IF NOT EXISTS favorite_area (
+CREATE TABLE favorite_area (
     id          BIGINT      NOT NULL AUTO_INCREMENT COMMENT '관심 지역 ID',
     member_id   BIGINT      NOT NULL COMMENT '회원 ID',
     region_code VARCHAR(10) NOT NULL COMMENT '행정구역 코드',
@@ -130,7 +126,7 @@ CREATE TABLE IF NOT EXISTS favorite_area (
 -- ============================================================
 -- 회원 장소
 -- ============================================================
-CREATE TABLE IF NOT EXISTS member_place (
+CREATE TABLE member_place (
     id          BIGINT        NOT NULL AUTO_INCREMENT COMMENT '장소 ID',
     member_id   BIGINT        NOT NULL COMMENT '회원 ID',
     place_type  VARCHAR(10)   NOT NULL COMMENT '장소 유형: HOME, WORK, OTHER',
@@ -152,7 +148,7 @@ CREATE TABLE IF NOT EXISTS member_place (
 -- ============================================================
 -- 공지사항
 -- ============================================================
-CREATE TABLE IF NOT EXISTS notice (
+CREATE TABLE notice (
     id         BIGINT       NOT NULL AUTO_INCREMENT COMMENT '공지사항 ID',
     member_id  BIGINT       NOT NULL COMMENT '작성자 회원 ID',
     title      VARCHAR(200) NOT NULL COMMENT '제목',
@@ -169,7 +165,7 @@ CREATE TABLE IF NOT EXISTS notice (
 -- ============================================================
 -- 상권 정보
 -- ============================================================
-CREATE TABLE IF NOT EXISTS commercial_area (
+CREATE TABLE commercial_area (
     id              BIGINT        NOT NULL AUTO_INCREMENT COMMENT '상권 ID',
     biz_name        VARCHAR(100)  NOT NULL COMMENT '상호명',
     category_large  VARCHAR(50)            COMMENT '업종 대분류',
@@ -187,7 +183,7 @@ CREATE TABLE IF NOT EXISTS commercial_area (
 -- ============================================================
 -- 환경 정보
 -- ============================================================
-CREATE TABLE IF NOT EXISTS environment_info (
+CREATE TABLE environment_info (
     id            BIGINT        NOT NULL AUTO_INCREMENT COMMENT '환경 정보 ID',
     item_name     VARCHAR(100)  NOT NULL COMMENT '점검 항목명',
     value         DECIMAL(10,4)          COMMENT '측정 수치',
@@ -205,7 +201,7 @@ CREATE TABLE IF NOT EXISTS environment_info (
 -- ============================================================
 -- 시설물 (A* 그래프 노드 — 지하철역, 학교, 병원, 공원 등)
 -- ============================================================
-CREATE TABLE IF NOT EXISTS facility (
+CREATE TABLE facility (
     facility_id   BIGINT        NOT NULL AUTO_INCREMENT COMMENT '시설물 ID',
     name          VARCHAR(100)  NOT NULL COMMENT '시설물명',
     facility_type VARCHAR(30)   NOT NULL COMMENT '유형: SUBWAY, SCHOOL, HOSPITAL, PARK 등',
@@ -222,7 +218,7 @@ CREATE TABLE IF NOT EXISTS facility (
 -- ============================================================
 -- A* 경로 탐색 요청 결과
 -- ============================================================
-CREATE TABLE IF NOT EXISTS route_request (
+CREATE TABLE route_request (
     route_request_id BIGINT   NOT NULL AUTO_INCREMENT COMMENT '경로 탐색 요청 ID',
     member_id        BIGINT   NOT NULL COMMENT '회원 ID',
     house_id         BIGINT   NOT NULL COMMENT '출발 매물 ID',
@@ -241,7 +237,7 @@ CREATE TABLE IF NOT EXISTS route_request (
 -- ============================================================
 -- A* 경로 좌표 목록
 -- ============================================================
-CREATE TABLE IF NOT EXISTS route_path (
+CREATE TABLE route_path (
     route_path_id    BIGINT        NOT NULL AUTO_INCREMENT COMMENT '경로 좌표 ID',
     route_request_id BIGINT        NOT NULL COMMENT '경로 탐색 요청 ID',
     seq              INT           NOT NULL COMMENT '순서 (0부터)',
@@ -253,5 +249,3 @@ CREATE TABLE IF NOT EXISTS route_path (
     INDEX idx_route_path_request (route_request_id),
     UNIQUE KEY uq_route_path_order (route_request_id, seq)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='A* 경로 좌표 목록';
-
-SET FOREIGN_KEY_CHECKS = 1;
