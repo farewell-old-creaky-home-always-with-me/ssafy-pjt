@@ -1,3 +1,18 @@
+<script setup>
+import { ref } from 'vue'
+import { RouterLink } from 'vue-router'
+import { Home, Mail, CheckCircle2 } from 'lucide-vue-next'
+import '@css/pages/auth.css'
+
+const email = ref('')
+const submitted = ref(false)
+
+function handleSubmit() {
+  if (!email.value.trim()) return
+  submitted.value = true
+}
+</script>
+
 <template>
   <div class="auth-page">
     <div class="auth-wrap-sm">
@@ -32,17 +47,3 @@
   </div>
 </template>
 
-<script setup>
-import { ref } from 'vue'
-import { RouterLink } from 'vue-router'
-import { Home, Mail, CheckCircle2 } from 'lucide-vue-next'
-import '../../css/pages/auth.css'
-
-const email = ref('')
-const submitted = ref(false)
-
-function handleSubmit() {
-  if (!email.value.trim()) return
-  submitted.value = true
-}
-</script>

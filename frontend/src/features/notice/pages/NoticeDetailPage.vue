@@ -1,3 +1,28 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ChevronLeft, FileText, Calendar, AlertCircle } from 'lucide-vue-next'
+import { noticesApi } from '@/api/index.js'
+import { formatDate } from '@/utils/date.js'
+
+const router = useRouter()
+const route = useRoute()
+const notice = ref(null)
+const loading = ref(false)
+const error = ref(null)
+
+onMounted(async () => {
+  loading.value = true
+  try {
+    notice.value = await noticesApi.getNoticeDetail(route.params.id)
+  } catch {
+    error.value = '공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+  } finally {
+    loading.value = false
+  }
+})
+</script>
+
 <template>
   <div class="notices-page">
     <div class="notices-wrap">
@@ -29,31 +54,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { ChevronLeft, FileText, Calendar, AlertCircle } from 'lucide-vue-next'
-import { noticesApi } from '../api/index.js'
-import { formatDate } from '../utils/date.js'
-
-const router = useRouter()
-const route = useRoute()
-const notice = ref(null)
-const loading = ref(false)
-const error = ref(null)
-
-onMounted(async () => {
-  loading.value = true
-  try {
-    notice.value = await noticesApi.getNoticeDetail(route.params.id)
-  } catch {
-    error.value = '공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
-  } finally {
-    loading.value = false
-  }
-})
-</script>
 
 <style scoped>
 .notices-page { min-height:calc(100vh - 64px); background:#F4F6F9; padding:2rem 1rem; }

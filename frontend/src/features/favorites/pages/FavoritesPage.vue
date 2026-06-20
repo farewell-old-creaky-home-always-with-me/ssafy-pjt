@@ -1,3 +1,60 @@
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { Plus, X, Search, Heart, MapPin, Calendar, Trash2, AlertTriangle, Loader2 } from 'lucide-vue-next'
+import { useFavoritesStore } from '@/stores/favoritesStore.js'
+import { formatDate } from '@/utils/date.js'
+import '@css/pages/favorites.css'
+
+const favoritesStore = useFavoritesStore()
+
+const showAdd = ref(false)
+const newRegionCode = ref('')
+const adding = ref(false)
+const searchQuery = ref('')
+const pendingDelete = ref(null)
+const deleting = ref(false)
+
+const filtered = computed(() => {
+  const q = searchQuery.value.toLowerCase()
+  return favoritesStore.items.filter(f =>
+    !q || ((f.dongName ?? '') + (f.sigunguName ?? '') + (f.sidoName ?? '')).toLowerCase().includes(q)
+  )
+})
+
+
+async function handleAdd() {
+  if (!newRegionCode.value.trim() || newRegionCode.value.length !== 10) {
+    alert('지역코드는 10자리여야 합니다')
+    return
+  }
+  adding.value = true
+  try {
+    await favoritesStore.addFavorite(newRegionCode.value.trim())
+    newRegionCode.value = ''
+    showAdd.value = false
+  } catch (err) {
+    alert(err.data?.message ?? '추가에 실패했습니다')
+  } finally {
+    adding.value = false
+  }
+}
+
+function startDelete(item) { pendingDelete.value = item }
+
+async function confirmDelete() {
+  if (!pendingDelete.value) return
+  deleting.value = true
+  try {
+    await favoritesStore.removeFavorite(pendingDelete.value.favoriteId)
+  } finally {
+    deleting.value = false
+    pendingDelete.value = null
+  }
+}
+
+onMounted(() => favoritesStore.fetchFavorites())
+</script>
+
 <template>
   <div class="favorites-page">
     <div class="favorites-wrap">
@@ -92,59 +149,3 @@
   </div>
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue'
-import { Plus, X, Search, Heart, MapPin, Calendar, Trash2, AlertTriangle, Loader2 } from 'lucide-vue-next'
-import { useFavoritesStore } from '../stores/favoritesStore.js'
-import { formatDate } from '../utils/date.js'
-import '../../css/pages/favorites.css'
-
-const favoritesStore = useFavoritesStore()
-
-const showAdd = ref(false)
-const newRegionCode = ref('')
-const adding = ref(false)
-const searchQuery = ref('')
-const pendingDelete = ref(null)
-const deleting = ref(false)
-
-const filtered = computed(() => {
-  const q = searchQuery.value.toLowerCase()
-  return favoritesStore.items.filter(f =>
-    !q || ((f.dongName ?? '') + (f.sigunguName ?? '') + (f.sidoName ?? '')).toLowerCase().includes(q)
-  )
-})
-
-
-async function handleAdd() {
-  if (!newRegionCode.value.trim() || newRegionCode.value.length !== 10) {
-    alert('지역코드는 10자리여야 합니다')
-    return
-  }
-  adding.value = true
-  try {
-    await favoritesStore.addFavorite(newRegionCode.value.trim())
-    newRegionCode.value = ''
-    showAdd.value = false
-  } catch (err) {
-    alert(err.data?.message ?? '추가에 실패했습니다')
-  } finally {
-    adding.value = false
-  }
-}
-
-function startDelete(item) { pendingDelete.value = item }
-
-async function confirmDelete() {
-  if (!pendingDelete.value) return
-  deleting.value = true
-  try {
-    await favoritesStore.removeFavorite(pendingDelete.value.favoriteId)
-  } finally {
-    deleting.value = false
-    pendingDelete.value = null
-  }
-}
-
-onMounted(() => favoritesStore.fetchFavorites())
-</script>

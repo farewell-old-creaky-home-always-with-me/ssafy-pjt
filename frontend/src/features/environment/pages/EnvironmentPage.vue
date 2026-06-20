@@ -1,62 +1,8 @@
-<template>
-  <div class="env-page">
-    <div class="env-header">
-      <div class="container" style="padding-top:0;padding-bottom:0">
-        <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">환경 정보</h1>
-        <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">지도 위에서 환경 데이터 레이어를 확인하세요</p>
-      </div>
-    </div>
-
-    <div class="env-map-area">
-      <div id="map" class="env-map"></div>
-
-      <div v-if="!hasActiveLayer" class="env-empty">
-        <div style="width:5rem;height:5rem;border-radius:50%;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;margin-bottom:1rem">
-          <MapPin :size="40" style="color:#2D9CDB" />
-        </div>
-        <p style="color:rgba(26,60,110,0.8);font-size:0.875rem;font-weight:600;background:rgba(255,255,255,0.8);padding:4px 8px;border-radius:4px">
-          {{ loading ? '데이터를 불러오는 중...' : '좌측 패널에서 레이어를 활성화해 주세요' }}
-        </p>
-      </div>
-
-      <div class="env-legend">
-        <div class="env-legend-header">
-          <h3>데이터 레이어</h3>
-          <span class="env-active-count">{{ activeCount }}/3 활성</span>
-        </div>
-        <div style="padding:0.75rem;display:flex;flex-direction:column;gap:0.5rem">
-          <button v-for="layer in LAYERS" :key="layer.key"
-            class="env-layer-btn" :class="{ on: active[layer.key] }"
-            @click="toggleLayer(layer.key)">
-            <div class="env-layer-icon" :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'}`">
-              <component :is="layer.icon" :size="18" :style="`color:${active[layer.key] ? layer.color : '#aaa'}`" />
-            </div>
-            <div style="flex:1;min-width:0">
-              <div class="env-layer-label">
-                {{ layer.label }}
-                <span class="env-layer-count" :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'};color:${active[layer.key] ? layer.color : '#aaa'}`">
-                  {{ layerData[layer.key].length }}
-                </span>
-              </div>
-              <p class="env-layer-desc">{{ layer.desc }}</p>
-            </div>
-            <component :is="active[layer.key] ? Eye : EyeOff" :size="16" :style="`color:${active[layer.key] ? layer.color : '#d1d5db'}`" />
-          </button>
-        </div>
-        <div class="env-legend-footer">
-          <Info :size="14" />
-          데이터 출처: 백엔드 환경 API
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { TreePine, Droplets, Wind, MapPin, Eye, EyeOff, Info } from 'lucide-vue-next'
-import { environmentApi } from '../api/index.js'
-import { escapeHtml } from '../utils/html.js'
+import { environmentApi } from '@/api/index.js'
+import { escapeHtml } from '@/utils/html.js'
 
 const LAYERS = [
   { key: 'green', label: '공원/녹지', icon: TreePine, color: '#27AE60', desc: '녹지 환경 데이터', keywords: ['공원', '녹지', '수목'] },
@@ -129,6 +75,60 @@ function initMap() {
 
 onMounted(initMap)
 </script>
+
+<template>
+  <div class="env-page">
+    <div class="env-header">
+      <div class="container" style="padding-top:0;padding-bottom:0">
+        <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">환경 정보</h1>
+        <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">지도 위에서 환경 데이터 레이어를 확인하세요</p>
+      </div>
+    </div>
+
+    <div class="env-map-area">
+      <div id="map" class="env-map"></div>
+
+      <div v-if="!hasActiveLayer" class="env-empty">
+        <div style="width:5rem;height:5rem;border-radius:50%;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;margin-bottom:1rem">
+          <MapPin :size="40" style="color:#2D9CDB" />
+        </div>
+        <p style="color:rgba(26,60,110,0.8);font-size:0.875rem;font-weight:600;background:rgba(255,255,255,0.8);padding:4px 8px;border-radius:4px">
+          {{ loading ? '데이터를 불러오는 중...' : '좌측 패널에서 레이어를 활성화해 주세요' }}
+        </p>
+      </div>
+
+      <div class="env-legend">
+        <div class="env-legend-header">
+          <h3>데이터 레이어</h3>
+          <span class="env-active-count">{{ activeCount }}/3 활성</span>
+        </div>
+        <div style="padding:0.75rem;display:flex;flex-direction:column;gap:0.5rem">
+          <button v-for="layer in LAYERS" :key="layer.key"
+            class="env-layer-btn" :class="{ on: active[layer.key] }"
+            @click="toggleLayer(layer.key)">
+            <div class="env-layer-icon" :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'}`">
+              <component :is="layer.icon" :size="18" :style="`color:${active[layer.key] ? layer.color : '#aaa'}`" />
+            </div>
+            <div style="flex:1;min-width:0">
+              <div class="env-layer-label">
+                {{ layer.label }}
+                <span class="env-layer-count" :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'};color:${active[layer.key] ? layer.color : '#aaa'}`">
+                  {{ layerData[layer.key].length }}
+                </span>
+              </div>
+              <p class="env-layer-desc">{{ layer.desc }}</p>
+            </div>
+            <component :is="active[layer.key] ? Eye : EyeOff" :size="16" :style="`color:${active[layer.key] ? layer.color : '#d1d5db'}`" />
+          </button>
+        </div>
+        <div class="env-legend-footer">
+          <Info :size="14" />
+          데이터 출처: 백엔드 환경 API
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style scoped>
 .env-page { min-height: calc(100vh - 64px); background: #F4F6F9; display: flex; flex-direction: column; }

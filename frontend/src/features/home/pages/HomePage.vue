@@ -1,3 +1,43 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { Search, ChevronDown, BarChart3, Building2, Landmark, TrendingUp, TrendingDown } from 'lucide-vue-next'
+import { statsApi } from '@/api/index.js'
+import '@css/pages/home.css'
+
+const router = useRouter()
+const heroInput = ref('')
+const heroTxType = ref('apt-sale')
+const searchFocused = ref(false)
+
+const stats = ref({
+  todayDealCount: null,
+  todayDealCountChange: null,
+  avgSalePrice: null,
+  avgSalePriceChange: null,
+  avgLeasePrice: null,
+  avgLeasePriceChange: null,
+})
+
+function formatKoreanManwon(won) {
+  if (won == null) return '-'
+  const manwon = Math.round(won / 10000)
+  const eok = Math.floor(manwon / 10000)
+  const rest = manwon % 10000
+  if (eok === 0) return rest.toLocaleString()
+  if (rest === 0) return manwon.toLocaleString()
+  return eok + '억 ' + rest.toLocaleString()
+}
+
+onMounted(async () => {
+  try {
+    stats.value = await statsApi.getStats()
+  } catch {
+    // Keep the placeholder stats when the backend is unavailable.
+  }
+})
+</script>
+
 <template>
   <section class="hero">
     <div class="hero-bg" style="background-image:url('https://images.unsplash.com/photo-1768006241304-6b833ee11611?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxTZW91bCUyMGNpdHlzY2FwZSUyMGFwYXJ0bWVudCUyMGJ1aWxkaW5ncyUyMHNreWxpbmV8ZW58MXx8fHwxNzcyNzY0NTQ2fDA&ixlib=rb-4.1.0&q=80&w=1080')"></div>
@@ -108,42 +148,3 @@
   </section>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { Search, ChevronDown, BarChart3, Building2, Landmark, TrendingUp, TrendingDown } from 'lucide-vue-next'
-import { statsApi } from '../api/index.js'
-import '../../css/pages/home.css'
-
-const router = useRouter()
-const heroInput = ref('')
-const heroTxType = ref('apt-sale')
-const searchFocused = ref(false)
-
-const stats = ref({
-  todayDealCount: null,
-  todayDealCountChange: null,
-  avgSalePrice: null,
-  avgSalePriceChange: null,
-  avgLeasePrice: null,
-  avgLeasePriceChange: null,
-})
-
-function formatKoreanManwon(won) {
-  if (won == null) return '-'
-  const manwon = Math.round(won / 10000)
-  const eok = Math.floor(manwon / 10000)
-  const rest = manwon % 10000
-  if (eok === 0) return rest.toLocaleString()
-  if (rest === 0) return manwon.toLocaleString()
-  return eok + '억 ' + rest.toLocaleString()
-}
-
-onMounted(async () => {
-  try {
-    stats.value = await statsApi.getStats()
-  } catch {
-    // Keep the placeholder stats when the backend is unavailable.
-  }
-})
-</script>

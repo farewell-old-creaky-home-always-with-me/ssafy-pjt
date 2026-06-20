@@ -1,3 +1,67 @@
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2 } from 'lucide-vue-next'
+import { membersApi } from '@/api/index.js'
+import { useAuthStore } from '@/stores/authStore.js'
+import '@css/pages/profile.css'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const profile = ref(null)
+const profileError = ref(null)
+const editMode = ref(false)
+const editName = ref('')
+const editPassword = ref('')
+const saving = ref(false)
+const showDeleteModal = ref(false)
+const deleting = ref(false)
+
+onMounted(async () => {
+  try {
+    profile.value = await membersApi.getMyMember()
+  } catch {
+    profileError.value = '프로필 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
+  }
+})
+
+function startEdit() {
+  editName.value = profile.value.name
+  editPassword.value = ''
+  editMode.value = true
+}
+
+async function handleUpdate() {
+  if (!editName.value.trim() || editPassword.value.length < 8) return
+  saving.value = true
+  try {
+    await membersApi.updateMyMember({ name: editName.value.trim(), password: editPassword.value })
+    profile.value = await membersApi.getMyMember()
+    authStore.patchUser({ name: profile.value.name })
+    editMode.value = false
+  } catch (err) {
+    alert(err.data?.message ?? '저장에 실패했습니다')
+  } finally {
+    saving.value = false
+  }
+}
+
+async function handleDelete() {
+  deleting.value = true
+  try {
+    await membersApi.deleteMyMember()
+    await authStore.logout()
+    router.push('/login')
+  } catch (err) {
+    alert(err.data?.message ?? '탈퇴에 실패했습니다')
+  } finally {
+    deleting.value = false
+    showDeleteModal.value = false
+  }
+}
+</script>
+
 <template>
   <div class="profile-page">
     <div v-if="profileError" style="max-width:40rem;margin:2rem auto;display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:0.75rem;color:#DC2626;font-size:0.875rem">
@@ -91,66 +155,3 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2 } from 'lucide-vue-next'
-import { membersApi } from '../api/index.js'
-import { useAuthStore } from '../stores/authStore.js'
-import '../../css/pages/profile.css'
-
-const router = useRouter()
-const authStore = useAuthStore()
-
-const profile = ref(null)
-const profileError = ref(null)
-const editMode = ref(false)
-const editName = ref('')
-const editPassword = ref('')
-const saving = ref(false)
-const showDeleteModal = ref(false)
-const deleting = ref(false)
-
-onMounted(async () => {
-  try {
-    profile.value = await membersApi.getMyMember()
-  } catch {
-    profileError.value = '프로필 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
-  }
-})
-
-function startEdit() {
-  editName.value = profile.value.name
-  editPassword.value = ''
-  editMode.value = true
-}
-
-async function handleUpdate() {
-  if (!editName.value.trim() || editPassword.value.length < 8) return
-  saving.value = true
-  try {
-    await membersApi.updateMyMember({ name: editName.value.trim(), password: editPassword.value })
-    profile.value = await membersApi.getMyMember()
-    authStore.patchUser({ name: profile.value.name })
-    editMode.value = false
-  } catch (err) {
-    alert(err.data?.message ?? '저장에 실패했습니다')
-  } finally {
-    saving.value = false
-  }
-}
-
-async function handleDelete() {
-  deleting.value = true
-  try {
-    await membersApi.deleteMyMember()
-    await authStore.logout()
-    router.push('/login')
-  } catch (err) {
-    alert(err.data?.message ?? '탈퇴에 실패했습니다')
-  } finally {
-    deleting.value = false
-    showDeleteModal.value = false
-  }
-}
-</script>

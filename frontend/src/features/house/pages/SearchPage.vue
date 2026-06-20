@@ -1,141 +1,10 @@
-<template>
-  <div class="search-page">
-    <div class="search-layout">
-      <!-- Filter Sidebar -->
-      <aside class="filter-sidebar" :class="{ 'sidebar-hidden': !sidebarOpen }" id="filter-sidebar">
-        <div class="filter-header">
-          <h2>필터</h2>
-          <button class="filter-close" @click="sidebarOpen = false"><X :size="16" /></button>
-        </div>
-        <div class="filter-body">
-          <div class="filter-group">
-            <label class="filter-label">법정동</label>
-            <select v-model="filters.dong" class="filter-select" id="filter-dong">
-              <option value="">전체</option>
-              <option v-for="d in dongList" :key="d" :value="d">{{ d }}</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label class="filter-label">건물유형</label>
-            <div class="toggle-group">
-              <button class="toggle-btn" :class="{ 'active-blue': filters.buildingType === '아파트' }" @click="filters.buildingType = '아파트'">아파트</button>
-              <button class="toggle-btn" :class="{ 'active-blue': filters.buildingType === '다세대' }" @click="filters.buildingType = '다세대'">다세대</button>
-            </div>
-          </div>
-          <div class="filter-group">
-            <label class="filter-label">거래유형</label>
-            <div class="toggle-group">
-              <button class="toggle-btn" :class="{ 'active-navy': filters.transactionType === '매매' }" @click="filters.transactionType = '매매'">매매</button>
-              <button class="toggle-btn" :class="{ 'active-navy': filters.transactionType === '전월세' }" @click="filters.transactionType = '전월세'">전월세</button>
-            </div>
-          </div>
-          <div class="filter-group">
-            <label class="filter-label">건축연도</label>
-            <div style="display:flex;gap:0.5rem;align-items:center">
-              <input v-model.number="filters.yearStart" type="number" class="filter-input" style="width:5rem" />
-              <span style="color:#9ca3af">~</span>
-              <input v-model.number="filters.yearEnd" type="number" class="filter-input" style="width:5rem" />
-            </div>
-          </div>
-          <div style="display:flex;gap:0.5rem;margin-top:1rem">
-            <button class="btn btn-primary btn-full btn-sm" @click="applyFilter">적용</button>
-            <button class="btn btn-ghost btn-full btn-sm" @click="resetFilter">초기화</button>
-          </div>
-        </div>
-      </aside>
-
-      <!-- Main Content -->
-      <main class="search-main">
-        <div class="search-top-bar">
-          <button class="filter-toggle-btn" @click="sidebarOpen = !sidebarOpen"><SlidersHorizontal :size="16" /> 필터</button>
-          <span class="result-count">총 <strong id="result-count">{{ filteredData.length }}</strong>건</span>
-          <span class="result-range">{{ resultRange }}</span>
-        </div>
-
-        <div class="map-wrap">
-          <div id="map" style="width:100%;height:300px"></div>
-        </div>
-
-        <table class="result-table">
-          <thead>
-            <tr>
-              <th @click="setSort('name')">건물명 <ChevronsUpDown v-if="sortKey !== 'name'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
-              <th @click="setSort('area')">면적(㎡) <ChevronsUpDown v-if="sortKey !== 'area'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
-              <th @click="setSort('floor')">층 <ChevronsUpDown v-if="sortKey !== 'floor'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
-              <th @click="setSort('price')">가격 <ChevronsUpDown v-if="sortKey !== 'price'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
-              <th @click="setSort('date')">거래일 <ChevronsUpDown v-if="sortKey !== 'date'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
-            </tr>
-          </thead>
-          <tbody id="result-tbody">
-            <tr v-if="pageData.length === 0">
-              <td colspan="5" style="text-align:center;padding:3rem;color:#9ca3af">
-                {{ loadError ? '데이터를 불러오는 중 오류가 발생했습니다. 콘솔을 확인하세요.' : '검색 결과가 없습니다.' }}
-              </td>
-            </tr>
-            <tr v-for="item in pageData" :key="item.id"
-              :class="{ selected: selectedId === item.id }"
-              @click="openModal(item)">
-              <td style="font-weight:500;color:#1A3C6E">{{ item.name }}</td>
-              <td>{{ item.area.toFixed(2) }}</td>
-              <td>{{ item.floor }}층</td>
-              <td style="font-weight:600;color:#1A3C6E">{{ item.price }}</td>
-              <td style="color:#9ca3af">{{ item.date }}</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <!-- Pagination -->
-        <div class="pagination" id="pagination">
-          <button class="page-btn" :disabled="currentPage === 1" @click="goPage(1)"><ChevronsLeft :size="14" /></button>
-          <button class="page-btn" :disabled="currentPage === 1" @click="goPage(currentPage - 1)"><ChevronLeft :size="14" /></button>
-          <button v-for="p in pageRange" :key="p" class="page-btn" :class="{ active: p === currentPage }" @click="goPage(p)">{{ p }}</button>
-          <button class="page-btn" :disabled="currentPage === totalPages" @click="goPage(currentPage + 1)"><ChevronRight :size="14" /></button>
-          <button class="page-btn" :disabled="currentPage === totalPages" @click="goPage(totalPages)"><ChevronsRight :size="14" /></button>
-        </div>
-      </main>
-    </div>
-
-    <!-- Detail Modal -->
-    <div v-if="modalItem" class="modal-overlay visible" @click.self="closeModal">
-      <div class="detail-modal-box">
-        <div class="modal-header">
-          <div>
-            <h2 class="modal-title">{{ modalItem.name }}</h2>
-            <p class="modal-subtitle">{{ modalItem.dong }} {{ modalItem.jibun }}</p>
-          </div>
-          <button class="modal-close-btn" @click="closeModal"><X :size="20" /></button>
-        </div>
-        <img :src="aptImages[modalItem.id % aptImages.length]" class="modal-img" :alt="modalItem.name" />
-        <div class="modal-price-row">
-          <span class="modal-price">{{ modalItem.price }}</span>
-          <span class="modal-date">거래일: {{ modalItem.date }}</span>
-        </div>
-        <div class="modal-info-grid">
-          <div class="info-item" v-for="inf in modalInfoItems" :key="inf.label">
-            <div class="info-item-icon"><component :is="inf.icon" :size="16" /></div>
-            <div>
-              <p class="info-item-label">{{ inf.label }}</p>
-              <p class="info-item-value">{{ inf.value }}</p>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-sm" :style="favBtnStyle" @click="toggleFavorite">
-            <Heart :size="16" /> {{ isFavItem ? '관심지역 해제' : '관심지역 추가' }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { X, SlidersHorizontal, ChevronsUpDown, ChevronUp, ChevronDown, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight, Heart, Building2, Handshake, Calendar, MapPin, Hash, Landmark, Maximize2, Layers } from 'lucide-vue-next'
-import { useFavoritesStore } from '../stores/favoritesStore.js'
-import { useAuthStore } from '../stores/authStore.js'
-import '../../css/pages/search.css'
+import { useFavoritesStore } from '@/stores/favoritesStore.js'
+import { useAuthStore } from '@/stores/authStore.js'
+import '@css/pages/search.css'
 
 const route = useRoute()
 const favoritesStore = useFavoritesStore()
@@ -337,3 +206,134 @@ onMounted(async () => {
   if (type && TYPE_MAP[type]) Object.assign(filters.value, TYPE_MAP[type])
 })
 </script>
+
+<template>
+  <div class="search-page">
+    <div class="search-layout">
+      <!-- Filter Sidebar -->
+      <aside class="filter-sidebar" :class="{ 'sidebar-hidden': !sidebarOpen }" id="filter-sidebar">
+        <div class="filter-header">
+          <h2>필터</h2>
+          <button class="filter-close" @click="sidebarOpen = false"><X :size="16" /></button>
+        </div>
+        <div class="filter-body">
+          <div class="filter-group">
+            <label class="filter-label">법정동</label>
+            <select v-model="filters.dong" class="filter-select" id="filter-dong">
+              <option value="">전체</option>
+              <option v-for="d in dongList" :key="d" :value="d">{{ d }}</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">건물유형</label>
+            <div class="toggle-group">
+              <button class="toggle-btn" :class="{ 'active-blue': filters.buildingType === '아파트' }" @click="filters.buildingType = '아파트'">아파트</button>
+              <button class="toggle-btn" :class="{ 'active-blue': filters.buildingType === '다세대' }" @click="filters.buildingType = '다세대'">다세대</button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">거래유형</label>
+            <div class="toggle-group">
+              <button class="toggle-btn" :class="{ 'active-navy': filters.transactionType === '매매' }" @click="filters.transactionType = '매매'">매매</button>
+              <button class="toggle-btn" :class="{ 'active-navy': filters.transactionType === '전월세' }" @click="filters.transactionType = '전월세'">전월세</button>
+            </div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">건축연도</label>
+            <div style="display:flex;gap:0.5rem;align-items:center">
+              <input v-model.number="filters.yearStart" type="number" class="filter-input" style="width:5rem" />
+              <span style="color:#9ca3af">~</span>
+              <input v-model.number="filters.yearEnd" type="number" class="filter-input" style="width:5rem" />
+            </div>
+          </div>
+          <div style="display:flex;gap:0.5rem;margin-top:1rem">
+            <button class="btn btn-primary btn-full btn-sm" @click="applyFilter">적용</button>
+            <button class="btn btn-ghost btn-full btn-sm" @click="resetFilter">초기화</button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="search-main">
+        <div class="search-top-bar">
+          <button class="filter-toggle-btn" @click="sidebarOpen = !sidebarOpen"><SlidersHorizontal :size="16" /> 필터</button>
+          <span class="result-count">총 <strong id="result-count">{{ filteredData.length }}</strong>건</span>
+          <span class="result-range">{{ resultRange }}</span>
+        </div>
+
+        <div class="map-wrap">
+          <div id="map" style="width:100%;height:300px"></div>
+        </div>
+
+        <table class="result-table">
+          <thead>
+            <tr>
+              <th @click="setSort('name')">건물명 <ChevronsUpDown v-if="sortKey !== 'name'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
+              <th @click="setSort('area')">면적(㎡) <ChevronsUpDown v-if="sortKey !== 'area'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
+              <th @click="setSort('floor')">층 <ChevronsUpDown v-if="sortKey !== 'floor'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
+              <th @click="setSort('price')">가격 <ChevronsUpDown v-if="sortKey !== 'price'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
+              <th @click="setSort('date')">거래일 <ChevronsUpDown v-if="sortKey !== 'date'" :size="14" /><ChevronUp v-else-if="sortDir === 'asc'" :size="14" /><ChevronDown v-else :size="14" /></th>
+            </tr>
+          </thead>
+          <tbody id="result-tbody">
+            <tr v-if="pageData.length === 0">
+              <td colspan="5" style="text-align:center;padding:3rem;color:#9ca3af">
+                {{ loadError ? '데이터를 불러오는 중 오류가 발생했습니다. 콘솔을 확인하세요.' : '검색 결과가 없습니다.' }}
+              </td>
+            </tr>
+            <tr v-for="item in pageData" :key="item.id"
+              :class="{ selected: selectedId === item.id }"
+              @click="openModal(item)">
+              <td style="font-weight:500;color:#1A3C6E">{{ item.name }}</td>
+              <td>{{ item.area.toFixed(2) }}</td>
+              <td>{{ item.floor }}층</td>
+              <td style="font-weight:600;color:#1A3C6E">{{ item.price }}</td>
+              <td style="color:#9ca3af">{{ item.date }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination">
+          <button class="page-btn" :disabled="currentPage === 1" @click="goPage(1)"><ChevronsLeft :size="14" /></button>
+          <button class="page-btn" :disabled="currentPage === 1" @click="goPage(currentPage - 1)"><ChevronLeft :size="14" /></button>
+          <button v-for="p in pageRange" :key="p" class="page-btn" :class="{ active: p === currentPage }" @click="goPage(p)">{{ p }}</button>
+          <button class="page-btn" :disabled="currentPage === totalPages" @click="goPage(currentPage + 1)"><ChevronRight :size="14" /></button>
+          <button class="page-btn" :disabled="currentPage === totalPages" @click="goPage(totalPages)"><ChevronsRight :size="14" /></button>
+        </div>
+      </main>
+    </div>
+
+    <!-- Detail Modal -->
+    <div v-if="modalItem" class="modal-overlay visible" @click.self="closeModal">
+      <div class="detail-modal-box">
+        <div class="modal-header">
+          <div>
+            <h2 class="modal-title">{{ modalItem.name }}</h2>
+            <p class="modal-subtitle">{{ modalItem.dong }} {{ modalItem.jibun }}</p>
+          </div>
+          <button class="modal-close-btn" @click="closeModal"><X :size="20" /></button>
+        </div>
+        <img :src="aptImages[modalItem.id % aptImages.length]" class="modal-img" :alt="modalItem.name" />
+        <div class="modal-price-row">
+          <span class="modal-price">{{ modalItem.price }}</span>
+          <span class="modal-date">거래일: {{ modalItem.date }}</span>
+        </div>
+        <div class="modal-info-grid">
+          <div class="info-item" v-for="inf in modalInfoItems" :key="inf.label">
+            <div class="info-item-icon"><component :is="inf.icon" :size="16" /></div>
+            <div>
+              <p class="info-item-label">{{ inf.label }}</p>
+              <p class="info-item-value">{{ inf.value }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-sm" :style="favBtnStyle" @click="toggleFavorite">
+            <Heart :size="16" /> {{ isFavItem ? '관심지역 해제' : '관심지역 추가' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
