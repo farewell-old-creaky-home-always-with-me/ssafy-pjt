@@ -1,0 +1,37 @@
+html {
+  font-size: var(--font-size);
+  font-family: 'Noto Sans KR', sans-serif;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+h1 { font-size: 1.5rem; font-weight: 500; line-height: 1.5; }
+h2 { font-size: 1.25rem; font-weight: 500; line-height: 1.5; }
+h3 { font-size: 1.125rem; font-weight: 500; line-height: 1.5; }
+h4 { font-size: 1rem; font-weight: 500; line-height: 1.5; }
+label { font-size: 1rem; font-weight: 500; line-height: 1.5; }
+button { font-size: 1rem; font-weight: 500; line-height: 1.5; }
+input { font-size: 1rem; font-weight: 400; line-height: 1.5; }
+
+a { text-decoration: none; }
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+@keyframes fadeScaleIn {
+  from { opacity: 0; transform: scale(0.95) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.animate-spin { animation: spin 1s linear infinite; }
+.animate-pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
