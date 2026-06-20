@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { favoritesApi } from '../api/index.js'
-import { useAuthStore } from './auth.js'
+import { useAuthStore } from './authStore.js'
 
 export const useFavoritesStore = defineStore('favorites', () => {
   const items = ref([]) // [{ favoriteId, regionCode, sidoName, sigunguName, dongName, createdAt }]

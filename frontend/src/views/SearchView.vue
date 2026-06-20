@@ -133,8 +133,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { X, SlidersHorizontal, ChevronsUpDown, ChevronUp, ChevronDown, ChevronsLeft, ChevronsRight, ChevronLeft, ChevronRight, Heart, Building2, Handshake, Calendar, MapPin, Hash, Landmark, Maximize2, Layers } from 'lucide-vue-next'
-import { useFavoritesStore } from '../stores/favorites.js'
-import { useAuthStore } from '../stores/auth.js'
+import { useFavoritesStore } from '../stores/favoritesStore.js'
+import { useAuthStore } from '../stores/authStore.js'
 import '../../css/pages/search.css'
 
 const route = useRoute()

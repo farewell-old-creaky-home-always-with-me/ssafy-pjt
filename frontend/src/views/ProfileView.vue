@@ -96,7 +96,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2 } from 'lucide-vue-next'
 import { membersApi } from '../api/index.js'
-import { useAuthStore } from '../stores/auth.js'
+import { useAuthStore } from '../stores/authStore.js'
 import '../../css/pages/profile.css'
 
 const router = useRouter()
