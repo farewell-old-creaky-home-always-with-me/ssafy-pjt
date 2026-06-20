@@ -1,5 +1,6 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function getEnvironment(params) {
-  return request({ method: 'GET', url: '/api/environment', params })
+export async function getEnvironment(params) {
+  const res = await http.get('/api/environment', { params })
+  return res.data
 }

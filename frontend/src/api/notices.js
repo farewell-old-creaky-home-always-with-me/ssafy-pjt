@@ -1,21 +1,21 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function getNotices(params) {
-  return request({ method: 'GET', url: '/api/notices', params })
+export async function getNotices(params) {
+  const res = await http.get('/api/notices', { params })
+  return res.data
 }
-
-export function getNoticeDetail(noticeId) {
-  return request({ method: 'GET', url: `/api/notices/${noticeId}` })
+export async function getNoticeDetail(noticeId) {
+  const res = await http.get(`/api/notices/${noticeId}`)
+  return res.data
 }
-
-export function createNotice(payload) {
-  return request({ method: 'POST', url: '/api/notices', data: payload })
+export async function createNotice(payload) {
+  const res = await http.post('/api/notices', payload)
+  return res.data
 }
-
-export function updateNotice(noticeId, payload) {
-  return request({ method: 'PUT', url: `/api/notices/${noticeId}`, data: payload })
+export async function updateNotice(noticeId, payload) {
+  const res = await http.put(`/api/notices/${noticeId}`, payload)
+  return res.data
 }
-
-export function deleteNotice(noticeId) {
-  return request({ method: 'DELETE', url: `/api/notices/${noticeId}` })
+export async function deleteNotice(noticeId) {
+  await http.delete(`/api/notices/${noticeId}`)
 }

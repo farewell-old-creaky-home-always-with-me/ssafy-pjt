@@ -1,17 +1,17 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function createMember(payload) {
-  return request({ method: 'POST', url: '/api/members', data: payload })
+export async function createMember(payload) {
+  const res = await http.post('/api/members', payload)
+  return res.data
 }
-
-export function getMyMember() {
-  return request({ method: 'GET', url: '/api/members/me' })
+export async function getMyMember() {
+  const res = await http.get('/api/members/me')
+  return res.data
 }
-
-export function updateMyMember(payload) {
-  return request({ method: 'PUT', url: '/api/members/me', data: payload })
+export async function updateMyMember(payload) {
+  const res = await http.put('/api/members/me', payload)
+  return res.data
 }
-
-export function deleteMyMember() {
-  return request({ method: 'DELETE', url: '/api/members/me' })
+export async function deleteMyMember() {
+  await http.delete('/api/members/me')
 }

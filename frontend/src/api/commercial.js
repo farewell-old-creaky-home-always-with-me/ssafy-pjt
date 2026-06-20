@@ -1,5 +1,6 @@
-import { request } from './client.js'
+import { http } from './http.js'
 
-export function getCommercials(params) {
-  return request({ method: 'GET', url: '/api/commercial', params })
+export async function getCommercials(params) {
+  const res = await http.get('/api/commercial', { params })
+  return res.data
 }
