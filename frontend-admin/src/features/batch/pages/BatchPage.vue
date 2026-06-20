@@ -1,3 +1,61 @@
+<script setup>
+import { ref, reactive } from 'vue'
+import { useRouter } from 'vue-router'
+import { Shield, MapPin, Building2, Play, Loader2, AlertCircle } from 'lucide-vue-next'
+import { useAuthStore } from '@/stores/authStore.js'
+import { adminApi } from '@/api/index.js'
+import '@css/pages/batch.css'
+
+const router = useRouter()
+const authStore = useAuthStore()
+
+const regionLoading = ref(false)
+const regionResult = ref(null)
+const regionError = ref('')
+
+const houseLoading = ref(false)
+const houseResult = ref(null)
+const houseError = ref('')
+
+const houseForm = reactive({
+  regionCode: '',
+  yearMonth: '',
+  houseType: 'APT',
+  dealType: 'SALE',
+})
+
+async function handleCollectRegionCodes() {
+  regionLoading.value = true
+  regionResult.value = null
+  regionError.value = ''
+  try {
+    regionResult.value = await adminApi.collectRegionCodes()
+  } catch (err) {
+    regionError.value = err.data?.message ?? err.message ?? '실행에 실패했습니다.'
+  } finally {
+    regionLoading.value = false
+  }
+}
+
+async function handleCollectHouseDeals() {
+  houseLoading.value = true
+  houseResult.value = null
+  houseError.value = ''
+  try {
+    houseResult.value = await adminApi.collectHouseDeals({ ...houseForm })
+  } catch (err) {
+    houseError.value = err.data?.message ?? err.message ?? '실행에 실패했습니다.'
+  } finally {
+    houseLoading.value = false
+  }
+}
+
+async function handleLogout() {
+  await authStore.logout()
+  router.push('/login')
+}
+</script>
+
 <template>
   <div class="batch-page">
     <header class="batch-header">
@@ -100,61 +158,3 @@
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { Shield, MapPin, Building2, Play, Loader2, AlertCircle } from 'lucide-vue-next'
-import { useAuthStore } from '../stores/auth.js'
-import { adminApi } from '../api/index.js'
-import '../../css/pages/batch.css'
-
-const router = useRouter()
-const authStore = useAuthStore()
-
-const regionLoading = ref(false)
-const regionResult = ref(null)
-const regionError = ref('')
-
-const houseLoading = ref(false)
-const houseResult = ref(null)
-const houseError = ref('')
-
-const houseForm = reactive({
-  regionCode: '',
-  yearMonth: '',
-  houseType: 'APT',
-  dealType: 'SALE',
-})
-
-async function handleCollectRegionCodes() {
-  regionLoading.value = true
-  regionResult.value = null
-  regionError.value = ''
-  try {
-    regionResult.value = await adminApi.collectRegionCodes()
-  } catch (err) {
-    regionError.value = err.data?.message ?? err.message ?? '실행에 실패했습니다.'
-  } finally {
-    regionLoading.value = false
-  }
-}
-
-async function handleCollectHouseDeals() {
-  houseLoading.value = true
-  houseResult.value = null
-  houseError.value = ''
-  try {
-    houseResult.value = await adminApi.collectHouseDeals({ ...houseForm })
-  } catch (err) {
-    houseError.value = err.data?.message ?? err.message ?? '실행에 실패했습니다.'
-  } finally {
-    houseLoading.value = false
-  }
-}
-
-async function handleLogout() {
-  await authStore.logout()
-  router.push('/login')
-}
-</script>
