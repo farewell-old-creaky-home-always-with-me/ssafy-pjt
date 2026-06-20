@@ -1,11 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/auth.js'
+import { useAuthStore } from '@/stores/authStore.js'
 
 const routes = [
-  { path: '/login', component: () => import('../views/LoginView.vue') },
+  {
+    path: '/login',
+    name: 'LoginPage',
+    component: () => import('@/features/auth/pages/LoginPage.vue'),
+    meta: { requiresAdmin: false },
+  },
   {
     path: '/',
-    component: () => import('../views/BatchView.vue'),
+    name: 'BatchPage',
+    component: () => import('@/features/batch/pages/BatchPage.vue'),
     meta: { requiresAdmin: true },
   },
 ]
@@ -24,7 +30,7 @@ router.beforeEach(async (to) => {
     await authStore.fetchMe()
   }
   if (!authStore.isLoggedIn()) {
-    return '/login'
+    return { name: 'LoginPage' }
   }
 })
 
