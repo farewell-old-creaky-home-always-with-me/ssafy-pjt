@@ -64,8 +64,8 @@
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-vue-next'
-import { useAuthStore } from '../stores/auth.js'
-import { useFavoritesStore } from '../stores/favorites.js'
+import { useAuthStore } from '../stores/authStore.js'
+import { useFavoritesStore } from '../stores/favoritesStore.js'
 import '../../css/pages/auth.css'
 
 const router = useRouter()

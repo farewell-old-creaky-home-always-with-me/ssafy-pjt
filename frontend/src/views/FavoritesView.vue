@@ -95,7 +95,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { Plus, X, Search, Heart, MapPin, Calendar, Trash2, AlertTriangle, Loader2 } from 'lucide-vue-next'
-import { useFavoritesStore } from '../stores/favorites.js'
+import { useFavoritesStore } from '../stores/favoritesStore.js'
 import { formatDate } from '../utils/date.js'
 import '../../css/pages/favorites.css'
 
