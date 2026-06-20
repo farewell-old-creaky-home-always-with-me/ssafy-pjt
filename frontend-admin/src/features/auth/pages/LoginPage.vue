@@ -28,7 +28,9 @@ function validatePassword() {
 }
 
 async function handleSubmit() {
-  const ok = validateEmail() & validatePassword()
+  const emailValid = validateEmail()
+  const passwordValid = validatePassword()
+  const ok = emailValid && passwordValid
   if (!ok) return
   loading.value = true
   try {
@@ -95,7 +97,13 @@ async function handleSubmit() {
                 @blur="validatePassword"
                 @input="generalError = ''"
               />
-              <button type="button" class="pw-toggle" @click="showPw = !showPw">
+              <button
+                type="button"
+                class="pw-toggle"
+                :aria-label="showPw ? '비밀번호 숨기기' : '비밀번호 보기'"
+                :aria-pressed="showPw"
+                @click="showPw = !showPw"
+              >
                 <Eye v-if="!showPw" :size="16" /><EyeOff v-else :size="16" />
               </button>
             </div>

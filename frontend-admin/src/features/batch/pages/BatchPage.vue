@@ -38,9 +38,17 @@ async function handleCollectRegionCodes() {
 }
 
 async function handleCollectHouseDeals() {
-  houseLoading.value = true
   houseResult.value = null
   houseError.value = ''
+  if (!/^\d{5}$/.test(houseForm.regionCode)) {
+    houseError.value = '행정구역 코드는 숫자 5자리로 입력해 주세요.'
+    return
+  }
+  if (!/^\d{6}$/.test(houseForm.yearMonth)) {
+    houseError.value = '기준 연월은 숫자 6자리로 입력해 주세요.'
+    return
+  }
+  houseLoading.value = true
   try {
     houseResult.value = await adminApi.collectHouseDeals({ ...houseForm })
   } catch (err) {
@@ -51,8 +59,11 @@ async function handleCollectHouseDeals() {
 }
 
 async function handleLogout() {
-  await authStore.logout()
-  router.push('/login')
+  try {
+    await authStore.logout()
+  } finally {
+    router.push('/login')
+  }
 }
 </script>
 

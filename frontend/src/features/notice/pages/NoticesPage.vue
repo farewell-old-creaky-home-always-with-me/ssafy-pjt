@@ -30,7 +30,11 @@ async function loadPage(p) {
     notices.value = res.content ?? res
     totalPages.value = res.totalPages ?? 1
     page.value = p
-  } catch { notices.value = [] } finally { loading.value = false }
+  } catch {
+    notices.value = []
+    page.value = 1
+    totalPages.value = 1
+  } finally { loading.value = false }
 }
 
 onMounted(() => loadPage(1))
