@@ -7,7 +7,7 @@ src/
 ├── api/
 │   ├── http.js           # Axios instance (shared client)
 │   ├── authApi.js
-│   └── memberApi.js
+│   └── membersApi.js
 ├── components/
 │   ├── base/             # Domain-free reusable UI
 │   └── layout/           # Layout-only components
@@ -37,9 +37,11 @@ src/
 | Domain component | PascalCase, 2+ words | `MemberProfile.vue` |
 | Pinia store | `*Store.js` | `authStore.js` |
 | Composable | `use*.js` | `usePagination.js` |
-| API module | `*Api.js` | `memberApi.js` |
+| API module | `*Api.js` | `membersApi.js` |
 
 Component names must be two or more words to avoid collision with HTML tags (`App.vue` is exempt).
+
+API module names mirror the REST resource path segment: `/api/members` → `membersApi.js`, `/api/auth` → `authApi.js`. Use plural for collection resources and singular/uncountable for non-collection resources.
 
 **Functions:** Use `handle` prefix for event and component event handlers. Use a descriptive verb for API calls, transforms, and validators.
 
