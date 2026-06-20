@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap');
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: #0a0a0f;
+  --card: #ffffff;
+  --card-foreground: #0a0a0f;
+  --primary: #030213;
+  --primary-foreground: #ffffff;
+  --secondary: #f0f0f5;
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0,0,0,0.1);
+  --input-background: #f3f3f5;
+  --ring: #b3b3b3;
+  --radius: 0.625rem;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.875rem;
+
+  /* App-specific colors */
+  --navy: #1A3C6E;
+  --blue: #2D9CDB;
+  --blue-hover: #2589C4;
+  --blue-active: #1F7AB0;
+  --red: #EB5757;
+  --green: #27AE60;
+  --bg-page: #F4F6F9;
+}

@@ -1,0 +1,10 @@
+import { http } from './http.js'
+
+export async function collectHouseDeals(payload) {
+  const res = await http.post('/api/admin/batch/house-deals', payload)
+  return res.data
+}
+export async function collectRegionCodes() {
+  const res = await http.post('/api/admin/batch/region-codes')
+  return res.data
+}
