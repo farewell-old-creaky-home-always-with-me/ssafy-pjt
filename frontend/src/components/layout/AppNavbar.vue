@@ -67,8 +67,8 @@
 import { ref, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { Home, BarChart3, Heart, Store, TreePine, FileText, LogIn, LogOut, UserCircle, Menu, X } from 'lucide-vue-next'
-import { useAuthStore } from '../stores/authStore.js'
-import { useFavoritesStore } from '../stores/favoritesStore.js'
+import { useAuthStore } from '../../stores/authStore.js'
+import { useFavoritesStore } from '../../stores/favoritesStore.js'
 
 const authStore = useAuthStore()
 const favoritesStore = useFavoritesStore()
