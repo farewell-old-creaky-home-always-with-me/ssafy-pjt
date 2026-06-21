@@ -1,11 +1,11 @@
 package com.ssafy.home.route.controller;
 
+import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.route.dto.RouteRequest;
 import com.ssafy.home.route.dto.RouteResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -19,6 +19,6 @@ public interface RouteApiDocs {
     RouteResponse calculateRoute(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "경로 탐색 요청", required = true)
             @Valid @RequestBody RouteRequest request,
-            @Parameter(hidden = true) HttpSession session
+            @Parameter(hidden = true) @LoginMemberId Long memberId
     );
 }

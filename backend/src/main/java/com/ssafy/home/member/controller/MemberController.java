@@ -1,7 +1,6 @@
 package com.ssafy.home.member.controller;
 
 import com.ssafy.home.global.auth.LoginMemberId;
-import com.ssafy.home.global.auth.SessionManager;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.member.dto.CreateMemberRequest;
 import com.ssafy.home.member.dto.MemberResponse;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController implements MemberApiDocs {
 
     private final MemberService memberService;
-    private final SessionManager sessionManager;
 
     @PostMapping
     @Override
@@ -57,7 +55,6 @@ public class MemberController implements MemberApiDocs {
     @Override
     public ResponseEntity<Void> deleteMyMember(@LoginMemberId Long memberId) {
         memberService.deleteMyMember(memberId);
-        sessionManager.invalidateCurrentSession();
         return ResponseEntity.noContent().build();
     }
 }

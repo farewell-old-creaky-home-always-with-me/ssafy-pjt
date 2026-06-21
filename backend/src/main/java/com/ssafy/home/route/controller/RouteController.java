@@ -1,10 +1,10 @@
 package com.ssafy.home.route.controller;
 
+import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.route.dto.RouteRequest;
 import com.ssafy.home.route.dto.RouteResponse;
 import com.ssafy.home.route.service.RouteService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,12 +24,8 @@ public class RouteController implements RouteApiDocs {
     @Override
     public RouteResponse calculateRoute(
             @Valid @RequestBody RouteRequest request,
-            HttpSession session
+            @LoginMemberId Long memberId
     ) {
-        return routeService.calculateRoute(getMemberId(session), request);
-    }
-
-    private Long getMemberId(HttpSession session) {
-        return (Long) session.getAttribute("memberId");
+        return routeService.calculateRoute(memberId, request);
     }
 }
