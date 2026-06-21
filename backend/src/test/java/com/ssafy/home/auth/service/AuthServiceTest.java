@@ -2,25 +2,24 @@ package com.ssafy.home.auth.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
+import com.ssafy.home.global.auth.JwtProperties;
+import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.exception.ErrorCode;
 import com.ssafy.home.member.dto.MemberEntity;
 import com.ssafy.home.member.mapper.MemberMapper;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,18 +31,23 @@ class AuthServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    private JwtTokenProvider jwtTokenProvider;
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(memberMapper, passwordEncoder);
+        jwtTokenProvider = new JwtTokenProvider(new JwtProperties(
+                "test-jwt-secret-key-for-ssafy-home-project-2026",
+                3_600_000
+        ));
+        authService = new AuthService(memberMapper, passwordEncoder, jwtTokenProvider);
     }
 
     @Test
-    void loginCreatesSessionWhenCredentialsMatch() {
+    void loginIssuesAccessTokenWhenCredentialsMatch() {
         MemberEntity member = new MemberEntity();
         member.setId(1L);
-        member.setName("홍길동");
+        member.setName("tester");
         member.setEmail("user@example.com");
         member.setPassword("encoded");
         member.setAdmin(true);
@@ -51,15 +55,13 @@ class AuthServiceTest {
         when(memberMapper.findByEmail("user@example.com")).thenReturn(member);
         when(passwordEncoder.matches("password1234", "encoded")).thenReturn(true);
 
-        MockHttpServletRequest request = new MockHttpServletRequest();
-
-        LoginResponse response = authService.login(new LoginRequest("user@example.com", "password1234"), request);
+        LoginResponse response = authService.login(new LoginRequest("user@example.com", "password1234"));
 
         assertThat(response.memberId()).isEqualTo(1L);
         assertThat(response.isAdmin()).isTrue();
-        assertThat(request.getSession(false)).isNotNull();
-        assertThat(request.getSession(false).getAttribute("memberId")).isEqualTo(1L);
-        assertThat(request.getSession(false).getAttribute("isAdmin")).isEqualTo(true);
+        assertThat(response.accessToken()).isNotBlank();
+        assertThat(jwtTokenProvider.getMemberId(response.accessToken())).isEqualTo(1L);
+        assertThat(jwtTokenProvider.isAdmin(response.accessToken())).isTrue();
     }
 
     @Test
@@ -69,22 +71,36 @@ class AuthServiceTest {
         when(memberMapper.findByEmail("user@example.com")).thenReturn(member);
         when(passwordEncoder.matches("wrong", "encoded")).thenReturn(false);
 
-        assertThatThrownBy(() -> authService.login(new LoginRequest("user@example.com", "wrong"), new MockHttpServletRequest()))
+        assertThatThrownBy(() -> authService.login(new LoginRequest("user@example.com", "wrong")))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.AUTH_INVALID_CREDENTIALS))
-                .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다");
+                        .isEqualTo(ErrorCode.AUTH_INVALID_CREDENTIALS));
     }
 
     @Test
-    void getAuthMeReturnsUnauthenticatedWhenSessionMemberIsMissing() {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute("memberId", 1L);
-        when(memberMapper.findById(1L)).thenReturn(null);
+    void getAuthMeReturnsAuthenticatedUserWhenTokenIsValid() {
+        String token = jwtTokenProvider.createAccessToken(1L, true);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
 
-        AuthMeResponse response = authService.getAuthMe(session);
+        MemberEntity member = new MemberEntity();
+        member.setId(1L);
+        member.setName("tester");
+        member.setAdmin(true);
+        when(memberMapper.findById(1L)).thenReturn(member);
+
+        AuthMeResponse response = authService.getAuthMe(request);
+
+        assertThat(response.isAuthenticated()).isTrue();
+        assertThat(response.memberId()).isEqualTo(1L);
+        assertThat(response.name()).isEqualTo("tester");
+        assertThat(response.isAdmin()).isTrue();
+    }
+
+    @Test
+    void getAuthMeReturnsUnauthenticatedWithoutToken() {
+        AuthMeResponse response = authService.getAuthMe(new MockHttpServletRequest());
 
         assertThat(response.isAuthenticated()).isFalse();
-        assertThat(session.isInvalid()).isTrue();
     }
 }
