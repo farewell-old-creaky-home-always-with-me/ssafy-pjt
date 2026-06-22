@@ -37,7 +37,7 @@ class JwtAuthenticationGlobalFilterTest {
     void filterReturns401WhenTokenMissing() {
         // given
         MockServerWebExchange exchange = MockServerWebExchange.from(
-                MockServerHttpRequest.get("/api/houses")
+                MockServerHttpRequest.get("/api/members/me")
         );
         AtomicBoolean chainCalled = new AtomicBoolean(false);
 
@@ -54,7 +54,7 @@ class JwtAuthenticationGlobalFilterTest {
     void filterReturns401WhenTokenInvalid() {
         // given
         MockServerWebExchange exchange = MockServerWebExchange.from(
-                MockServerHttpRequest.get("/api/houses")
+                MockServerHttpRequest.get("/api/members/me")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer invalid-token")
         );
         AtomicBoolean chainCalled = new AtomicBoolean(false);
@@ -100,6 +100,108 @@ class JwtAuthenticationGlobalFilterTest {
         // then
         assertThat(exchange.getResponse().getStatusCode()).isNull();
         assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("로그인 요청은 토큰 없이 다음 필터를 호출한다")
+    void filterCallsChainForLoginRequest() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/auth/login")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("회원가입 요청은 토큰 없이 다음 필터를 호출한다")
+    void filterCallsChainForMemberCreateRequest() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/members")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("공지사항 조회 요청은 토큰 없이 다음 필터를 호출한다")
+    void filterCallsChainForNoticeReadRequest() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.get("/api/notices")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("공지사항 상세 조회 요청은 토큰 없이 다음 필터를 호출한다")
+    void filterCallsChainForNoticeDetailReadRequest() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.get("/api/notices/1")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("공지사항 작성 요청은 토큰이 없으면 401을 반환한다")
+    void filterReturns401ForNoticeWriteRequestWithoutToken() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/notices")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(chainCalled).isFalse();
+    }
+
+    @Test
+    @DisplayName("관리자 API 요청은 토큰이 없으면 401을 반환한다")
+    void filterReturns401ForAdminRequestWithoutToken() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/admin/batch/region-codes")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(chainCalled).isFalse();
     }
 
     private GatewayFilterChain chain(AtomicBoolean chainCalled) {

@@ -7,6 +7,7 @@ import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
@@ -17,6 +18,19 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 
     private static final String API_PATH_PREFIX = "/api/";
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final PublicEndpoint[] PUBLIC_ENDPOINTS = {
+            PublicEndpoint.exact(HttpMethod.POST, "/api/auth/login"),
+            PublicEndpoint.exact(HttpMethod.POST, "/api/auth/logout"),
+            PublicEndpoint.exact(HttpMethod.GET, "/api/auth/me"),
+            PublicEndpoint.exact(HttpMethod.POST, "/api/members"),
+            PublicEndpoint.exact(HttpMethod.GET, "/api/notices"),
+            PublicEndpoint.prefix(HttpMethod.GET, "/api/notices/"),
+            PublicEndpoint.exact(HttpMethod.GET, "/api/houses"),
+            PublicEndpoint.prefix(HttpMethod.GET, "/api/houses/"),
+            PublicEndpoint.exact(HttpMethod.GET, "/api/commercial"),
+            PublicEndpoint.exact(HttpMethod.GET, "/api/environment"),
+            PublicEndpoint.exact(HttpMethod.GET, "/api/stats")
+    };
 
     private final JwtTokenValidator jwtTokenValidator;
 
@@ -48,7 +62,23 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
         if (HttpMethod.OPTIONS.equals(exchange.getRequest().getMethod())) {
             return false;
         }
+        if (isPublicEndpoint(exchange.getRequest())) {
+            return false;
+        }
         return exchange.getRequest().getURI().getPath().startsWith(API_PATH_PREFIX);
+    }
+
+    private boolean isPublicEndpoint(ServerHttpRequest request) {
+        String path = request.getURI().getPath();
+        HttpMethod method = request.getMethod();
+
+        for (PublicEndpoint endpoint : PUBLIC_ENDPOINTS) {
+            if (endpoint.matches(method, path)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private String resolveToken(ServerWebExchange exchange) {
@@ -57,5 +87,26 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
             return null;
         }
         return authorization.substring(BEARER_PREFIX.length());
+    }
+
+    private record PublicEndpoint(HttpMethod method, String path, boolean prefix) {
+
+        private static PublicEndpoint exact(HttpMethod method, String path) {
+            return new PublicEndpoint(method, path, false);
+        }
+
+        private static PublicEndpoint prefix(HttpMethod method, String path) {
+            return new PublicEndpoint(method, path, true);
+        }
+
+        private boolean matches(HttpMethod requestMethod, String requestPath) {
+            if (!method.equals(requestMethod)) {
+                return false;
+            }
+            if (prefix) {
+                return requestPath.startsWith(path);
+            }
+            return path.equals(requestPath);
+        }
     }
 }
