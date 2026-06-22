@@ -1,3 +1,4 @@
 rootProject.name = 'home'
 
 include 'main-service'
+include 'gateway'
