@@ -1,5 +1,6 @@
 package com.ssafy.home.admin.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -10,7 +11,7 @@ import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
 import com.ssafy.home.admin.dto.RegionCodeCollectResponse;
 import com.ssafy.home.admin.service.BatchJobService;
-import com.ssafy.home.global.auth.SessionConst;
+import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.support.WebMvcTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,8 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -37,16 +38,20 @@ class AdminBatchControllerTest {
     @MockitoBean
     private BatchJobService batchJobService;
 
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
+
     @Test
     @DisplayName("실거래 수집 배치를 실행하면 200을 반환한다")
     void collectHouseDealsReturns200() throws Exception {
         // given
         HouseDealCollectRequest request = houseDealCollectRequest();
+        authenticateAdmin(1L);
         given(batchJobService.collectHouseDeals(1L, request)).willReturn(houseDealCollectResponse());
 
         // when / then
         mockMvc.perform(post("/api/admin/batch/house-deals")
-                        .session(adminSession(1L))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .accept(MediaType.APPLICATION_JSON))
@@ -70,10 +75,11 @@ class AdminBatchControllerTest {
                 "APARTMENT",
                 "SALE"
         );
+        authenticateAdmin(1L);
 
         // when / then
         mockMvc.perform(post("/api/admin/batch/house-deals")
-                        .session(adminSession(1L))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request))
                         .accept(MediaType.APPLICATION_JSON))
@@ -85,13 +91,14 @@ class AdminBatchControllerTest {
     @DisplayName("법정동 수집 배치를 실행하면 200을 반환한다")
     void collectRegionCodesReturns200() throws Exception {
         // given
+        authenticateAdmin(1L);
         given(batchJobService.collectRegionCodes(1L)).willReturn(
                 new RegionCodeCollectResponse(10L, "regionCodeCollectJob", "STARTED")
         );
 
         // when / then
         mockMvc.perform(post("/api/admin/batch/region-codes")
-                        .session(adminSession(1L))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.jobExecutionId").value(10))
@@ -112,10 +119,9 @@ class AdminBatchControllerTest {
         );
     }
 
-    private MockHttpSession adminSession(Long memberId) {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.MEMBER_ID, memberId);
-        session.setAttribute(SessionConst.IS_ADMIN, true);
-        return session;
+    private void authenticateAdmin(Long memberId) {
+        given(jwtTokenProvider.resolveToken(any())).willReturn("access-token");
+        given(jwtTokenProvider.getMemberId("access-token")).willReturn(memberId);
+        given(jwtTokenProvider.isAdmin("access-token")).willReturn(true);
     }
 }

@@ -1,21 +1,23 @@
 package com.ssafy.home.global.interceptor;
 
-import com.ssafy.home.global.auth.SessionConst;
-import com.ssafy.home.global.exception.CustomException;
 import static com.ssafy.home.global.exception.ErrorCode.AUTH_FORBIDDEN;
 import static com.ssafy.home.global.exception.ErrorCode.AUTH_UNAUTHORIZED;
+
+import com.ssafy.home.global.auth.AuthConst;
+import com.ssafy.home.global.auth.JwtTokenProvider;
+import com.ssafy.home.global.exception.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 @Component
+@RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
 
-    public static final String SESSION_MEMBER_ID = SessionConst.MEMBER_ID;
-    public static final String SESSION_IS_ADMIN = SessionConst.IS_ADMIN;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -28,20 +30,24 @@ public class AuthInterceptor implements HandlerInterceptor {
         boolean adminOnly = handlerMethod.hasMethodAnnotation(AdminOnly.class)
                 || handlerMethod.getBeanType().isAnnotationPresent(AdminOnly.class);
 
-        HttpSession session = request.getSession(false);
-        Object memberId = session == null
-                ? null
-                : session.getAttribute(SESSION_MEMBER_ID);
+        if (!loginRequired && !adminOnly) {
+            return true;
+        }
 
-        if ((loginRequired || adminOnly) && memberId == null) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token == null) {
             throw new CustomException(AUTH_UNAUTHORIZED);
         }
 
-        if (adminOnly) {
-            Object isAdmin = session.getAttribute(SESSION_IS_ADMIN);
-            if (!(isAdmin instanceof Boolean admin) || !admin) {
-                throw new CustomException(AUTH_FORBIDDEN);
-            }
+        jwtTokenProvider.validateToken(token);
+        Long memberId = jwtTokenProvider.getMemberId(token);
+        boolean isAdmin = jwtTokenProvider.isAdmin(token);
+
+        request.setAttribute(AuthConst.MEMBER_ID, memberId);
+        request.setAttribute(AuthConst.IS_ADMIN, isAdmin);
+
+        if (adminOnly && !isAdmin) {
+            throw new CustomException(AUTH_FORBIDDEN);
         }
 
         return true;

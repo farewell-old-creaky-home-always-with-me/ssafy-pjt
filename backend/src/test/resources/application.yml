@@ -42,3 +42,7 @@ vworld:
   retry-count: 0
   sido-retry-count: 1
   skip-limit: 1000
+
+jwt:
+  secret: test-jwt-secret-key-for-ssafy-home-project-2026
+  access-token-expiration-millis: 3600000

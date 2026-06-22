@@ -1,26 +1,25 @@
 package com.ssafy.home.auth.service;
 
+import static com.ssafy.home.global.exception.ErrorCode.AUTH_INVALID_CREDENTIALS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 
-import static com.ssafy.home.global.exception.ErrorCode.AUTH_INVALID_CREDENTIALS;
-
-import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.AuthLoginRequest;
+import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginResponse;
-import com.ssafy.home.global.auth.SessionManager;
+import com.ssafy.home.global.auth.JwtProperties;
+import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.member.mapper.MemberMapper;
 import com.ssafy.home.member.mapper.dto.MemberDetailResult;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -33,68 +32,81 @@ class AuthServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @Mock
-    private SessionManager sessionManager;
-
+    private JwtTokenProvider jwtTokenProvider;
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(memberMapper, passwordEncoder, sessionManager);
+        jwtTokenProvider = new JwtTokenProvider(new JwtProperties(
+                "test-jwt-secret-key-for-ssafy-home-project-2026",
+                3_600_000
+        ));
+        authService = new AuthService(memberMapper, passwordEncoder, jwtTokenProvider);
     }
 
     @Test
-    @DisplayName("자격 증명이 일치하면 로그인하고 세션을 생성한다")
-    void loginCreatesSessionWhenCredentialsMatch() {
+    @DisplayName("자격 증명이 일치하면 JWT 액세스 토큰을 발급한다")
+    void loginIssuesAccessTokenWhenCredentialsMatch() {
         // given
-        MemberDetailResult member = memberDetailResult(1L, "user@example.com", "홍길동", "encoded", true);
+        MemberDetailResult member = memberDetailResult(1L, "user@example.com", "tester", "encoded", true);
         given(memberMapper.findByEmail("user@example.com")).willReturn(member);
         given(passwordEncoder.matches("password1234", "encoded")).willReturn(true);
-        MockHttpServletRequest request = new MockHttpServletRequest();
 
         // when
-        LoginResponse response = authService.login(
-                new AuthLoginRequest("user@example.com", "password1234"), request);
+        LoginResponse response = authService.login(new AuthLoginRequest("user@example.com", "password1234"));
 
         // then
         assertThat(response.memberId()).isEqualTo(1L);
+        assertThat(response.name()).isEqualTo("tester");
         assertThat(response.isAdmin()).isTrue();
-        assertThat(request.getSession(false)).isNotNull();
-        assertThat(request.getSession(false).getAttribute("memberId")).isEqualTo(1L);
-        assertThat(request.getSession(false).getAttribute("isAdmin")).isEqualTo(true);
+        assertThat(response.accessToken()).isNotBlank();
+        assertThat(jwtTokenProvider.getMemberId(response.accessToken())).isEqualTo(1L);
+        assertThat(jwtTokenProvider.isAdmin(response.accessToken())).isTrue();
     }
 
     @Test
     @DisplayName("자격 증명이 일치하지 않으면 로그인 예외가 발생한다")
     void loginThrowsWhenCredentialsDoNotMatch() {
         // given
-        MemberDetailResult member = new MemberDetailResult();
-        member.setPassword("encoded");
+        MemberDetailResult member = memberDetailResult(1L, "user@example.com", "tester", "encoded", false);
         given(memberMapper.findByEmail("user@example.com")).willReturn(member);
         given(passwordEncoder.matches("wrong", "encoded")).willReturn(false);
 
         // when / then
-        assertThatThrownBy(() -> authService.login(
-                new AuthLoginRequest("user@example.com", "wrong"), new MockHttpServletRequest()))
+        assertThatThrownBy(() -> authService.login(new AuthLoginRequest("user@example.com", "wrong")))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(AUTH_INVALID_CREDENTIALS))
-                .hasMessage("이메일 또는 비밀번호가 올바르지 않습니다");
+                        .isEqualTo(AUTH_INVALID_CREDENTIALS));
     }
 
     @Test
-    @DisplayName("세션 회원이 DB에 없으면 미인증 응답을 반환하고 세션을 무효화한다")
-    void getAuthMeReturnsUnauthenticatedWhenSessionMemberIsMissing() {
+    @DisplayName("유효한 JWT 토큰이면 현재 회원 정보를 반환한다")
+    void getAuthMeReturnsAuthenticatedMemberWhenTokenIsValid() {
         // given
-        given(sessionManager.findCurrentMemberId()).willReturn(Optional.of(1L));
-        given(memberMapper.findById(1L)).willReturn(null);
+        String token = jwtTokenProvider.createAccessToken(1L, true);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        given(memberMapper.findById(1L))
+                .willReturn(memberDetailResult(1L, "user@example.com", "tester", "encoded", true));
 
         // when
-        AuthMeResponse response = authService.getAuthMe();
+        AuthMeResponse response = authService.getAuthMe(request);
+
+        // then
+        assertThat(response.isAuthenticated()).isTrue();
+        assertThat(response.memberId()).isEqualTo(1L);
+        assertThat(response.name()).isEqualTo("tester");
+        assertThat(response.isAdmin()).isTrue();
+    }
+
+    @Test
+    @DisplayName("토큰이 없으면 게스트 응답을 반환한다")
+    void getAuthMeReturnsGuestWithoutToken() {
+        // when
+        AuthMeResponse response = authService.getAuthMe(new MockHttpServletRequest());
 
         // then
         assertThat(response.isAuthenticated()).isFalse();
-        verify(sessionManager).invalidateCurrentSession();
     }
 
     private MemberDetailResult memberDetailResult(

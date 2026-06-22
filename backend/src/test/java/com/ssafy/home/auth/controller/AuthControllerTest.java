@@ -2,7 +2,6 @@ package com.ssafy.home.auth.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,8 +12,7 @@ import com.ssafy.home.auth.dto.AuthLoginRequest;
 import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.auth.service.AuthService;
-import com.ssafy.home.global.auth.SessionConst;
-import com.ssafy.home.global.auth.SessionManager;
+import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.support.WebMvcTestConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,7 +21,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,14 +39,15 @@ class AuthControllerTest {
     private AuthService authService;
 
     @MockitoBean
-    private SessionManager sessionManager;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("로그인 요청이 성공하면 200을 반환한다")
     void loginReturns200() throws Exception {
         // given
         AuthLoginRequest request = new AuthLoginRequest("user@example.com", "password123");
-        given(authService.login(any(AuthLoginRequest.class), any())).willReturn(new LoginResponse(1L, "홍길동", false));
+        given(authService.login(any(AuthLoginRequest.class)))
+                .willReturn(new LoginResponse(1L, "tester", false, "access-token"));
 
         // when / then
         mockMvc.perform(post("/api/auth/login")
@@ -57,14 +55,16 @@ class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberId").value(1L))
-                .andExpect(jsonPath("$.name").value("홍길동"));
+                .andExpect(jsonPath("$.name").value("tester"))
+                .andExpect(jsonPath("$.accessToken").value("access-token"));
     }
 
     @Test
     @DisplayName("인증 상태를 조회한다")
     void getAuthMeReturns200() throws Exception {
         // given
-        given(authService.getAuthMe()).willReturn(new AuthMeResponse(true, 1L, "홍길동", false));
+        given(authService.getAuthMe(any()))
+                .willReturn(new AuthMeResponse(true, 1L, "tester", false));
 
         // when / then
         mockMvc.perform(get("/api/auth/me").accept(MediaType.APPLICATION_JSON))
@@ -74,28 +74,10 @@ class AuthControllerTest {
     }
 
     @Test
-    @DisplayName("로그아웃 시 세션을 무효화한다")
-    void logoutInvalidatesSession() throws Exception {
+    @DisplayName("로그아웃은 200을 반환한다")
+    void logoutReturns200() throws Exception {
         // when / then
-        mockMvc.perform(post("/api/auth/logout").session(loggedInSession(1L)))
+        mockMvc.perform(post("/api/auth/logout"))
                 .andExpect(status().isOk());
-
-        verify(sessionManager).invalidateCurrentSession();
-    }
-
-    @Test
-    @DisplayName("세션 없이 로그아웃을 호출하면 401을 반환한다")
-    void logoutReturns401WithoutSession() throws Exception {
-        // when / then
-        mockMvc.perform(post("/api/auth/logout").accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.code").value("AUTH_UNAUTHORIZED"));
-    }
-
-    private MockHttpSession loggedInSession(Long memberId) {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.MEMBER_ID, memberId);
-        session.setAttribute(SessionConst.IS_ADMIN, false);
-        return session;
     }
 }

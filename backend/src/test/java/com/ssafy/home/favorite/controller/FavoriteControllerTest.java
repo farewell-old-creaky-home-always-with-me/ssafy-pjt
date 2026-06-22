@@ -13,7 +13,7 @@ import com.ssafy.home.favorite.dto.FavoriteCreateRequest;
 import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.favorite.service.FavoriteService;
-import com.ssafy.home.global.auth.SessionConst;
+import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.support.WebMvcTestConfig;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,9 +42,12 @@ class FavoriteControllerTest {
     @MockitoBean
     private FavoriteService favoriteService;
 
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
+
     @Test
-    @DisplayName("세션 없이 관심 지역 목록을 조회하면 401을 반환한다")
-    void getFavoritesReturns401WithoutSession() throws Exception {
+    @DisplayName("토큰 없이 관심 지역 목록을 조회하면 401을 반환한다")
+    void getFavoritesReturns401WithoutToken() throws Exception {
         // when / then
         mockMvc.perform(get("/api/favorites").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
@@ -52,14 +55,15 @@ class FavoriteControllerTest {
     }
 
     @Test
-    @DisplayName("로그인 세션으로 관심 지역 목록을 조회한다")
-    void getFavoritesReturns200WithSession() throws Exception {
+    @DisplayName("로그인 토큰으로 관심 지역 목록을 조회한다")
+    void getFavoritesReturns200WithToken() throws Exception {
         // given
+        authenticateMember(1L);
         given(favoriteService.getFavorites(1L)).willReturn(List.of(favoriteResponse()));
 
         // when / then
         mockMvc.perform(get("/api/favorites")
-                        .session(loggedInSession(1L))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].favoriteId").value(1L))
@@ -71,12 +75,13 @@ class FavoriteControllerTest {
     void createFavoriteReturns201() throws Exception {
         // given
         FavoriteCreateRequest request = new FavoriteCreateRequest("1168010100");
+        authenticateMember(1L);
         given(favoriteService.createFavorite(eq(1L), any(FavoriteCreateRequest.class)))
                 .willReturn(new FavoriteCreateResponse(2L, "1168010100"));
 
         // when / then
         mockMvc.perform(post("/api/favorites")
-                        .session(loggedInSession(1L))
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -95,10 +100,9 @@ class FavoriteControllerTest {
         );
     }
 
-    private MockHttpSession loggedInSession(Long memberId) {
-        MockHttpSession session = new MockHttpSession();
-        session.setAttribute(SessionConst.MEMBER_ID, memberId);
-        session.setAttribute(SessionConst.IS_ADMIN, false);
-        return session;
+    private void authenticateMember(Long memberId) {
+        given(jwtTokenProvider.resolveToken(any())).willReturn("access-token");
+        given(jwtTokenProvider.getMemberId("access-token")).willReturn(memberId);
+        given(jwtTokenProvider.isAdmin("access-token")).willReturn(false);
     }
 }

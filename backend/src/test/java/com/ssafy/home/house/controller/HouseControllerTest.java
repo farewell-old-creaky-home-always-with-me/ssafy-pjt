@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.house.dto.HouseDetailResponse;
 import com.ssafy.home.house.dto.HouseSummaryResponse;
@@ -33,6 +34,9 @@ class HouseControllerTest {
 
     @MockitoBean
     private HouseService houseService;
+
+    @MockitoBean
+    private JwtTokenProvider jwtTokenProvider;
 
     @Test
     @DisplayName("지역 코드로 주택 목록을 조회한다")
