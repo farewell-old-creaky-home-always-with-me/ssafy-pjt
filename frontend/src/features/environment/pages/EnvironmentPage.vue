@@ -77,51 +77,60 @@ onMounted(initMap)
 </script>
 
 <template>
-  <div class="env-page">
-    <div class="env-header">
-      <div class="container" style="padding-top:0;padding-bottom:0">
-        <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">환경 정보</h1>
-        <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">지도 위에서 환경 데이터 레이어를 확인하세요</p>
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page flex flex-col">
+    <div class="bg-white border-b border-gray-100 px-6 py-4">
+      <div class="max-w-[80rem] mx-auto">
+        <h1 class="text-navy text-[1.375rem] font-bold">환경 정보</h1>
+        <p class="text-gray-400 text-[0.8125rem] mt-1">지도 위에서 환경 데이터 레이어를 확인하세요</p>
       </div>
     </div>
 
-    <div class="env-map-area">
-      <div id="map" class="env-map"></div>
+    <div class="flex-1 relative min-h-[500px]">
+      <div id="map" class="absolute inset-0 bg-gradient-to-br from-[#E8F0FE] to-[#D4E4F7] overflow-hidden"></div>
 
-      <div v-if="!hasActiveLayer" class="env-empty">
-        <div style="width:5rem;height:5rem;border-radius:50%;background:rgba(255,255,255,0.8);display:flex;align-items:center;justify-content:center;margin-bottom:1rem">
-          <MapPin :size="40" style="color:#2D9CDB" />
+      <div v-if="!hasActiveLayer" class="absolute inset-0 flex items-center justify-center flex-col z-[5] pointer-events-none">
+        <div class="w-20 h-20 rounded-full bg-white/80 flex items-center justify-center mb-4">
+          <MapPin :size="40" class="text-blue" />
         </div>
-        <p style="color:rgba(26,60,110,0.8);font-size:0.875rem;font-weight:600;background:rgba(255,255,255,0.8);padding:4px 8px;border-radius:4px">
+        <p class="text-navy/80 text-sm font-semibold bg-white/80 px-2 py-1 rounded">
           {{ loading ? '데이터를 불러오는 중...' : '좌측 패널에서 레이어를 활성화해 주세요' }}
         </p>
       </div>
 
-      <div class="env-legend">
-        <div class="env-legend-header">
-          <h3>데이터 레이어</h3>
-          <span class="env-active-count">{{ activeCount }}/3 활성</span>
+      <!-- Legend panel -->
+      <div class="absolute top-4 left-4 z-20 w-72 bg-white rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden">
+        <div class="px-5 py-[0.875rem] border-b border-gray-100 flex items-center justify-between">
+          <h3 class="text-navy text-sm font-semibold">데이터 레이어</h3>
+          <span class="text-blue bg-blue/10 rounded-lg px-2 py-0.5 text-[0.6875rem] font-semibold">{{ activeCount }}/3 활성</span>
         </div>
-        <div style="padding:0.75rem;display:flex;flex-direction:column;gap:0.5rem">
-          <button v-for="layer in LAYERS" :key="layer.key"
-            class="env-layer-btn" :class="{ on: active[layer.key] }"
-            @click="toggleLayer(layer.key)">
-            <div class="env-layer-icon" :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'}`">
+        <div class="p-3 flex flex-col gap-2">
+          <button
+            v-for="layer in LAYERS"
+            :key="layer.key"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-transparent text-left transition-all cursor-pointer"
+            :class="active[layer.key] ? 'bg-bg-page border-[#e5e7eb]' : 'bg-transparent'"
+            @click="toggleLayer(layer.key)"
+          >
+            <div
+              class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
+              :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'}`"
+            >
               <component :is="layer.icon" :size="18" :style="`color:${active[layer.key] ? layer.color : '#aaa'}`" />
             </div>
-            <div style="flex:1;min-width:0">
-              <div class="env-layer-label">
+            <div class="flex-1 min-w-0">
+              <div class="text-navy text-[0.8125rem] font-semibold flex items-center gap-2">
                 {{ layer.label }}
-                <span class="env-layer-count" :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'};color:${active[layer.key] ? layer.color : '#aaa'}`">
-                  {{ layerData[layer.key].length }}
-                </span>
+                <span
+                  class="px-1.5 py-0.5 rounded-[0.375rem] text-[0.625rem] font-semibold"
+                  :style="`background:${active[layer.key] ? layer.color + '15' : '#F4F6F9'};color:${active[layer.key] ? layer.color : '#aaa'}`"
+                >{{ layerData[layer.key].length }}</span>
               </div>
-              <p class="env-layer-desc">{{ layer.desc }}</p>
+              <p class="text-gray-400 text-[0.6875rem] truncate max-w-[10rem]">{{ layer.desc }}</p>
             </div>
             <component :is="active[layer.key] ? Eye : EyeOff" :size="16" :style="`color:${active[layer.key] ? layer.color : '#d1d5db'}`" />
           </button>
         </div>
-        <div class="env-legend-footer">
+        <div class="px-5 py-3 border-t border-gray-100 flex items-start gap-2 text-gray-400 text-[0.6875rem]">
           <Info :size="14" />
           데이터 출처: 백엔드 환경 API
         </div>
@@ -129,22 +138,3 @@ onMounted(initMap)
     </div>
   </div>
 </template>
-
-<style scoped>
-.env-page { min-height: calc(100vh - 64px); background: #F4F6F9; display: flex; flex-direction: column; }
-.env-header { background: #fff; border-bottom: 1px solid #f3f4f6; padding: 1rem 1.5rem; }
-.env-map-area { flex: 1; position: relative; min-height: 500px; }
-.env-map { position: absolute; inset: 0; background: linear-gradient(135deg, #E8F0FE, #D4E4F7); overflow: hidden; }
-.env-empty { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; flex-direction: column; z-index: 5; pointer-events: none; }
-.env-legend { position: absolute; top: 1rem; left: 1rem; z-index: 20; width: 18rem; background: #fff; border-radius: 1rem; box-shadow: 0 4px 16px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; overflow: hidden; }
-.env-legend-header { padding: 0.875rem 1.25rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; justify-content: space-between; }
-.env-legend-header h3 { color: #1A3C6E; font-size: 0.875rem; font-weight: 600; }
-.env-active-count { color: #2D9CDB; background: rgba(45,156,219,0.1); border-radius: 0.5rem; padding: 0.125rem 0.5rem; font-size: 0.6875rem; font-weight: 600; }
-.env-layer-btn { width: 100%; display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid transparent; background: none; cursor: pointer; text-align: left; transition: all 0.15s; }
-.env-layer-btn.on { background: #F4F6F9; border-color: #e5e7eb; }
-.env-layer-icon { width: 2.25rem; height: 2.25rem; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.env-layer-label { color: #1A3C6E; font-size: 0.8125rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem; }
-.env-layer-count { padding: 0.125rem 0.375rem; border-radius: 0.375rem; font-size: 0.625rem; font-weight: 600; }
-.env-layer-desc { color: #9ca3af; font-size: 0.6875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 10rem; }
-.env-legend-footer { padding: 0.75rem 1.25rem; border-top: 1px solid #f3f4f6; display: flex; align-items: flex-start; gap: 0.5rem; color: #9ca3af; font-size: 0.6875rem; }
-</style>
