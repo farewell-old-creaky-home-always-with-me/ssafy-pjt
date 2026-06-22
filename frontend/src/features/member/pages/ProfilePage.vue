@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2 } from 'lucide-vue-next'
 import { membersApi } from '@/api/index.js'
 import { useAuthStore } from '@/stores/authStore.js'
-import '@css/pages/profile.css'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -63,71 +63,94 @@ async function handleDelete() {
 </script>
 
 <template>
-  <div class="profile-page">
-    <div v-if="profileError" style="max-width:40rem;margin:2rem auto;display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:0.75rem;color:#DC2626;font-size:0.875rem">
-      <AlertCircle :size="16" style="flex-shrink:0" />
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page py-10 px-4">
+    <div v-if="profileError" class="max-w-[40rem] mx-auto mt-8 flex items-center gap-2 px-5 py-4 bg-[#FEF2F2] border border-[#FECACA] rounded-xl text-[#DC2626] text-sm">
+      <AlertCircle :size="16" class="shrink-0" />
       {{ profileError }}
     </div>
-    <div class="profile-wrap" v-else-if="profile">
-      <div class="card card-lg" style="margin-bottom:1.5rem;overflow:hidden">
-        <div class="profile-banner">
-          <div class="profile-avatar-wrap">
-            <div class="profile-avatar"><User :size="32" /></div>
+
+    <div v-else-if="profile" class="max-w-[520px] mx-auto">
+      <!-- 프로필 카드 -->
+      <div class="bg-white rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.08)] mb-6 overflow-hidden">
+        <div class="h-28 bg-gradient-to-br from-navy to-blue relative rounded-t-2xl">
+          <div class="absolute bottom-0 left-1/2 translate-y-1/2 -translate-x-1/2">
+            <div class="w-20 h-20 rounded-full bg-white border-4 border-white shadow-[0_4px_12px_rgba(0,0,0,0.1)] flex items-center justify-center text-blue">
+              <User :size="32" />
+            </div>
           </div>
         </div>
-        <div class="profile-name-section">
-          <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">{{ profile.name }}</h1>
-          <p style="color:#9ca3af;font-size:0.875rem;margin-top:0.25rem">{{ profile.email }}</p>
+        <div class="pt-14 pb-6 text-center px-6">
+          <h1 class="text-navy text-[1.375rem] font-bold">{{ profile.name }}</h1>
+          <p class="text-gray-400 text-sm mt-1">{{ profile.email }}</p>
         </div>
       </div>
 
-      <div class="card card-lg" style="overflow:hidden">
+      <!-- 정보 카드 -->
+      <div class="bg-white rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.08)] overflow-hidden">
         <!-- 조회 모드 -->
         <div v-if="!editMode">
-          <div class="profile-section-header"><h2>회원 정보</h2></div>
-          <div style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem">
-            <div class="profile-info-row">
-              <div class="profile-info-icon"><UserCircle :size="18" /></div>
-              <div><p class="profile-info-label">이름</p><p class="profile-info-value">{{ profile.name }}</p></div>
+          <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-navy text-base font-semibold">회원 정보</h2>
+          </div>
+          <div class="px-6 py-5 flex flex-col gap-4">
+            <div class="flex items-center gap-3 bg-bg-page rounded-xl px-4 py-[0.875rem]">
+              <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
+                <UserCircle :size="18" class="text-blue" />
+              </div>
+              <div>
+                <p class="text-gray-400 text-[0.6875rem] font-medium">이름</p>
+                <p class="text-navy text-sm font-semibold">{{ profile.name }}</p>
+              </div>
             </div>
-            <div class="profile-info-row">
-              <div class="profile-info-icon"><Mail :size="18" /></div>
-              <div><p class="profile-info-label">이메일</p><p class="profile-info-value">{{ profile.email }}</p></div>
+            <div class="flex items-center gap-3 bg-bg-page rounded-xl px-4 py-[0.875rem]">
+              <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
+                <Mail :size="18" class="text-blue" />
+              </div>
+              <div>
+                <p class="text-gray-400 text-[0.6875rem] font-medium">이메일</p>
+                <p class="text-navy text-sm font-semibold">{{ profile.email }}</p>
+              </div>
             </div>
-            <div class="profile-actions">
-              <button class="btn btn-primary btn-full" @click="startEdit"><Pencil :size="16" /> 정보 수정</button>
-              <button class="btn btn-outline-danger btn-full" @click="showDeleteModal = true"><Trash2 :size="16" /> 회원 탈퇴</button>
+            <div class="flex gap-3 mt-2">
+              <BaseButton :full="true" @click="startEdit"><Pencil :size="16" /> 정보 수정</BaseButton>
+              <BaseButton variant="outline-danger" :full="true" @click="showDeleteModal = true"><Trash2 :size="16" /> 회원 탈퇴</BaseButton>
             </div>
           </div>
         </div>
 
         <!-- 수정 모드 -->
         <div v-else>
-          <div class="profile-section-header">
-            <h2>정보 수정</h2>
-            <button class="cancel-close-btn" @click="editMode = false"><X :size="16" /></button>
+          <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+            <h2 class="text-navy text-base font-semibold">정보 수정</h2>
+            <button
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 transition-colors hover:bg-bg-page hover:text-gray-500"
+              @click="editMode = false"
+            ><X :size="16" /></button>
           </div>
-          <form @submit.prevent="handleUpdate" novalidate style="padding:1.25rem 1.5rem;display:flex;flex-direction:column;gap:1rem">
-            <div class="form-group">
-              <label class="form-label" for="edit-name">이름</label>
-              <div class="input-icon-wrap">
-                <span class="input-icon"><UserCircle :size="16" /></span>
-                <input id="edit-name" v-model="editName" type="text" class="input-base" />
+          <form @submit.prevent="handleUpdate" novalidate class="px-6 py-5 flex flex-col gap-4">
+            <div>
+              <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="edit-name">이름</label>
+              <div class="relative">
+                <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><UserCircle :size="16" /></span>
+                <input id="edit-name" v-model="editName" type="text"
+                  class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]" />
               </div>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="edit-password">새 비밀번호 (필수)</label>
-              <div class="input-icon-wrap">
-                <span class="input-icon"><Lock :size="16" /></span>
-                <input id="edit-password" v-model="editPassword" type="password" class="input-base" placeholder="8자 이상" />
+            <div>
+              <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="edit-password">새 비밀번호 (필수)</label>
+              <div class="relative">
+                <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><Lock :size="16" /></span>
+                <input id="edit-password" v-model="editPassword" type="password"
+                  class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                  placeholder="8자 이상" />
               </div>
             </div>
-            <div style="display:flex;gap:0.75rem;margin-top:0.5rem">
-              <button type="submit" class="btn btn-primary btn-full" :disabled="saving">
+            <div class="flex gap-3 mt-2">
+              <BaseButton type="submit" :full="true" :disabled="saving">
                 <Loader2 v-if="saving" :size="16" class="animate-spin" />
                 {{ saving ? '저장 중...' : '저장하기' }}
-              </button>
-              <button type="button" class="btn btn-ghost btn-full" @click="editMode = false">취소</button>
+              </BaseButton>
+              <BaseButton variant="ghost" :full="true" type="button" @click="editMode = false">취소</BaseButton>
             </div>
           </form>
         </div>
@@ -135,23 +158,24 @@ async function handleDelete() {
     </div>
 
     <!-- 탈퇴 확인 모달 -->
-    <div v-if="showDeleteModal" class="modal-overlay visible">
-      <div class="modal-backdrop" @click="showDeleteModal = false"></div>
-      <div class="modal-box">
-        <div style="padding:2rem 1.5rem 0.5rem;text-align:center">
-          <div class="confirm-modal-icon"><AlertTriangle :size="24" /></div>
-          <h3 style="color:#1A3C6E;font-size:1.125rem;font-weight:700;margin-bottom:0.5rem">정말 탈퇴하시겠습니까?</h3>
-          <p style="color:#9ca3af;font-size:0.8125rem">탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.</p>
+    <div v-if="showDeleteModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="showDeleteModal = false"></div>
+      <div class="relative bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] w-full max-w-[380px] overflow-hidden">
+        <div class="px-6 pt-8 pb-2 text-center">
+          <div class="w-14 h-14 rounded-full bg-red/10 flex items-center justify-center mx-auto mb-4">
+            <AlertTriangle :size="24" class="text-red" />
+          </div>
+          <h3 class="text-navy text-lg font-bold mb-2">정말 탈퇴하시겠습니까?</h3>
+          <p class="text-gray-400 text-[0.8125rem]">탈퇴 시 모든 데이터가 삭제되며 복구할 수 없습니다.</p>
         </div>
-        <div style="display:flex;gap:0.75rem;padding:1.5rem">
-          <button class="btn btn-ghost btn-full" @click="showDeleteModal = false">취소</button>
-          <button class="btn btn-danger btn-full" :disabled="deleting" @click="handleDelete">
+        <div class="flex gap-3 px-6 py-6">
+          <BaseButton variant="ghost" :full="true" @click="showDeleteModal = false">취소</BaseButton>
+          <BaseButton variant="danger" :full="true" :disabled="deleting" @click="handleDelete">
             <Loader2 v-if="deleting" :size="16" class="animate-spin" />
             {{ deleting ? '처리 중...' : '탈퇴하기' }}
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>
   </div>
 </template>
-
