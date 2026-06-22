@@ -1,6 +1,5 @@
 package com.ssafy.home.global.config;
 
-import com.ssafy.home.global.interceptor.AdminOnly;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.global.response.ErrorDetail;
 import com.ssafy.home.global.response.FieldErrorDetail;
@@ -73,9 +72,7 @@ public class OpenApiConfig {
         }
 
         return handlerMethod.hasMethodAnnotation(LoginRequired.class)
-                || handlerMethod.hasMethodAnnotation(AdminOnly.class)
-                || handlerMethod.getBeanType().isAnnotationPresent(LoginRequired.class)
-                || handlerMethod.getBeanType().isAnnotationPresent(AdminOnly.class);
+                || handlerMethod.getBeanType().isAnnotationPresent(LoginRequired.class);
     }
 
     private ApiResponse errorResponse(String description) {

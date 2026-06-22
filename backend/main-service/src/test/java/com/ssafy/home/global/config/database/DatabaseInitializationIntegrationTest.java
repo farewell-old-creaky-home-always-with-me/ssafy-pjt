@@ -22,8 +22,6 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @SpringBootTest(properties = {
         "spring.flyway.enabled=true",
         "spring.sql.init.mode=never",
-        "spring.batch.job.enabled=false",
-        "spring.batch.jdbc.initialize-schema=never",
         "app.database.seed-enabled=true"
 })
 class DatabaseInitializationIntegrationTest {

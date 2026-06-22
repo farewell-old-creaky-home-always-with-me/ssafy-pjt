@@ -1,6 +1,5 @@
 package com.ssafy.home.global.interceptor;
 
-import static com.ssafy.home.global.exception.ErrorCode.AUTH_FORBIDDEN;
 import static com.ssafy.home.global.exception.ErrorCode.AUTH_UNAUTHORIZED;
 
 import com.ssafy.home.global.auth.AuthConst;
@@ -27,10 +26,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         boolean loginRequired = handlerMethod.hasMethodAnnotation(LoginRequired.class)
                 || handlerMethod.getBeanType().isAnnotationPresent(LoginRequired.class);
-        boolean adminOnly = handlerMethod.hasMethodAnnotation(AdminOnly.class)
-                || handlerMethod.getBeanType().isAnnotationPresent(AdminOnly.class);
 
-        if (!loginRequired && !adminOnly) {
+        if (!loginRequired) {
             return true;
         }
 
@@ -41,14 +38,8 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         jwtTokenProvider.validateToken(token);
         Long memberId = jwtTokenProvider.getMemberId(token);
-        boolean isAdmin = jwtTokenProvider.isAdmin(token);
 
         request.setAttribute(AuthConst.MEMBER_ID, memberId);
-        request.setAttribute(AuthConst.IS_ADMIN, isAdmin);
-
-        if (adminOnly && !isAdmin) {
-            throw new CustomException(AUTH_FORBIDDEN);
-        }
 
         return true;
     }

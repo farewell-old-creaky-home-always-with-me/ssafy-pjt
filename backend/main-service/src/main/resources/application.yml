@@ -4,11 +4,6 @@ server:
 spring:
   application:
     name: ssafy-home-backend
-  batch:
-    job:
-      enabled: false
-    jdbc:
-      initialize-schema: never
   config:
     import: classpath:secret/application-secret.yml
   sql:
@@ -24,21 +19,6 @@ mybatis:
   type-aliases-package: com.ssafy.home
   configuration:
     map-underscore-to-camel-case: true
-
-molit:
-  page-size: 100
-  timeout: 10s
-  retry-count: 2
-  skip-limit: 1000
-
-vworld:
-  data-url: https://api.vworld.kr/req/data
-  legal-emd-layer: LT_C_ADEMD_INFO
-  page-size: 1000
-  timeout: 10s
-  retry-count: 2
-  sido-retry-count: 3
-  skip-limit: 1000
 
 cors:
   allowed-origins:

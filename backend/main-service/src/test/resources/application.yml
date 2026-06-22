@@ -23,26 +23,6 @@ mybatis:
   configuration:
     map-underscore-to-camel-case: true
 
-molit:
-  apartment-sale-url: http://localhost/test
-  multi-family-sale-url: http://localhost/test
-  service-key: test-key
-  page-size: 10
-  timeout: 5s
-  retry-count: 0
-  skip-limit: 1000
-
-vworld:
-  data-url: http://localhost/vworld
-  api-key: test-key
-  domain: localhost
-  legal-emd-layer: LT_C_ADEMD_INFO
-  page-size: 10
-  timeout: 5s
-  retry-count: 0
-  sido-retry-count: 1
-  skip-limit: 1000
-
 jwt:
   secret: test-jwt-secret-key-for-ssafy-home-project-2026
   access-token-expiration-millis: 3600000

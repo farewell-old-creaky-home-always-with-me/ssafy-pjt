@@ -45,27 +45,13 @@ class AuthInterceptorTest {
     }
 
     @Test
-    @DisplayName("일반 회원 토큰으로 관리자 API를 호출하면 403을 반환한다")
-    void adminOnlyEndpointReturns403ForNonAdminToken() throws Exception {
+    @DisplayName("유효한 토큰으로 로그인 필수 API를 호출하면 통과한다")
+    void loginRequiredEndpointPassesWithToken() throws Exception {
         // given
         String token = jwtTokenProvider.createAccessToken(1L, false);
 
         // when / then
-        mockMvc.perform(get("/admin-only")
-                        .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
-    }
-
-    @Test
-    @DisplayName("관리자 토큰으로 관리자 API를 호출하면 통과한다")
-    void adminOnlyEndpointPassesForAdminToken() throws Exception {
-        // given
-        String token = jwtTokenProvider.createAccessToken(1L, true);
-
-        // when / then
-        mockMvc.perform(get("/admin-only")
+        mockMvc.perform(get("/login-required")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
@@ -77,12 +63,6 @@ class AuthInterceptorTest {
         @LoginRequired
         @GetMapping("/login-required")
         public String loginRequired() {
-            return "ok";
-        }
-
-        @AdminOnly
-        @GetMapping("/admin-only")
-        public String adminOnly() {
             return "ok";
         }
     }
