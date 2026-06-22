@@ -20,18 +20,22 @@ public interface HouseApiDocs {
     ResponseEntity<PageResponse<HouseSummaryResponse>> searchHouses(
             @Parameter(description = "법정동 지역 코드", example = "1111010100")
             @RequestParam String regionCode,
-            @Parameter(description = "주택 유형", example = "APT")
+            @Parameter(description = "주택 유형 (아파트, 다세대)", example = "아파트")
             @RequestParam(required = false) String houseType,
-            @Parameter(description = "거래 유형", example = "SALE")
+            @Parameter(description = "거래 유형 (매매, 전세, 월세, 전월세)", example = "매매")
             @RequestParam(required = false) String dealType,
-            @Parameter(description = "최소 거래 금액", example = "10000")
+            @Parameter(description = "최소 거래 금액 (만원)", example = "10000")
             @RequestParam(required = false) Integer minAmount,
-            @Parameter(description = "최대 거래 금액", example = "100000")
+            @Parameter(description = "최대 거래 금액 (만원)", example = "100000")
             @RequestParam(required = false) Integer maxAmount,
             @Parameter(description = "페이지 번호", example = "1")
             @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 크기", example = "20")
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "20") int size,
+            @Parameter(description = "정렬 기준 (name, area, floor, price, date)", example = "date")
+            @RequestParam(defaultValue = "date") String sortBy,
+            @Parameter(description = "정렬 방향 (asc, desc)", example = "desc")
+            @RequestParam(defaultValue = "desc") String sortDir
     );
 
     @Operation(

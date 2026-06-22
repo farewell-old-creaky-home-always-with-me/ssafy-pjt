@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
 
+import static com.ssafy.home.global.exception.ErrorCode.COMMON_INVALID_INPUT;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
 
@@ -36,11 +37,37 @@ class HouseServiceTest {
         given(houseMapper.existsByRegionCode("1100000000")).willReturn(false);
 
         // when / then
-        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20))
+        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20, "date", "desc"))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
                         .isEqualTo(HOUSE_INVALID_REGION))
                 .hasMessage("유효하지 않은 행정구역 코드입니다");
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 sortBy 값으로 검색하면 예외가 발생한다")
+    void searchHousesThrowsWhenSortByIsInvalid() {
+        // given
+        given(houseMapper.existsByRegionCode("1100000000")).willReturn(true);
+
+        // when / then
+        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20, "INVALID", "desc"))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(COMMON_INVALID_INPUT));
+    }
+
+    @Test
+    @DisplayName("유효하지 않은 sortDir 값으로 검색하면 예외가 발생한다")
+    void searchHousesThrowsWhenSortDirIsInvalid() {
+        // given
+        given(houseMapper.existsByRegionCode("1100000000")).willReturn(true);
+
+        // when / then
+        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20, "date", "INVALID"))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(COMMON_INVALID_INPUT));
     }
 
     @Test

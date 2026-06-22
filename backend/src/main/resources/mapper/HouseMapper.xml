@@ -24,7 +24,14 @@
             AND h.house_type = #{houseType}
         </if>
         <if test="dealType != null">
-            AND ld.deal_type = #{dealType}
+            <choose>
+                <when test="dealType == '전월세'">
+                    AND ld.deal_type IN ('전세', '월세')
+                </when>
+                <otherwise>
+                    AND ld.deal_type = #{dealType}
+                </otherwise>
+            </choose>
         </if>
         <if test="minAmount != null">
             AND COALESCE(ld.deal_amount, ld.deposit_amount, 0) &gt;= #{minAmount}
@@ -58,6 +65,8 @@
             h.jibun,
             h.build_year,
             h.house_type,
+            h.region_code,
+            rc.dong_name,
             ld.deal_type AS latest_deal_type,
             ld.deal_amount AS latest_deal_amount,
             ld.deposit_amount AS latest_deposit_amount,
@@ -69,8 +78,21 @@
         INNER JOIN (
             <include refid="latestDealSubquery"/>
         ) ld ON ld.house_id = h.id AND ld.rn = 1
+        INNER JOIN region_code rc ON rc.region_code = h.region_code
         <include refid="searchConditions"/>
-        ORDER BY ld.deal_date DESC, h.id DESC
+        ORDER BY
+        <choose>
+            <when test="sortBy == 'name'">h.apt_name</when>
+            <when test="sortBy == 'area'">ld.area</when>
+            <when test="sortBy == 'floor'">ld.floor</when>
+            <when test="sortBy == 'price'">COALESCE(ld.deal_amount, ld.deposit_amount, 0)</when>
+            <otherwise>ld.deal_date</otherwise>
+        </choose>
+        <choose>
+            <when test="sortDir == 'asc'">ASC</when>
+            <otherwise>DESC</otherwise>
+        </choose>
+        , h.id DESC
         LIMIT #{size} OFFSET #{offset}
     </select>
 

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.region.mapper.RegionMapper">
+
+    <select id="findAll" resultType="com.ssafy.home.region.mapper.dto.RegionResult">
+        SELECT DISTINCT
+            rc.region_code,
+            rc.sido_name,
+            rc.sigungu_name,
+            rc.dong_name
+        FROM region_code rc
+        INNER JOIN house h ON h.region_code = rc.region_code
+        <where>
+            <if test="dong != null and dong != ''">
+                AND rc.dong_name LIKE CONCAT('%', #{dong}, '%')
+            </if>
+        </where>
+        ORDER BY rc.sido_name, rc.sigungu_name, rc.dong_name
+    </select>
+
+</mapper>

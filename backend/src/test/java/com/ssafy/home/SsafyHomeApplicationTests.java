@@ -6,6 +6,7 @@ import com.ssafy.home.batch.mapper.BatchCollectionLogMapper;
 import com.ssafy.home.batch.mapper.HouseDealBatchMapper;
 import com.ssafy.home.batch.mapper.RegionBatchMapper;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
+import com.ssafy.home.region.mapper.RegionMapper;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
 import com.ssafy.home.global.config.database.InitialDataLoader;
@@ -83,6 +84,9 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     RegionBatchMapper regionBatchMapper;
+
+    @MockitoBean
+    RegionMapper regionMapper;
 
     @Test
     void contextLoads() {
