@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ssafy.home.global.auth.JwtTokenProvider;
+import com.ssafy.home.global.config.SecurityConfig;
 import com.ssafy.home.region.dto.RegionResponse;
 import com.ssafy.home.region.service.RegionService;
 import com.ssafy.home.support.WebMvcTestConfig;
@@ -13,16 +14,15 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(RegionController.class)
-@Import(WebMvcTestConfig.class)
-@AutoConfigureMockMvc(addFilters = false)
+@Import({WebMvcTestConfig.class, SecurityConfig.class})
 class RegionControllerTest {
 
     @Autowired
@@ -75,5 +75,29 @@ class RegionControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    @DisplayName("미인증 상태로 공개 엔드포인트에 접근하면 200을 반환한다")
+    void getRegionsUnauthenticatedReturns200() throws Exception {
+        // given
+        given(regionService.getRegions(null)).willReturn(List.of());
+
+        // when / then
+        mockMvc.perform(get("/api/regions").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("인증 토큰으로 공개 엔드포인트에 접근해도 200을 반환한다")
+    void getRegionsAuthenticatedReturns200() throws Exception {
+        // given
+        given(regionService.getRegions(null)).willReturn(List.of());
+
+        // when / then
+        mockMvc.perform(get("/api/regions")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer some-token")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
     }
 }

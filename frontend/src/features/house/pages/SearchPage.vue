@@ -128,8 +128,8 @@ const modalInfoItems = computed(() => {
     { icon: MapPin, label: '동', value: item.dongName },
     { icon: Hash, label: '지번', value: item.jibun },
     { icon: Landmark, label: '지역코드', value: item.regionCode },
-    { icon: Maximize2, label: '전용면적', value: item.latestDeal ? item.latestDeal.area.toFixed(2) + ' ㎡' : '-' },
-    { icon: Layers, label: '층', value: item.latestDeal ? item.latestDeal.floor + '층' : '-' },
+    { icon: Maximize2, label: '전용면적', value: item.latestDeal?.area != null ? item.latestDeal.area.toFixed(2) + ' ㎡' : '-' },
+    { icon: Layers, label: '층', value: item.latestDeal?.floor != null ? item.latestDeal.floor + '층' : '-' },
   ]
 })
 
@@ -168,7 +168,11 @@ function initMap() {
 }
 
 onMounted(async () => {
-  regions.value = await regionsApi.getRegions()
+  try {
+    regions.value = await regionsApi.getRegions()
+  } catch {
+    // regions stays [], rest of initialization continues
+  }
 
   const { dong, type } = route.query
   if (dong) {

@@ -15,7 +15,8 @@ public class RegionService {
 
     @Transactional(readOnly = true)
     public List<RegionResponse> getRegions(String dong) {
-        return regionMapper.findAll(dong)
+        String normalizedDong = (dong == null || dong.isBlank()) ? null : dong.trim();
+        return regionMapper.findAll(normalizedDong)
                 .stream()
                 .map(RegionResponse::from)
                 .toList();
