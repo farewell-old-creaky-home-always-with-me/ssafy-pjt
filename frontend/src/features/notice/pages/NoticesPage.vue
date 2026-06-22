@@ -13,7 +13,6 @@ const searchQuery = ref('')
 const page = ref(1)
 const totalPages = ref(1)
 
-
 const filtered = computed(() =>
   notices.value.filter(n => n.title.toLowerCase().includes(searchQuery.value.toLowerCase()))
 )
@@ -41,68 +40,70 @@ onMounted(() => loadPage(1))
 </script>
 
 <template>
-  <div class="notices-page">
-    <div class="notices-wrap">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem">
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page py-8 px-4">
+    <div class="max-w-[56rem] mx-auto">
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">공지사항</h1>
-          <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">SSAFY Home 서비스 관련 공지사항입니다</p>
+          <h1 class="text-navy text-[1.375rem] font-bold">공지사항</h1>
+          <p class="text-gray-400 text-[0.8125rem] mt-1">SSAFY Home 서비스 관련 공지사항입니다</p>
         </div>
       </div>
 
-      <div class="notice-search">
-        <Search :size="18" />
-        <input v-model="searchQuery" type="text" placeholder="제목으로 검색..." />
+      <!-- Search -->
+      <div class="relative mb-4">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"><Search :size="18" /></span>
+        <input
+          v-model="searchQuery"
+          type="text"
+          class="w-full py-3 pl-11 pr-4 rounded-xl bg-white border border-[#e5e7eb] text-navy text-sm outline-none shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)] placeholder:text-gray-400"
+          placeholder="제목으로 검색..."
+        />
       </div>
 
-      <div v-if="error" class="general-error" style="display:flex">
+      <div v-if="error" class="flex items-center gap-2 bg-red/5 border border-red/20 rounded-xl px-4 py-3 mb-4 text-red text-[0.8125rem] font-medium">
         <AlertCircle :size="16" /><span>{{ error }}</span>
       </div>
 
-      <div v-if="loading" style="padding:4rem;text-align:center;color:#9ca3af">불러오는 중...</div>
-      <div v-else class="card" style="overflow:hidden">
-        <div class="notice-list-header">
-          <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600;text-align:center">번호</span>
-          <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600">제목</span>
-          <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600;text-align:center">작성일</span>
-          <span style="color:#1A3C6E;font-size:0.75rem;font-weight:600;text-align:center">작성자</span>
+      <div v-if="loading" class="py-16 text-center text-gray-400">불러오는 중...</div>
+      <div v-else class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
+        <!-- Table header (sm+) -->
+        <div class="hidden sm:grid grid-cols-[60px_1fr_100px_80px] bg-bg-page px-5 py-3 gap-3">
+          <span class="text-navy text-xs font-semibold text-center">번호</span>
+          <span class="text-navy text-xs font-semibold">제목</span>
+          <span class="text-navy text-xs font-semibold text-center">작성일</span>
+          <span class="text-navy text-xs font-semibold text-center">작성자</span>
         </div>
-        <div v-if="filtered.length === 0" style="padding:4rem 1rem;display:flex;flex-direction:column;align-items:center">
-          <FileText :size="40" style="color:#d1d5db;margin-bottom:0.75rem" />
-          <p style="color:#9ca3af;font-size:0.875rem">공지사항이 없습니다</p>
+
+        <div v-if="filtered.length === 0" class="py-16 px-4 flex flex-col items-center">
+          <FileText :size="40" class="text-[#d1d5db] mb-3" />
+          <p class="text-gray-400 text-sm">공지사항이 없습니다</p>
         </div>
-        <button v-for="n in filtered" :key="n.noticeId" class="notice-row" @click="router.push('/notices/' + n.noticeId)">
-          <span class="notice-no">{{ n.noticeId }}</span>
-          <span class="notice-title">{{ n.title }}</span>
-          <span class="notice-date"><Calendar :size="12" />{{ formatDate(n.createdAt) }}</span>
-          <span class="notice-views">{{ n.authorName }}</span>
+
+        <button
+          v-for="n in filtered"
+          :key="n.noticeId"
+          class="w-full text-left flex flex-col sm:grid sm:grid-cols-[60px_1fr_100px_80px] sm:items-center px-5 py-4 gap-1 sm:gap-3 border-b border-gray-50 last:border-none cursor-pointer bg-none transition-colors hover:bg-blue/[0.03]"
+          @click="router.push('/notices/' + n.noticeId)"
+        >
+          <span class="hidden sm:block text-gray-400 text-[0.8125rem] text-center">{{ n.noticeId }}</span>
+          <span class="text-navy text-sm font-medium truncate">{{ n.title }}</span>
+          <span class="text-gray-400 text-xs flex items-center gap-1"><Calendar :size="12" />{{ formatDate(n.createdAt) }}</span>
+          <span class="text-gray-400 text-xs">{{ n.authorName }}</span>
         </button>
       </div>
 
       <!-- Pagination -->
-      <div style="display:flex;justify-content:center;gap:0.25rem;margin-top:1rem">
-        <button class="page-btn" :disabled="page === 1" @click="loadPage(page - 1)"><ChevronLeft :size="14" /></button>
-        <button v-for="p in pageRange" :key="p" class="page-btn" :class="{ active: p === page }" @click="loadPage(p)">{{ p }}</button>
-        <button class="page-btn" :disabled="page >= totalPages" @click="loadPage(page + 1)"><ChevronRight :size="14" /></button>
+      <div class="flex justify-center gap-1 mt-4">
+        <button class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 text-[0.8125rem] transition-colors hover:bg-bg-page hover:text-navy disabled:text-[#d1d5db] disabled:cursor-not-allowed" :disabled="page === 1" @click="loadPage(page - 1)"><ChevronLeft :size="14" /></button>
+        <button
+          v-for="p in pageRange"
+          :key="p"
+          class="w-9 h-9 flex items-center justify-center rounded-lg text-[0.8125rem] transition-colors"
+          :class="p === page ? 'bg-blue text-white font-semibold cursor-default' : 'text-gray-500 hover:bg-bg-page hover:text-navy'"
+          @click="loadPage(p)"
+        >{{ p }}</button>
+        <button class="w-9 h-9 flex items-center justify-center rounded-lg text-gray-500 text-[0.8125rem] transition-colors hover:bg-bg-page hover:text-navy disabled:text-[#d1d5db] disabled:cursor-not-allowed" :disabled="page >= totalPages" @click="loadPage(page + 1)"><ChevronRight :size="14" /></button>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.notices-page { min-height:calc(100vh - 64px); background:#F4F6F9; padding:2rem 1rem; }
-.notices-wrap { max-width:56rem; margin:0 auto; }
-.notice-list-header { display:none; grid-template-columns:60px 1fr 100px 80px; background:#F4F6F9; padding:0.75rem 1.25rem; gap:0.75rem; }
-@media (min-width:640px) { .notice-list-header { display:grid; } }
-.notice-row { width:100%; text-align:left; display:flex; flex-direction:column; padding:1rem 1.25rem; gap:0.25rem; border-bottom:1px solid #f9fafb; cursor:pointer; background:none; border-left:none; border-right:none; border-top:none; transition:background 0.15s; }
-@media (min-width:640px) { .notice-row { display:grid; grid-template-columns:60px 1fr 100px 80px; align-items:center; gap:0.75rem; } }
-.notice-row:hover { background:rgba(45,156,219,0.03); }
-.notice-no { color:#9ca3af; font-size:0.8125rem; text-align:center; display:none; }
-@media (min-width:640px) { .notice-no { display:block; } }
-.notice-title { color:#1A3C6E; font-size:0.875rem; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.notice-date, .notice-views { color:#9ca3af; font-size:0.75rem; display:flex; align-items:center; gap:0.25rem; }
-.notice-search { position:relative; margin-bottom:1rem; }
-.notice-search svg { position:absolute; left:1rem; top:50%; transform:translateY(-50%); color:#9ca3af; pointer-events:none; }
-.notice-search input { width:100%; padding:0.75rem 1rem 0.75rem 2.75rem; border-radius:0.75rem; background:#fff; border:1px solid #e5e7eb; color:#1A3C6E; font-size:0.875rem; outline:none; box-shadow:0 1px 3px rgba(0,0,0,0.05); }
-.notice-search input:focus { border-color:#2D9CDB; box-shadow:0 0 0 3px rgba(45,156,219,0.15); }
-</style>
