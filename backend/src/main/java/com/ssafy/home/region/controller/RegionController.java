@@ -13,10 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/regions")
 @RequiredArgsConstructor
-public class RegionController {
+public class RegionController implements RegionApiDocs {
 
     private final RegionService regionService;
 
+    @Override
     @GetMapping
     public ResponseEntity<List<RegionResponse>> getRegions(
             @RequestParam(required = false) String dong
