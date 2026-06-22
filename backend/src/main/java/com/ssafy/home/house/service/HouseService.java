@@ -1,5 +1,6 @@
 package com.ssafy.home.house.service;
 
+import static com.ssafy.home.global.exception.ErrorCode.COMMON_INVALID_INPUT;
 import static com.ssafy.home.global.exception.ErrorCode.COMMON_INVALID_PAGE;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_AMOUNT_MAX;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_AMOUNT_MIN;
@@ -135,13 +136,13 @@ public class HouseService {
 
     private void validateSortBy(String sortBy) {
         if (!ALLOWED_SORT_BY.contains(sortBy)) {
-            throw new CustomException(COMMON_INVALID_PAGE);
+            throw new CustomException(COMMON_INVALID_INPUT);
         }
     }
 
     private void validateSortDir(String sortDir) {
         if (!ALLOWED_SORT_DIR.contains(sortDir)) {
-            throw new CustomException(COMMON_INVALID_PAGE);
+            throw new CustomException(COMMON_INVALID_INPUT);
         }
     }
 
