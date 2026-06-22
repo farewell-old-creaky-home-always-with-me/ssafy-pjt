@@ -3,7 +3,7 @@ import { ref, computed, onMounted } from 'vue'
 import { Plus, X, Search, Heart, MapPin, Calendar, Trash2, AlertTriangle, Loader2 } from 'lucide-vue-next'
 import { useFavoritesStore } from '@/stores/favoritesStore.js'
 import { formatDate } from '@/utils/date.js'
-import '@css/pages/favorites.css'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 const favoritesStore = useFavoritesStore()
 
@@ -20,7 +20,6 @@ const filtered = computed(() => {
     !q || ((f.dongName ?? '') + (f.sigunguName ?? '') + (f.sidoName ?? '')).toLowerCase().includes(q)
   )
 })
-
 
 async function handleAdd() {
   if (!newRegionCode.value.trim() || newRegionCode.value.length !== 10) {
@@ -56,96 +55,117 @@ onMounted(() => favoritesStore.fetchFavorites())
 </script>
 
 <template>
-  <div class="favorites-page">
-    <div class="favorites-wrap">
-      <div class="favorites-header">
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page py-8 px-4">
+    <div class="max-w-3xl mx-auto">
+      <!-- Header -->
+      <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h1 style="color:#1A3C6E;font-size:1.375rem;font-weight:700">관심지역</h1>
-          <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.25rem">
-            저장된 관심지역 <span style="color:#2D9CDB">{{ favoritesStore.count }}</span>개
+          <h1 class="text-navy text-[1.375rem] font-bold">관심지역</h1>
+          <p class="text-gray-400 text-[0.8125rem] mt-1">
+            저장된 관심지역 <span class="text-blue">{{ favoritesStore.count }}</span>개
           </p>
         </div>
-        <button class="btn btn-primary btn-sm" @click="showAdd = !showAdd">
+        <BaseButton size="sm" @click="showAdd = !showAdd">
           <Plus v-if="!showAdd" :size="16" /><X v-else :size="16" />
           {{ showAdd ? '취소' : '관심지역 추가' }}
-        </button>
+        </BaseButton>
       </div>
 
       <!-- Add form -->
-      <div v-if="showAdd" class="add-form-card">
-        <h3 style="color:#1A3C6E;font-size:0.9375rem;font-weight:600;margin-bottom:1rem">새 관심지역 등록</h3>
-        <div class="add-form-fields">
-          <div style="flex:1">
-            <label class="form-label" style="font-size:0.75rem;margin-bottom:0.375rem;display:block">지역코드 (10자리)</label>
-            <input v-model="newRegionCode" type="text" class="input-plain" placeholder="예: 1168010100" maxlength="10" />
+      <div v-if="showAdd" class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-5 mb-6">
+        <h3 class="text-navy text-[0.9375rem] font-semibold mb-4">새 관심지역 등록</h3>
+        <div class="flex flex-col sm:flex-row sm:items-end gap-3">
+          <div class="flex-1">
+            <label class="block text-navy text-xs font-semibold mb-1.5">지역코드 (10자리)</label>
+            <input
+              v-model="newRegionCode"
+              type="text"
+              class="w-full px-4 py-2.5 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)] placeholder:text-gray-400"
+              placeholder="예: 1168010100"
+              maxlength="10"
+            />
           </div>
-          <div style="display:flex;align-items:flex-end">
-            <button class="btn btn-navy btn-sm" style="white-space:nowrap;height:2.5rem" :disabled="adding" @click="handleAdd">
-              <Loader2 v-if="adding" :size="14" class="animate-spin" />추가
-            </button>
-          </div>
+          <BaseButton size="sm" variant="navy" class="h-10 whitespace-nowrap" :disabled="adding" @click="handleAdd">
+            <Loader2 v-if="adding" :size="14" class="animate-spin" />추가
+          </BaseButton>
         </div>
-        <p style="color:#9ca3af;font-size:0.75rem;margin-top:0.5rem">
-          지역코드는 검색 페이지의 실거래가 상세 정보에서 확인할 수 있습니다.
-        </p>
+        <p class="text-gray-400 text-xs mt-2">지역코드는 검색 페이지의 실거래가 상세 정보에서 확인할 수 있습니다.</p>
       </div>
 
       <!-- Search -->
-      <div v-if="favoritesStore.count > 0" class="search-bar">
-        <Search :size="18" />
-        <input v-model="searchQuery" type="text" placeholder="지역명으로 검색..." />
+      <div v-if="favoritesStore.count > 0" class="relative mb-4">
+        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"><Search :size="18" /></span>
+        <input
+          v-model="searchQuery"
+          type="text"
+          class="w-full py-3 pl-11 pr-4 rounded-xl bg-white border border-[#e5e7eb] text-navy text-sm outline-none shadow-[0_1px_3px_rgba(0,0,0,0.05)] transition-all focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)] placeholder:text-gray-400"
+          placeholder="지역명으로 검색..."
+        />
       </div>
 
       <!-- Error -->
-      <div v-if="favoritesStore.error" style="display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:0.75rem;color:#DC2626;font-size:0.875rem;margin-bottom:1rem">
-        <AlertTriangle :size="16" style="flex-shrink:0" />
+      <div v-if="favoritesStore.error" class="flex items-center gap-2 px-5 py-4 bg-[#FEF2F2] border border-[#FECACA] rounded-xl text-[#DC2626] text-sm mb-4">
+        <AlertTriangle :size="16" class="shrink-0" />
         {{ favoritesStore.error }}
       </div>
 
-      <!-- List -->
-      <div id="fav-list-container">
-        <div v-if="filtered.length === 0" class="empty-state">
-          <div class="empty-icon"><Heart :size="32" /></div>
-          <p style="color:#1A3C6E;font-size:1rem;font-weight:600;margin-bottom:0.25rem">
-            {{ searchQuery ? '검색 결과가 없습니다' : '등록된 관심지역이 없습니다' }}
-          </p>
-          <p style="color:#9ca3af;font-size:0.8125rem;text-align:center">
-            {{ searchQuery ? '다른 검색어로 시도해 주세요' : '상단의 추가 버튼으로 관심지역을 등록해 보세요' }}
-          </p>
+      <!-- Empty state -->
+      <div v-if="filtered.length === 0" class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center py-16 px-4">
+        <div class="w-16 h-16 rounded-full bg-bg-page flex items-center justify-center mb-4">
+          <Heart :size="32" class="text-[#d1d5db]" />
         </div>
-        <div v-else class="fav-list">
-          <div v-for="item in filtered" :key="item.favoriteId" class="fav-item">
-            <div class="fav-icon"><MapPin :size="18" /></div>
-            <div class="fav-info">
-              <p class="fav-name">{{ item.dongName || item.sigunguName }}</p>
-              <div class="fav-meta">
-                <span><MapPin :size="12" />{{ item.sidoName }} {{ item.sigunguName }}</span>
-                <span><Calendar :size="12" />{{ formatDate(item.createdAt) }}</span>
-              </div>
-            </div>
-            <button class="fav-delete-btn" @click="startDelete(item)" aria-label="삭제"><Trash2 :size="16" /></button>
+        <p class="text-navy text-base font-semibold mb-1">
+          {{ searchQuery ? '검색 결과가 없습니다' : '등록된 관심지역이 없습니다' }}
+        </p>
+        <p class="text-gray-400 text-[0.8125rem] text-center">
+          {{ searchQuery ? '다른 검색어로 시도해 주세요' : '상단의 추가 버튼으로 관심지역을 등록해 보세요' }}
+        </p>
+      </div>
+
+      <!-- List -->
+      <div v-else class="flex flex-col gap-3">
+        <div
+          v-for="item in filtered"
+          :key="item.favoriteId"
+          class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] px-5 py-4 flex items-center gap-4 transition-shadow hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)]"
+        >
+          <div class="w-10 h-10 rounded-xl bg-blue/10 flex items-center justify-center shrink-0 text-blue">
+            <MapPin :size="18" />
           </div>
+          <div class="flex-1 min-w-0">
+            <p class="text-navy text-[0.9375rem] font-semibold truncate">{{ item.dongName || item.sigunguName }}</p>
+            <div class="flex items-center gap-3 mt-1 flex-wrap">
+              <span class="text-gray-400 text-xs flex items-center gap-1"><MapPin :size="12" />{{ item.sidoName }} {{ item.sigunguName }}</span>
+              <span class="text-gray-400 text-xs flex items-center gap-1"><Calendar :size="12" />{{ formatDate(item.createdAt) }}</span>
+            </div>
+          </div>
+          <button
+            class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-[#d1d5db] transition-colors hover:bg-red/5 hover:text-red"
+            aria-label="삭제"
+            @click="startDelete(item)"
+          ><Trash2 :size="16" /></button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Delete modal -->
-  <div v-if="pendingDelete" class="modal-overlay visible">
-    <div class="modal-backdrop" @click="pendingDelete = null"></div>
-    <div class="modal-box">
-      <div style="padding:2rem 1.5rem 0.5rem;text-align:center">
-        <div class="confirm-modal-icon"><AlertTriangle :size="24" /></div>
-        <h3 style="color:#1A3C6E;font-size:1.125rem;font-weight:700;margin-bottom:0.5rem">관심지역 삭제</h3>
-        <p style="color:#9ca3af;font-size:0.8125rem">이 관심지역을 삭제하시겠습니까?</p>
+  <div v-if="pendingDelete" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" @click="pendingDelete = null"></div>
+    <div class="relative bg-white rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.2)] w-full max-w-[380px] overflow-hidden">
+      <div class="px-6 pt-8 pb-2 text-center">
+        <div class="w-14 h-14 rounded-full bg-red/10 flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle :size="24" class="text-red" />
+        </div>
+        <h3 class="text-navy text-lg font-bold mb-2">관심지역 삭제</h3>
+        <p class="text-gray-400 text-[0.8125rem]">이 관심지역을 삭제하시겠습니까?</p>
       </div>
-      <div style="display:flex;gap:0.75rem;padding:1.5rem">
-        <button class="btn btn-ghost btn-full" @click="pendingDelete = null">취소</button>
-        <button class="btn btn-danger btn-full" :disabled="deleting" @click="confirmDelete">
+      <div class="flex gap-3 px-6 py-6">
+        <BaseButton variant="ghost" :full="true" @click="pendingDelete = null">취소</BaseButton>
+        <BaseButton variant="danger" :full="true" :disabled="deleting" @click="confirmDelete">
           <Loader2 v-if="deleting" :size="14" class="animate-spin" />삭제
-        </button>
+        </BaseButton>
       </div>
     </div>
   </div>
 </template>
-
