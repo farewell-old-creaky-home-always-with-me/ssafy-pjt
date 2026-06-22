@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue'
 import { UtensilsCrossed, Store, Hospital, BookOpen, LayoutGrid, X } from 'lucide-vue-next'
 import { commercialApi } from '@/api/index.js'
-import '@css/pages/commercial.css'
 
 const CATEGORIES = [
   { key: '', label: '전체', icon: LayoutGrid, color: '#4F46E5' },
@@ -70,36 +69,45 @@ onMounted(initMap)
 </script>
 
 <template>
-  <div class="commercial-page">
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page flex flex-col">
     <div id="map" style="width:100%;height:calc(100vh - 64px)"></div>
 
     <!-- Category tabs -->
-    <div id="cat-tabs" style="position:absolute;top:80px;left:50%;transform:translateX(-50%);display:flex;gap:0.5rem;z-index:10;flex-wrap:wrap;justify-content:center">
-      <button v-for="cat in CATEGORIES" :key="cat.key"
-        class="cat-tab" :class="{ active: activeCategory === cat.key }"
+    <div class="absolute top-20 left-1/2 -translate-x-1/2 flex gap-2 z-10 flex-wrap justify-center">
+      <button
+        v-for="cat in CATEGORIES"
+        :key="cat.key"
+        class="flex items-center gap-2 px-5 py-2.5 rounded-xl whitespace-nowrap text-[0.8125rem] font-medium border-none cursor-pointer transition-all my-3 bg-bg-page text-gray-500 hover:bg-[#e5e7eb]"
+        :class="{ 'text-white font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]': activeCategory === cat.key }"
         :style="activeCategory === cat.key ? `background-color:${cat.color}` : ''"
-        @click="selectCategory(cat.key)">
+        @click="selectCategory(cat.key)"
+      >
         <component :is="cat.icon" :size="14" />
         {{ cat.label }}
-        <span class="cat-tab-count" :style="activeCategory === cat.key ? 'background:rgba(255,255,255,0.2)' : 'background:rgba(156,163,175,0.4)'">
+        <span
+          class="px-1.5 py-0.5 rounded-[0.375rem] text-[0.6875rem] font-semibold"
+          :style="activeCategory === cat.key ? 'background:rgba(255,255,255,0.2)' : 'background:rgba(156,163,175,0.4)'"
+        >
           {{ activeCategory === cat.key ? storesData.length : '-' }}
         </span>
       </button>
     </div>
 
     <!-- Bottom sheet -->
-    <div v-if="selectedShop" id="bottom-sheet" class="bottom-sheet expanded">
-      <div style="padding:1rem 1.25rem;display:flex;align-items:flex-start;gap:0.75rem">
-        <div id="sheet-icon" :style="`background:${activeCat.color}15;width:2.5rem;height:2.5rem;border-radius:0.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0`">
+    <div v-if="selectedShop" class="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-[0_-4px_20px_rgba(0,0,0,0.1)] border-t border-gray-100 z-30 overflow-hidden max-h-[60%]">
+      <div class="px-5 py-4 flex items-start gap-3">
+        <div
+          class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+          :style="`background:${activeCat.color}15`"
+        >
           <component :is="activeCat.icon" :size="20" :style="`color:${activeCat.color}`" />
         </div>
-        <div style="flex:1;min-width:0">
-          <h3 style="color:#1A3C6E;font-size:1rem;font-weight:700">{{ selectedShop.bizName }}</h3>
-          <p style="color:#9ca3af;font-size:0.8125rem;margin-top:0.125rem">{{ selectedShop.categoryMedium || selectedShop.categoryLarge }}</p>
+        <div class="flex-1 min-w-0">
+          <h3 class="text-navy text-base font-bold">{{ selectedShop.bizName }}</h3>
+          <p class="text-gray-400 text-[0.8125rem] mt-0.5">{{ selectedShop.categoryMedium || selectedShop.categoryLarge }}</p>
         </div>
-        <button @click="selectedShop = null" style="background:none;border:none;cursor:pointer"><X :size="18" /></button>
+        <button class="text-gray-400 hover:text-gray-600" @click="selectedShop = null"><X :size="18" /></button>
       </div>
     </div>
   </div>
 </template>
-
