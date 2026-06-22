@@ -1,3 +1,7 @@
 [submodule "backend/src/main/resources/secret"]
 	path = backend/src/main/resources/secret
 	url = https://github.com/farewell-old-creaky-home-always-with-me/backend-secret.git
+[submodule "frontend/secret"]
+	path = frontend/secret
+	url = https://github.com/farewell-old-creaky-home-always-with-me/frontend-secret.git
+	branch = main
