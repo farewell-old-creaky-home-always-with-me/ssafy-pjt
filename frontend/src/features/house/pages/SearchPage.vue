@@ -191,7 +191,7 @@ onMounted(async () => {
         >
           <div class="bg-navy px-5 py-4">
             <h2 class="text-white text-base font-semibold m-0">필터</h2>
-            <button class="hidden" @click="sidebarOpen = false"><X :size="16" /></button>
+            <button class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white transition-colors" @click="sidebarOpen = false"><X :size="16" /></button>
           </div>
           <div class="p-5 flex flex-col gap-5">
             <div>
