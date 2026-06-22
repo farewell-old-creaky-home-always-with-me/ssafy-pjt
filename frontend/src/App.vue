@@ -20,5 +20,5 @@
 <script setup>
 import { RouterView } from 'vue-router'
 import { Home } from 'lucide-vue-next'
-import AppNavbar from './components/AppNavbar.vue'
+import AppNavbar from './components/layout/AppNavbar.vue'
 </script>
