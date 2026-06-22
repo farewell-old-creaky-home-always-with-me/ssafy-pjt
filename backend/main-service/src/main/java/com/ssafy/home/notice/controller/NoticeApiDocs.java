@@ -1,19 +1,13 @@
 package com.ssafy.home.notice.controller;
 
-import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
-import com.ssafy.home.notice.dto.NoticeIdResponse;
 import com.ssafy.home.notice.dto.NoticeListItemResponse;
-import com.ssafy.home.notice.dto.NoticeCreateRequest;
-import com.ssafy.home.notice.dto.NoticeUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Tag(name = "Notice", description = "공지사항 API")
@@ -35,36 +29,6 @@ public interface NoticeApiDocs {
             description = "공지사항 ID로 상세 정보를 조회합니다."
     )
     ResponseEntity<NoticeDetailResponse> getNotice(
-            @Parameter(description = "공지사항 ID", example = "1")
-            @PathVariable Long noticeId
-    );
-
-    @Operation(
-            summary = "공지사항 등록",
-            description = "관리자가 공지사항을 등록합니다."
-    )
-    ResponseEntity<NoticeIdResponse> createNotice(
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "공지사항 요청", required = true)
-            @Valid @RequestBody NoticeCreateRequest request,
-            @Parameter(hidden = true) @LoginMemberId Long memberId
-    );
-
-    @Operation(
-            summary = "공지사항 수정",
-            description = "관리자가 공지사항을 수정합니다."
-    )
-    ResponseEntity<NoticeIdResponse> updateNotice(
-            @Parameter(description = "공지사항 ID", example = "1")
-            @PathVariable Long noticeId,
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "공지사항 요청", required = true)
-            @Valid @RequestBody NoticeUpdateRequest request
-    );
-
-    @Operation(
-            summary = "공지사항 삭제",
-            description = "관리자가 공지사항을 삭제합니다."
-    )
-    ResponseEntity<Void> deleteNotice(
             @Parameter(description = "공지사항 ID", example = "1")
             @PathVariable Long noticeId
     );
