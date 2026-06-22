@@ -13,6 +13,16 @@ spring:
               uri: http://localhost:8081
               predicates:
                 - Path=/api/admin/**
+            - id: admin-notice-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/notices,/api/notices/**
+                - Method=POST,PUT,DELETE
+            - id: main-notice-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/notices,/api/notices/**
+                - Method=GET
             - id: main-service
               uri: http://localhost:8082
               predicates:
