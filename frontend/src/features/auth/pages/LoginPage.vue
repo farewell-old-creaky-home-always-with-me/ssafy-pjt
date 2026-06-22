@@ -51,7 +51,7 @@ async function handleSubmit() {
 <template>
   <div class="min-h-[calc(100vh-64px)] bg-bg-page flex items-center justify-center py-12 px-4">
     <div class="w-full max-w-[420px]">
-      <div class="w-full bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
+      <div class="w-full bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden">
         <div class="flex flex-col items-center px-8 pt-10 pb-6">
           <div class="w-14 h-14 rounded-2xl bg-blue flex items-center justify-center text-white mb-5 shadow-[0_4px_12px_rgba(45,156,219,0.25)]">
             <Home :size="20" />
