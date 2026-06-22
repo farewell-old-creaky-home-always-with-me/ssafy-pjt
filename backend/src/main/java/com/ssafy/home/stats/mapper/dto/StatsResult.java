@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class StatsResult {
-    private long todayDealCount;
-    private long yesterdayDealCount;
+    private long thisMonthDealCount;
+    private long lastMonthDealCount;
     private Long avgSalePriceThisMonthManwon;
     private Long avgSalePriceLastMonthManwon;
     private Long avgLeasePriceThisMonthManwon;

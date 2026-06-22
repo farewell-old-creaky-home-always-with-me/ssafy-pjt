@@ -11,8 +11,8 @@ const heroTxType = ref('apt-sale')
 const searchFocused = ref(false)
 
 const stats = ref({
-  todayDealCount: null,
-  todayDealCountChange: null,
+  thisMonthDealCount: null,
+  thisMonthDealCountChange: null,
   avgSalePrice: null,
   avgSalePriceChange: null,
   avgLeasePrice: null,
@@ -98,18 +98,18 @@ onMounted(async () => {
         <div class="stat-card">
           <div class="stat-card-top">
             <div class="stat-icon" style="background:rgba(45,156,219,0.1)"><BarChart3 style="color:#2D9CDB" :size="20" /></div>
-            <div v-if="stats.todayDealCountChange != null" :class="['stat-change', stats.todayDealCountChange >= 0 ? 'up' : 'down']">
-              <TrendingUp v-if="stats.todayDealCountChange >= 0" :size="14" />
+            <div v-if="stats.thisMonthDealCountChange != null" :class="['stat-change', stats.thisMonthDealCountChange >= 0 ? 'up' : 'down']">
+              <TrendingUp v-if="stats.thisMonthDealCountChange >= 0" :size="14" />
               <TrendingDown v-else :size="14" />
-              {{ (stats.todayDealCountChange >= 0 ? '+' : '') + stats.todayDealCountChange.toFixed(1) }}%
+              {{ (stats.thisMonthDealCountChange >= 0 ? '+' : '') + stats.thisMonthDealCountChange.toFixed(1) }}%
             </div>
           </div>
-          <p class="stat-label">오늘 거래량</p>
+          <p class="stat-label">이번 달 거래량</p>
           <div class="stat-value">
-            <span class="stat-number">{{ stats.todayDealCount != null ? stats.todayDealCount.toLocaleString() : '-' }}</span>
+            <span class="stat-number">{{ stats.thisMonthDealCount != null ? stats.thisMonthDealCount.toLocaleString() : '-' }}</span>
             <span class="stat-unit">건</span>
           </div>
-          <p class="stat-desc">전일 대비</p>
+          <p class="stat-desc">전월 대비</p>
         </div>
         <div class="stat-card">
           <div class="stat-card-top">

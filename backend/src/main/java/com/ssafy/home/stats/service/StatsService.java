@@ -19,16 +19,16 @@ public class StatsService {
     public StatsResponse getStats() {
         StatsResult row = statsMapper.findSummary();
 
-        long todayCount    = row.getTodayDealCount();
-        long yesterdayCount = row.getYesterdayDealCount();
-        long avgSalePrice  = toWon(row.getAvgSalePriceThisMonthManwon());
-        long avgLeasePrice = toWon(row.getAvgLeasePriceThisMonthManwon());
+        long thisMonthCount = row.getThisMonthDealCount();
+        long lastMonthCount = row.getLastMonthDealCount();
+        long avgSalePrice   = toWon(row.getAvgSalePriceThisMonthManwon());
+        long avgLeasePrice  = toWon(row.getAvgLeasePriceThisMonthManwon());
 
-        double todayChange  = calculateChange(todayCount,  yesterdayCount);
-        double saleChange   = calculateChange(avgSalePrice, toWon(row.getAvgSalePriceLastMonthManwon()));
-        double leaseChange  = calculateChange(avgLeasePrice, toWon(row.getAvgLeasePriceLastMonthManwon()));
+        double thisMonthChange = calculateChange(thisMonthCount, lastMonthCount);
+        double saleChange      = calculateChange(avgSalePrice, toWon(row.getAvgSalePriceLastMonthManwon()));
+        double leaseChange     = calculateChange(avgLeasePrice, toWon(row.getAvgLeasePriceLastMonthManwon()));
 
-        return StatsResponse.of(todayCount, todayChange, avgSalePrice, saleChange, avgLeasePrice, leaseChange);
+        return StatsResponse.of(thisMonthCount, thisMonthChange, avgSalePrice, saleChange, avgLeasePrice, leaseChange);
     }
 
     private long toWon(Long manwon) {
