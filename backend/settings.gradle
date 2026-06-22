@@ -2,3 +2,4 @@ rootProject.name = 'home'
 
 include 'main-service'
 include 'gateway'
+include 'admin-service'
