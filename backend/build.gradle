@@ -1,50 +1,13 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.5.0'
-	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.springframework.boot' version '3.5.0' apply false
+	id 'io.spring.dependency-management' version '1.1.7' apply false
 }
 
-group = 'com.ssafy'
-version = '0.0.1-SNAPSHOT'
-description = 'SSAFY HOME Backend'
+allprojects {
+	group = 'com.ssafy'
+	version = '0.0.1-SNAPSHOT'
 
-java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+	repositories {
+		mavenCentral()
 	}
-}
-
-repositories {
-	mavenCentral()
-}
-
-dependencies {
-	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
-	implementation 'org.springframework.boot:spring-boot-starter-batch'
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-validation'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-actuator'
-	implementation 'org.flywaydb:flyway-core'
-	implementation 'org.flywaydb:flyway-mysql'
-	implementation 'io.micrometer:micrometer-registry-prometheus'
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.8'
-	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
-	implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
-	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
-	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
-	runtimeOnly 'com.mysql:mysql-connector-j'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testImplementation 'org.mockito:mockito-junit-jupiter'
-	testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:3.0.5'
-	testImplementation 'org.testcontainers:junit-jupiter'
-	testImplementation 'org.testcontainers:mysql'
-	testRuntimeOnly 'com.h2database:h2'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	compileOnly 'org.projectlombok:lombok'
-	annotationProcessor 'org.projectlombok:lombok'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
 }

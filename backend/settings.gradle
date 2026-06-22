@@ -1,1 +1,3 @@
 rootProject.name = 'home'
+
+include 'main-service'
