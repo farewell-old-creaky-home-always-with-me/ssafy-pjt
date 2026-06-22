@@ -36,7 +36,7 @@ class HouseServiceTest {
         given(houseMapper.existsByRegionCode("1100000000")).willReturn(false);
 
         // when / then
-        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20))
+        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20, "date", "desc"))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
                         .isEqualTo(HOUSE_INVALID_REGION))

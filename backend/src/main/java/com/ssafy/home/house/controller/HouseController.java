@@ -28,10 +28,13 @@ public class HouseController implements HouseApiDocs {
             @RequestParam(required = false) Integer minAmount,
             @RequestParam(required = false) Integer maxAmount,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "date") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
     ) {
         return ResponseEntity.ok(
-                houseService.searchHouses(regionCode, houseType, dealType, minAmount, maxAmount, page, size));
+                houseService.searchHouses(regionCode, houseType, dealType, minAmount, maxAmount,
+                        page, size, sortBy, sortDir));
     }
 
     @GetMapping("/{houseId}")

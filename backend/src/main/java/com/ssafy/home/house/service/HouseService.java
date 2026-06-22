@@ -1,6 +1,5 @@
 package com.ssafy.home.house.service;
 
-import com.ssafy.home.global.exception.CustomException;
 import static com.ssafy.home.global.exception.ErrorCode.COMMON_INVALID_PAGE;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_AMOUNT_MAX;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_AMOUNT_MIN;
@@ -11,17 +10,19 @@ import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION_LEN
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION_REQUIRED;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_TYPE;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
-import lombok.RequiredArgsConstructor;
+
+import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.response.PageResponse;
-import com.ssafy.home.house.mapper.dto.HouseDealResult;
 import com.ssafy.home.house.dto.HouseDetailResponse;
+import com.ssafy.home.house.mapper.HouseMapper;
+import com.ssafy.home.house.mapper.dto.HouseDealResult;
 import com.ssafy.home.house.mapper.dto.HouseDetailResult;
 import com.ssafy.home.house.mapper.dto.HouseSearchParam;
 import com.ssafy.home.house.dto.HouseSummaryResponse;
 import com.ssafy.home.house.mapper.dto.HouseSummaryResult;
-import com.ssafy.home.house.mapper.HouseMapper;
 import java.util.List;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class HouseService {
 
     private static final Set<String> ALLOWED_HOUSE_TYPES = Set.of("아파트", "다세대");
-    private static final Set<String> ALLOWED_DEAL_TYPES = Set.of("매매", "전세", "월세");
+    private static final Set<String> ALLOWED_DEAL_TYPES = Set.of("매매", "전세", "월세", "전월세");
+    private static final Set<String> ALLOWED_SORT_BY = Set.of("name", "area", "floor", "price", "date");
+    private static final Set<String> ALLOWED_SORT_DIR = Set.of("asc", "desc");
 
     private final HouseMapper houseMapper;
 
@@ -42,7 +45,9 @@ public class HouseService {
             Integer minAmount,
             Integer maxAmount,
             int page,
-            int size
+            int size,
+            String sortBy,
+            String sortDir
     ) {
         String normalizedRegionCode = normalizeRegionCode(regionCode);
         validateRegionCode(normalizedRegionCode);
@@ -50,6 +55,11 @@ public class HouseService {
         validateDealType(dealType);
         validateAmounts(minAmount, maxAmount);
         validatePage(page, size);
+
+        String resolvedSortBy = (sortBy == null || sortBy.isBlank()) ? "date" : sortBy.trim();
+        String resolvedSortDir = (sortDir == null || sortDir.isBlank()) ? "desc" : sortDir.trim().toLowerCase();
+        validateSortBy(resolvedSortBy);
+        validateSortDir(resolvedSortDir);
 
         HouseSearchParam condition = new HouseSearchParam();
         condition.setRegionCode(normalizedRegionCode);
@@ -60,6 +70,8 @@ public class HouseService {
         condition.setPage(page);
         condition.setSize(size);
         condition.setOffset((page - 1) * size);
+        condition.setSortBy(resolvedSortBy);
+        condition.setSortDir(resolvedSortDir);
 
         long total = houseMapper.countBySearch(condition);
         List<HouseSummaryResponse> items = houseMapper.search(condition)
@@ -121,6 +133,18 @@ public class HouseService {
         }
     }
 
+    private void validateSortBy(String sortBy) {
+        if (!ALLOWED_SORT_BY.contains(sortBy)) {
+            throw new CustomException(COMMON_INVALID_PAGE);
+        }
+    }
+
+    private void validateSortDir(String sortDir) {
+        if (!ALLOWED_SORT_DIR.contains(sortDir)) {
+            throw new CustomException(COMMON_INVALID_PAGE);
+        }
+    }
+
     private String normalizeRegionCode(String regionCode) {
         if (regionCode == null || regionCode.trim().isEmpty()) {
             throw new CustomException(HOUSE_INVALID_REGION_REQUIRED);
@@ -135,6 +159,4 @@ public class HouseService {
     private String normalizeNullable(String value) {
         return value == null ? null : value.trim();
     }
-
-
 }
