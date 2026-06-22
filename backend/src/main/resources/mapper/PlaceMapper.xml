@@ -4,20 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.home.place.mapper.PlaceMapper">
 
-    <resultMap id="placeResultMap" type="com.ssafy.home.place.dto.PlaceEntity">
-        <id property="id" column="id"/>
-        <result property="memberId" column="member_id"/>
-        <result property="placeType" column="place_type"/>
-        <result property="name" column="name"/>
-        <result property="address" column="address"/>
-        <result property="regionCode" column="region_code"/>
-        <result property="latitude" column="latitude"/>
-        <result property="longitude" column="longitude"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
-    </resultMap>
-
-    <select id="existsRegionCode" resultType="boolean">
+    <select id="existsByRegionCode" resultType="boolean">
         SELECT EXISTS(
             SELECT 1
             FROM region_code
@@ -32,7 +19,7 @@
           AND place_type = #{placeType}
     </select>
 
-    <insert id="insertPlace" parameterType="com.ssafy.home.place.dto.PlaceEntity" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insert" parameterType="com.ssafy.home.place.mapper.dto.PlaceCreateParam" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO member_place (
             member_id,
             place_type,
@@ -52,7 +39,7 @@
         )
     </insert>
 
-    <select id="findByMemberId" resultMap="placeResultMap">
+    <select id="findByMemberId" resultType="com.ssafy.home.place.mapper.dto.PlaceResult">
         SELECT
             id,
             member_id,
@@ -69,7 +56,7 @@
         ORDER BY created_at DESC, id DESC
     </select>
 
-    <select id="findById" resultMap="placeResultMap">
+    <select id="findById" resultType="com.ssafy.home.place.mapper.dto.PlaceResult">
         SELECT
             id,
             member_id,
@@ -85,7 +72,7 @@
         WHERE id = #{placeId}
     </select>
 
-    <update id="updatePlace" parameterType="com.ssafy.home.place.dto.PlaceEntity">
+    <update id="updateById" parameterType="com.ssafy.home.place.mapper.dto.PlaceUpdateParam">
         UPDATE member_place
         SET place_type = #{placeType},
             name = #{name},

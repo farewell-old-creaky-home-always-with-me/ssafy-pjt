@@ -1,8 +1,6 @@
 -- SSAFY HOME mock data
 -- Demo account password for all members: password
 
-SET FOREIGN_KEY_CHECKS = 0;
-
 INSERT INTO region_code (region_code, sido_name, sigungu_name, dong_name) VALUES
 ('1111010100', '서울특별시', '종로구', '청운동'),
 ('1111010200', '서울특별시', '종로구', '신교동'),
@@ -89,9 +87,9 @@ started_at = VALUES(started_at),
 ended_at = VALUES(ended_at);
 
 INSERT INTO member (id, email, password, name, is_admin) VALUES
-(1, 'admin@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '관리자', 1),
-(2, 'user@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '김싸피', 0),
-(3, 'agent@example.com', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', '박중개', 0)
+(1, 'admin@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '관리자', 1),
+(2, 'user@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '김싸피', 0),
+(3, 'agent@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '박중개', 0)
 ON DUPLICATE KEY UPDATE
 email = VALUES(email),
 password = VALUES(password),
@@ -166,5 +164,3 @@ unit = VALUES(unit),
 measured_date = VALUES(measured_date),
 latitude = VALUES(latitude),
 longitude = VALUES(longitude);
-
-SET FOREIGN_KEY_CHECKS = 1;

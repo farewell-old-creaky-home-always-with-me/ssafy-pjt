@@ -5,6 +5,7 @@ import com.ssafy.home.environment.service.EnvironmentService;
 import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,11 +20,11 @@ public class EnvironmentController implements EnvironmentApiDocs {
 
     @GetMapping
     @Override
-    public List<EnvironmentResponse> getEnvironmentInfos(
+    public ResponseEntity<List<EnvironmentResponse>> getEnvironmentInfos(
             @RequestParam BigDecimal lat,
             @RequestParam BigDecimal lng,
             @RequestParam(required = false) Integer radius
     ) {
-        return environmentService.getEnvironmentInfos(lat, lng, radius);
+        return ResponseEntity.ok(environmentService.getEnvironmentInfos(lat, lng, radius));
     }
 }

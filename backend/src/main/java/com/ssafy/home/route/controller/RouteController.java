@@ -7,6 +7,7 @@ import com.ssafy.home.route.dto.RouteResponse;
 import com.ssafy.home.route.service.RouteService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @LoginRequired
 @RestController
-@RequestMapping("/api/route")
+@RequestMapping("/api/routes")
 @RequiredArgsConstructor
 public class RouteController implements RouteApiDocs {
 
@@ -22,10 +23,10 @@ public class RouteController implements RouteApiDocs {
 
     @PostMapping("/astar")
     @Override
-    public RouteResponse calculateRoute(
+    public ResponseEntity<RouteResponse> calculateRoute(
             @Valid @RequestBody RouteRequest request,
             @LoginMemberId Long memberId
     ) {
-        return routeService.calculateRoute(memberId, request);
+        return ResponseEntity.ok(routeService.calculateRoute(memberId, request));
     }
 }

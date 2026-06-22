@@ -112,6 +112,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Search, ChevronDown, BarChart3, Building2, Landmark, TrendingUp, TrendingDown } from 'lucide-vue-next'
+import { getStats } from '../api/stats.js'
 import '../../css/pages/home.css'
 
 const router = useRouter()
@@ -138,10 +139,11 @@ function formatKoreanManwon(won) {
   return eok + '억 ' + rest.toLocaleString()
 }
 
-onMounted(() => {
-  fetch('/api/stats')
-    .then(res => res.ok ? res.json() : Promise.reject(res.status))
-    .then(data => { stats.value = data })
-    .catch(() => {})
+onMounted(async () => {
+  try {
+    stats.value = await getStats()
+  } catch {
+    // Keep the placeholder stats when the backend is unavailable.
+  }
 })
 </script>

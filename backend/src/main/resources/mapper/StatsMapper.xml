@@ -4,26 +4,26 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ssafy.home.stats.mapper.StatsMapper">
 
-    <select id="findStats" resultType="com.ssafy.home.stats.dto.StatsRow">
+    <select id="findSummary" resultType="com.ssafy.home.stats.mapper.dto.StatsResult">
         SELECT
-            COUNT(CASE WHEN deal_date = CURDATE()                              THEN 1 END) AS todayDealCount,
-            COUNT(CASE WHEN deal_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)   THEN 1 END) AS yesterdayDealCount,
+            COUNT(CASE WHEN deal_date = CURDATE()                              THEN 1 END) AS today_deal_count,
+            COUNT(CASE WHEN deal_date = DATE_SUB(CURDATE(), INTERVAL 1 DAY)   THEN 1 END) AS yesterday_deal_count,
             CAST(AVG(CASE WHEN deal_type = '매매'
                            AND YEAR(deal_date)  = YEAR(CURDATE())
                            AND MONTH(deal_date) = MONTH(CURDATE())
-                      THEN deal_amount END) AS SIGNED)                                    AS avgSalePriceThisMonthManwon,
+                      THEN deal_amount END) AS SIGNED)                                    AS avg_sale_price_this_month_manwon,
             CAST(AVG(CASE WHEN deal_type = '매매'
                            AND deal_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
                            AND deal_date  &lt; DATE_FORMAT(CURDATE(), '%Y-%m-01')
-                      THEN deal_amount END) AS SIGNED)                                    AS avgSalePriceLastMonthManwon,
+                      THEN deal_amount END) AS SIGNED)                                    AS avg_sale_price_last_month_manwon,
             CAST(AVG(CASE WHEN deal_type = '전세'
                            AND YEAR(deal_date)  = YEAR(CURDATE())
                            AND MONTH(deal_date) = MONTH(CURDATE())
-                      THEN deposit_amount END) AS SIGNED)                                 AS avgLeasePriceThisMonthManwon,
+                      THEN deposit_amount END) AS SIGNED)                                 AS avg_lease_price_this_month_manwon,
             CAST(AVG(CASE WHEN deal_type = '전세'
                            AND deal_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
                            AND deal_date  &lt; DATE_FORMAT(CURDATE(), '%Y-%m-01')
-                      THEN deposit_amount END) AS SIGNED)                                 AS avgLeasePriceLastMonthManwon
+                      THEN deposit_amount END) AS SIGNED)                                 AS avg_lease_price_last_month_manwon
         FROM house_deal
         WHERE deal_date >= DATE_FORMAT(DATE_SUB(CURDATE(), INTERVAL 1 MONTH), '%Y-%m-01')
           AND deal_date &lt;= CURDATE()

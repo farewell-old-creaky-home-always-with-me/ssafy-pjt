@@ -1,9 +1,11 @@
 package com.ssafy.home.global.interceptor;
 
+import static com.ssafy.home.global.exception.ErrorCode.AUTH_FORBIDDEN;
+import static com.ssafy.home.global.exception.ErrorCode.AUTH_UNAUTHORIZED;
+
 import com.ssafy.home.global.auth.AuthConst;
 import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +36,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
         String token = jwtTokenProvider.resolveToken(request);
         if (token == null) {
-            throw new CustomException(ErrorCode.AUTH_UNAUTHORIZED);
+            throw new CustomException(AUTH_UNAUTHORIZED);
         }
 
         jwtTokenProvider.validateToken(token);
@@ -45,7 +47,7 @@ public class AuthInterceptor implements HandlerInterceptor {
         request.setAttribute(AuthConst.IS_ADMIN, isAdmin);
 
         if (adminOnly && !isAdmin) {
-            throw new CustomException(ErrorCode.AUTH_FORBIDDEN);
+            throw new CustomException(AUTH_FORBIDDEN);
         }
 
         return true;

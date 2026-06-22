@@ -1,7 +1,7 @@
 package com.ssafy.home.auth.controller;
 
+import com.ssafy.home.auth.dto.AuthLoginRequest;
 import com.ssafy.home.auth.dto.AuthMeResponse;
-import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.auth.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,8 +23,8 @@ public class AuthController implements AuthApiDocs {
 
     @PostMapping("/login")
     @Override
-    public LoginResponse login(@Valid @RequestBody LoginRequest request) {
-        return authService.login(request);
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody AuthLoginRequest request) {
+        return ResponseEntity.ok(authService.login(request));
     }
 
     @PostMapping("/logout")
@@ -35,7 +35,7 @@ public class AuthController implements AuthApiDocs {
 
     @GetMapping("/me")
     @Override
-    public AuthMeResponse getAuthMe(HttpServletRequest request) {
-        return authService.getAuthMe(request);
+    public ResponseEntity<AuthMeResponse> getAuthMe(HttpServletRequest request) {
+        return ResponseEntity.ok(authService.getAuthMe(request));
     }
 }

@@ -471,13 +471,15 @@ ChatMessageDao
 
 ---
 
-## 8. DDL 파일
+## 8. 데이터베이스 마이그레이션
 
-DDL SQL은 다음 경로에 작성한다.
+스키마 변경은 다음 경로에 새 Flyway 마이그레이션으로 추가한다.
 
 ```text
-db/schema.sql
+backend/src/main/resources/db/migration/V<version>__<description>.sql
 ```
+
+이미 적용된 마이그레이션 파일은 수정하지 않는다.
 
 주요 설계 요소:
 
@@ -558,10 +560,7 @@ db/schema.sql
 ## 12. 파일 구성 예시
 
 ```text
-whereismyhouse-db/
-├── README.md
-├── images/
-│   └── erd.png
-└── db/
-    └── schema.sql
+backend/src/main/resources/db/migration/
+├── V1__application_schema.sql
+└── V2__spring_batch_schema.sql
 ```

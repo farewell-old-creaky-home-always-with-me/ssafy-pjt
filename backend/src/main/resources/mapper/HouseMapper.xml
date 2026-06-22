@@ -34,7 +34,7 @@
         </if>
     </sql>
 
-    <select id="existsRegionCode" resultType="boolean">
+    <select id="existsByRegionCode" resultType="boolean">
         SELECT EXISTS(
             SELECT 1
             FROM region_code
@@ -42,7 +42,7 @@
         )
     </select>
 
-    <select id="countHouses" resultType="long">
+    <select id="countBySearch" resultType="long">
         SELECT COUNT(*)
         FROM house h
         INNER JOIN (
@@ -51,20 +51,20 @@
         <include refid="searchConditions"/>
     </select>
 
-    <select id="findHouseSummaries" resultType="com.ssafy.home.house.dto.HouseSummaryRow">
+    <select id="search" resultType="com.ssafy.home.house.mapper.dto.HouseSummaryResult">
         SELECT
-            h.id AS houseId,
-            h.apt_name AS aptName,
-            h.jibun AS jibun,
-            h.build_year AS buildYear,
-            h.house_type AS houseType,
-            ld.deal_type AS latestDealType,
-            ld.deal_amount AS latestDealAmount,
-            ld.deposit_amount AS latestDepositAmount,
-            ld.monthly_rent AS latestMonthlyRent,
-            ld.deal_date AS latestDealDate,
-            ld.area AS latestArea,
-            ld.floor AS latestFloor
+            h.id AS house_id,
+            h.apt_name,
+            h.jibun,
+            h.build_year,
+            h.house_type,
+            ld.deal_type AS latest_deal_type,
+            ld.deal_amount AS latest_deal_amount,
+            ld.deposit_amount AS latest_deposit_amount,
+            ld.monthly_rent AS latest_monthly_rent,
+            ld.deal_date AS latest_deal_date,
+            ld.area AS latest_area,
+            ld.floor AS latest_floor
         FROM house h
         INNER JOIN (
             <include refid="latestDealSubquery"/>
@@ -74,28 +74,28 @@
         LIMIT #{size} OFFSET #{offset}
     </select>
 
-    <select id="findHouseById" resultType="com.ssafy.home.house.dto.HouseDetailRow">
+    <select id="findById" resultType="com.ssafy.home.house.mapper.dto.HouseDetailResult">
         SELECT
-            id AS houseId,
-            apt_name AS aptName,
-            region_code AS regionCode,
+            id AS house_id,
+            apt_name,
+            region_code,
             jibun,
-            build_year AS buildYear,
-            house_type AS houseType,
+            build_year,
+            house_type,
             latitude,
             longitude
         FROM house
         WHERE id = #{houseId}
     </select>
 
-    <select id="findHouseDealsByHouseId" resultType="com.ssafy.home.house.dto.HouseDealRow">
+    <select id="findAllByHouseId" resultType="com.ssafy.home.house.mapper.dto.HouseDealResult">
         SELECT
-            id AS dealId,
-            deal_type AS dealType,
-            deal_amount AS dealAmount,
-            deposit_amount AS depositAmount,
-            monthly_rent AS monthlyRent,
-            deal_date AS dealDate,
+            id AS deal_id,
+            deal_type,
+            deal_amount,
+            deposit_amount,
+            monthly_rent,
+            deal_date,
             area,
             floor
         FROM house_deal

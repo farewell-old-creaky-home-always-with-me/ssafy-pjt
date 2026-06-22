@@ -1,6 +1,8 @@
 package com.ssafy.home.notice.mapper;
 
-import com.ssafy.home.notice.dto.NoticeEntity;
+import com.ssafy.home.notice.mapper.dto.NoticeCreateParam;
+import com.ssafy.home.notice.mapper.dto.NoticeResult;
+import com.ssafy.home.notice.mapper.dto.NoticeUpdateParam;
 import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -8,15 +10,15 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface NoticeMapper {
 
-    long countNotices();
+    long countAll();
 
-    List<NoticeEntity> findNotices(@Param("offset") int offset, @Param("size") int size);
+    List<NoticeResult> findAll(@Param("offset") int offset, @Param("size") int size);
 
-    NoticeEntity findNoticeById(@Param("noticeId") Long noticeId);
+    NoticeResult findById(@Param("noticeId") Long noticeId);
 
-    void insertNotice(NoticeEntity notice);
+    void insert(NoticeCreateParam notice);
 
-    int updateNotice(NoticeEntity notice);
+    int updateById(NoticeUpdateParam notice);
 
-    int deleteNoticeById(@Param("noticeId") Long noticeId);
+    int deleteById(@Param("noticeId") Long noticeId);
 }

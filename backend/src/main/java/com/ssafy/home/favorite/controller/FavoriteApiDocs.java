@@ -1,6 +1,6 @@
 package com.ssafy.home.favorite.controller;
 
-import com.ssafy.home.favorite.dto.CreateFavoriteRequest;
+import com.ssafy.home.favorite.dto.FavoriteCreateRequest;
 import com.ssafy.home.favorite.dto.FavoriteCreateResponse;
 import com.ssafy.home.favorite.dto.FavoriteResponse;
 import com.ssafy.home.global.auth.LoginMemberId;
@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +21,7 @@ public interface FavoriteApiDocs {
             summary = "관심 매물 목록 조회",
             description = "현재 로그인한 회원의 관심 매물 목록을 조회합니다."
     )
-    List<FavoriteResponse> getFavorites(@Parameter(hidden = true) @LoginMemberId Long memberId);
+    ResponseEntity<List<FavoriteResponse>> getFavorites(@Parameter(hidden = true) @LoginMemberId Long memberId);
 
     @Operation(
             summary = "관심 매물 등록",
@@ -28,7 +29,7 @@ public interface FavoriteApiDocs {
     )
     ResponseEntity<FavoriteCreateResponse> createFavorite(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "관심 매물 등록 요청", required = true)
-            @Valid @RequestBody CreateFavoriteRequest request,
+            @Valid @RequestBody FavoriteCreateRequest request,
             @Parameter(hidden = true) @LoginMemberId Long memberId
     );
 

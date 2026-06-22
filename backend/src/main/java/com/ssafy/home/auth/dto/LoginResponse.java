@@ -6,4 +6,8 @@ public record LoginResponse(
         boolean isAdmin,
         String accessToken
 ) {
+
+    public static LoginResponse from(com.ssafy.home.member.mapper.dto.MemberDetailResult member) {
+        return new LoginResponse(member.getId(), member.getName(), member.isAdmin(), null);
+    }
 }

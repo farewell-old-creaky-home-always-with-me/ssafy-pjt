@@ -1,7 +1,7 @@
 package com.ssafy.home.auth.controller;
 
+import com.ssafy.home.auth.dto.AuthLoginRequest;
 import com.ssafy.home.auth.dto.AuthMeResponse;
-import com.ssafy.home.auth.dto.LoginRequest;
 import com.ssafy.home.auth.dto.LoginResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,9 +18,9 @@ public interface AuthApiDocs {
             summary = "Login",
             description = "Authenticate with email and password, then issue a JWT access token."
     )
-    LoginResponse login(
+    ResponseEntity<LoginResponse> login(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Login request", required = true)
-            @Valid @RequestBody LoginRequest request
+            @Valid @RequestBody AuthLoginRequest request
     );
 
     @Operation(
@@ -33,5 +33,5 @@ public interface AuthApiDocs {
             summary = "Current user",
             description = "Return the authenticated user from the JWT access token."
     )
-    AuthMeResponse getAuthMe(@Parameter(hidden = true) HttpServletRequest request);
+    ResponseEntity<AuthMeResponse> getAuthMe(@Parameter(hidden = true) HttpServletRequest request);
 }

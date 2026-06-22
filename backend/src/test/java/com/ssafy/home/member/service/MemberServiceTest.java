@@ -3,18 +3,22 @@ package com.ssafy.home.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import static com.ssafy.home.global.exception.ErrorCode.MEMBER_DUPLICATE_EMAIL;
 
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
-import com.ssafy.home.member.dto.CreateMemberRequest;
-import com.ssafy.home.member.dto.MemberEntity;
-import com.ssafy.home.member.dto.MemberResponse;
-import com.ssafy.home.member.dto.UpdateMemberRequest;
+import com.ssafy.home.member.dto.MemberCreateRequest;
+import com.ssafy.home.member.dto.MemberDetailResponse;
+import com.ssafy.home.member.dto.MemberUpdateRequest;
 import com.ssafy.home.member.mapper.MemberMapper;
+import com.ssafy.home.member.mapper.dto.MemberCreateParam;
+import com.ssafy.home.member.mapper.dto.MemberDetailResult;
+import com.ssafy.home.member.mapper.dto.MemberUpdateParam;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -38,53 +42,64 @@ class MemberServiceTest {
     }
 
     @Test
+    @DisplayName("이미 존재하는 이메일로 가입하면 예외가 발생한다")
     void createMemberThrowsWhenEmailAlreadyExists() {
-        when(memberMapper.existsByEmail("user@example.com")).thenReturn(true);
+        // given
+        given(memberMapper.existsByEmail("user@example.com")).willReturn(true);
 
-        assertThatThrownBy(() -> memberService.createMember(new CreateMemberRequest("user@example.com", "password1234", "홍길동")))
+        // when / then
+        assertThatThrownBy(() -> memberService.createMember(
+                new MemberCreateRequest("user@example.com", "password1234", "홍길동")))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(ErrorCode.MEMBER_DUPLICATE_EMAIL))
+                        .isEqualTo(MEMBER_DUPLICATE_EMAIL))
                 .hasMessage("이미 사용 중인 이메일입니다");
     }
 
     @Test
+    @DisplayName("회원 가입 시 비밀번호를 인코딩하고 응답을 반환한다")
     void createMemberEncodesPasswordAndReturnsResponse() {
-        when(memberMapper.existsByEmail("user@example.com")).thenReturn(false);
-        when(passwordEncoder.encode("password1234")).thenReturn("encoded-password");
-        doAnswer(invocation -> {
-            MemberEntity member = invocation.getArgument(0);
-            member.setId(10L);
+        // given
+        given(memberMapper.existsByEmail("user@example.com")).willReturn(false);
+        given(passwordEncoder.encode("password1234")).willReturn("encoded-password");
+        willAnswer(invocation -> {
+            MemberCreateParam param = invocation.getArgument(0);
+            param.setId(10L);
             return null;
-        }).when(memberMapper).insertMember(any(MemberEntity.class));
+        }).given(memberMapper).insert(any(MemberCreateParam.class));
+        given(memberMapper.findById(10L)).willReturn(memberDetailResult(10L, "user@example.com", "홍길동"));
 
-        MemberEntity saved = new MemberEntity();
-        saved.setId(10L);
-        saved.setEmail("user@example.com");
-        saved.setName("홍길동");
-        when(memberMapper.findById(10L)).thenReturn(saved);
+        // when
+        MemberDetailResponse response = memberService.createMember(
+                new MemberCreateRequest("user@example.com", "password1234", "홍길동"));
 
-        MemberResponse response = memberService.createMember(new CreateMemberRequest("user@example.com", "password1234", "홍길동"));
-
+        // then
         assertThat(response.memberId()).isEqualTo(10L);
         assertThat(response.email()).isEqualTo("user@example.com");
         verify(passwordEncoder).encode("password1234");
     }
 
     @Test
-    void updateMemberReplacesNameAndPassword() {
-        MemberEntity member = new MemberEntity();
-        member.setId(1L);
-        member.setName("기존 이름");
-        member.setPassword("old");
-        when(memberMapper.findById(1L)).thenReturn(member);
-        when(passwordEncoder.encode("new-password")).thenReturn("encoded");
+    @DisplayName("회원 정보 수정 시 이름과 비밀번호를 갱신한다")
+    void updateReplacesNameAndPassword() {
+        // given
+        given(memberMapper.findById(1L)).willReturn(memberDetailResult(1L, "user@example.com", "기존 이름"));
+        given(passwordEncoder.encode("new-password")).willReturn("encoded");
 
-        var response = memberService.updateMyMember(1L, new UpdateMemberRequest("새 이름", "new-password"));
+        // when
+        var response = memberService.updateMyMember(1L, new MemberUpdateRequest("새 이름", "new-password"));
 
+        // then
         assertThat(response.memberId()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("새 이름");
-        verify(memberMapper).updateMember(member);
-        assertThat(member.getPassword()).isEqualTo("encoded");
+        verify(memberMapper).updateById(any(MemberUpdateParam.class));
+    }
+
+    private MemberDetailResult memberDetailResult(Long id, String email, String name) {
+        MemberDetailResult member = new MemberDetailResult();
+        member.setId(id);
+        member.setEmail(email);
+        member.setName(name);
+        return member;
     }
 }

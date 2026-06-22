@@ -6,7 +6,8 @@ import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.notice.dto.NoticeDetailResponse;
 import com.ssafy.home.notice.dto.NoticeIdResponse;
 import com.ssafy.home.notice.dto.NoticeListItemResponse;
-import com.ssafy.home.notice.dto.NoticeRequest;
+import com.ssafy.home.notice.dto.NoticeCreateRequest;
+import com.ssafy.home.notice.dto.NoticeUpdateRequest;
 import com.ssafy.home.notice.service.NoticeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,24 +32,24 @@ public class NoticeController implements NoticeApiDocs {
 
     @GetMapping
     @Override
-    public PageResponse<NoticeListItemResponse> getNotices(
+    public ResponseEntity<PageResponse<NoticeListItemResponse>> getNotices(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        return noticeService.getNotices(page, size);
+        return ResponseEntity.ok(noticeService.getNotices(page, size));
     }
 
     @GetMapping("/{noticeId}")
     @Override
-    public NoticeDetailResponse getNotice(@PathVariable Long noticeId) {
-        return noticeService.getNotice(noticeId);
+    public ResponseEntity<NoticeDetailResponse> getNotice(@PathVariable Long noticeId) {
+        return ResponseEntity.ok(noticeService.getNotice(noticeId));
     }
 
     @AdminOnly
     @PostMapping
     @Override
     public ResponseEntity<NoticeIdResponse> createNotice(
-            @Valid @RequestBody NoticeRequest request,
+            @Valid @RequestBody NoticeCreateRequest request,
             @LoginMemberId Long memberId
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -58,11 +59,11 @@ public class NoticeController implements NoticeApiDocs {
     @AdminOnly
     @PutMapping("/{noticeId}")
     @Override
-    public NoticeIdResponse updateNotice(
+    public ResponseEntity<NoticeIdResponse> updateNotice(
             @PathVariable Long noticeId,
-            @Valid @RequestBody NoticeRequest request
+            @Valid @RequestBody NoticeUpdateRequest request
     ) {
-        return noticeService.updateNotice(noticeId, request);
+        return ResponseEntity.ok(noticeService.updateNotice(noticeId, request));
     }
 
     @AdminOnly
@@ -72,5 +73,4 @@ public class NoticeController implements NoticeApiDocs {
         noticeService.deleteNotice(noticeId);
         return ResponseEntity.noContent().build();
     }
-
 }

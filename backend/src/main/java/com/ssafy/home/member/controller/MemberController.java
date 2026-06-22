@@ -2,10 +2,10 @@ package com.ssafy.home.member.controller;
 
 import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.LoginRequired;
-import com.ssafy.home.member.dto.CreateMemberRequest;
-import com.ssafy.home.member.dto.MemberResponse;
+import com.ssafy.home.member.dto.MemberCreateRequest;
+import com.ssafy.home.member.dto.MemberDetailResponse;
 import com.ssafy.home.member.dto.MemberUpdateResponse;
-import com.ssafy.home.member.dto.UpdateMemberRequest;
+import com.ssafy.home.member.dto.MemberUpdateRequest;
 import com.ssafy.home.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class MemberController implements MemberApiDocs {
 
     @PostMapping
     @Override
-    public ResponseEntity<MemberResponse> createMember(@Valid @RequestBody CreateMemberRequest request) {
+    public ResponseEntity<MemberDetailResponse> createMember(@Valid @RequestBody MemberCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(memberService.createMember(request));
     }
@@ -36,18 +36,18 @@ public class MemberController implements MemberApiDocs {
     @LoginRequired
     @GetMapping("/me")
     @Override
-    public MemberResponse getMyMember(@LoginMemberId Long memberId) {
-        return memberService.getMyMember(memberId);
+    public ResponseEntity<MemberDetailResponse> getMyMember(@LoginMemberId Long memberId) {
+        return ResponseEntity.ok(memberService.getMyMember(memberId));
     }
 
     @LoginRequired
     @PutMapping("/me")
     @Override
-    public MemberUpdateResponse updateMyMember(
-            @Valid @RequestBody UpdateMemberRequest request,
+    public ResponseEntity<MemberUpdateResponse> updateMyMember(
+            @Valid @RequestBody MemberUpdateRequest request,
             @LoginMemberId Long memberId
     ) {
-        return memberService.updateMyMember(memberId, request);
+        return ResponseEntity.ok(memberService.updateMyMember(memberId, request));
     }
 
     @LoginRequired

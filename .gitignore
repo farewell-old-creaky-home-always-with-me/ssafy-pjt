@@ -4,7 +4,9 @@
 # Claude & Codex
 .claude/
 .codex/
-docs/
+
+# Superpowers (agent workflow artifacts)
+docs/superpowers/
 
 # Node
 node_modules/

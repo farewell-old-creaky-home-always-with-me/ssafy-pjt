@@ -23,9 +23,13 @@ Thumbs.db
 
 # Logs and temporary files
 *.log
+docs/
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 tmp/
 temp/
+
+# Local agent documentation
+docs/

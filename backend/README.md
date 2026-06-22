@@ -28,14 +28,25 @@
 
 ## 환경 설정
 
-아래 환경 변수를 설정하거나 `application.yml`에서 직접 수정한다.
+민감 정보(DB, API 키)는 `secret/` **서브모듈**의 `application-secret.yml`에서 관리한다.
+템플릿은 `application-secret.example.yml`을 참고한다.
 
-| 환경 변수 | 설명 | 기본값 |
-|-----------|------|--------|
-| `DB_URL` | MySQL 접속 URL | `jdbc:mysql://localhost:3306/ssafy_home` |
-| `DB_USERNAME` | DB 사용자명 | `ssafy` |
-| `DB_PASSWORD` | DB 비밀번호 | `ssafy` |
-| `SQL_INIT_MODE` | SQL 초기화 모드 | `always` |
+```bash
+git submodule update --init backend/src/main/resources/secret
+# submodule 내 application-secret.yml에 molit/vworld 키 추가
+```
+
+| 항목 | secret yml 키 | 설명 |
+|------|---------------|------|
+| MySQL | `spring.datasource.*` | 접속 URL, 사용자, 비밀번호 |
+| 국토부 API | `molit.service-key`, `molit.apartment-sale-url`, `molit.multi-family-sale-url` | 공공데이터포털 인증키·endpoint |
+| VWorld | `vworld.api-key`, `vworld.domain` | Open API 키·등록 도메인 |
+
+현재 초기화 방식은 새로 만든 빈 DB를 전제로 한다.
+
+애플리케이션 기동 시 Flyway가 먼저 `src/main/resources/db/migration`의 아직 적용되지 않은 마이그레이션을 실행한다. Spring Batch 메타 테이블(`BATCH_*`)도 Flyway가 관리하며, `spring.batch.jdbc.initialize-schema`는 `never`로 유지한다.
+
+기본 설정에서는 이후 매 기동마다 `src/main/resources/data.sql`의 목업 데이터를 트랜잭션으로 반영하며, `app.database.seed-enabled`를 `false`로 설정하면 생략할 수 있다. 목업 데이터는 Flyway 이력에 포함하지 않으며, 반복 실행할 수 있도록 UPSERT로 관리한다.
 
 ---
 

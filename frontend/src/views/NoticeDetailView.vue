@@ -34,7 +34,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ChevronLeft, FileText, Calendar, AlertCircle } from 'lucide-vue-next'
-import { api } from '../api/index.js'
+import { noticesApi } from '../api/index.js'
 import { formatDate } from '../utils/date.js'
 
 const router = useRouter()
@@ -46,7 +46,7 @@ const error = ref(null)
 onMounted(async () => {
   loading.value = true
   try {
-    notice.value = await api.get(`/api/notices/${route.params.id}`)
+    notice.value = await noticesApi.getNoticeDetail(route.params.id)
   } catch {
     error.value = '공지사항을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
   } finally {

@@ -1,7 +1,8 @@
 package com.ssafy.home.global.auth;
 
+import static com.ssafy.home.global.exception.ErrorCode.AUTH_UNAUTHORIZED;
+
 import com.ssafy.home.global.exception.CustomException;
-import com.ssafy.home.global.exception.ErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;
@@ -28,12 +29,12 @@ public class LoginMemberIdArgumentResolver implements HandlerMethodArgumentResol
     ) {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         if (request == null) {
-            throw new CustomException(ErrorCode.AUTH_UNAUTHORIZED);
+            throw new CustomException(AUTH_UNAUTHORIZED);
         }
 
         Object memberId = request.getAttribute(AuthConst.MEMBER_ID);
         if (!(memberId instanceof Long id)) {
-            throw new CustomException(ErrorCode.AUTH_UNAUTHORIZED);
+            throw new CustomException(AUTH_UNAUTHORIZED);
         }
 
         return id;

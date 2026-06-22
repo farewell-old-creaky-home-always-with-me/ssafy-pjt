@@ -1,10 +1,47 @@
+app:
+  database:
+    seed-enabled: false
+
 spring:
+  flyway:
+    enabled: false
   config:
     import: optional:classpath:secret/application-secret.yml
   datasource:
-    url: jdbc:mysql://localhost:3306/ssafy_home
-    username: test
-    password: test
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema-h2.sql
+      data-locations:
+
+mybatis:
+  mapper-locations: classpath:/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+
+molit:
+  apartment-sale-url: http://localhost/test
+  multi-family-sale-url: http://localhost/test
+  service-key: test-key
+  page-size: 10
+  timeout: 5s
+  retry-count: 0
+  skip-limit: 1000
+
+vworld:
+  data-url: http://localhost/vworld
+  api-key: test-key
+  domain: localhost
+  legal-emd-layer: LT_C_ADEMD_INFO
+  page-size: 10
+  timeout: 5s
+  retry-count: 0
+  sido-retry-count: 1
+  skip-limit: 1000
 
 jwt:
   secret: test-jwt-secret-key-for-ssafy-home-project-2026
