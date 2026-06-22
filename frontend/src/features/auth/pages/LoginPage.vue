@@ -4,7 +4,7 @@ import { useRouter, RouterLink } from 'vue-router'
 import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2 } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/authStore.js'
 import { useFavoritesStore } from '@/stores/favoritesStore.js'
-import '@css/pages/auth.css'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -49,45 +49,66 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="auth-page">
-    <div class="auth-wrap">
-      <div class="auth-card card-lg">
-        <div class="auth-card-header">
-          <div class="auth-logo-icon"><Home :size="20" /></div>
-          <h1 style="color:#1A3C6E;font-size:1.5rem;font-weight:700;margin-bottom:0.25rem">로그인</h1>
-          <p style="color:#9ca3af;font-size:0.8125rem;margin:0">SSAFY Home에 오신 것을 환영합니다</p>
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-[420px]">
+      <div class="w-full bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.08)]">
+        <div class="flex flex-col items-center px-8 pt-10 pb-6">
+          <div class="w-14 h-14 rounded-2xl bg-blue flex items-center justify-center text-white mb-5 shadow-[0_4px_12px_rgba(45,156,219,0.25)]">
+            <Home :size="20" />
+          </div>
+          <h1 class="text-navy text-2xl font-bold mb-1">로그인</h1>
+          <p class="text-gray-400 text-[0.8125rem] m-0">SSAFY Home에 오신 것을 환영합니다</p>
         </div>
 
-        <form class="auth-card-form" @submit.prevent="handleSubmit" novalidate>
-          <div v-if="generalError" class="general-error" style="display:flex">
+        <form class="px-8 pb-8" @submit.prevent="handleSubmit" novalidate>
+          <div v-if="generalError" class="flex items-center gap-2 bg-red/5 border border-red/20 rounded-xl px-4 py-3 mb-5 text-red text-[0.8125rem] font-medium">
             <AlertCircle :size="16" />
             <span>{{ generalError }}</span>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="login-email">이메일</label>
-            <div class="input-icon-wrap">
-              <span class="input-icon"><Mail :size="16" /></span>
-              <input id="login-email" v-model="email" type="email" class="input-base"
-                :class="{ 'input-error': emailError }" placeholder="이메일을 입력하세요" autocomplete="email"
-                @blur="validateEmail" @input="generalError = ''" />
+          <div class="mb-4">
+            <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="login-email">이메일</label>
+            <div class="relative">
+              <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <Mail :size="16" />
+              </span>
+              <input
+                id="login-email"
+                v-model="email"
+                type="email"
+                class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                :class="{ 'border-red! shadow-[0_0_0_3px_rgba(235,87,87,0.15)]!': emailError }"
+                placeholder="이메일을 입력하세요"
+                autocomplete="email"
+                @blur="validateEmail"
+                @input="generalError = ''"
+              />
             </div>
-            <div v-if="emailError" class="field-error" style="display:flex">
+            <div v-if="emailError" class="flex items-center gap-1.5 mt-1.5 pl-1 text-red text-xs">
               <AlertCircle :size="14" /><span>{{ emailError }}</span>
             </div>
           </div>
 
-          <div class="form-group" style="margin-bottom:1.5rem">
-            <label class="form-label" for="login-password">비밀번호</label>
-            <div class="input-icon-wrap" style="position:relative">
-              <span class="input-icon"><Lock :size="16" /></span>
-              <input id="login-password" v-model="password" :type="showPw ? 'text' : 'password'"
-                class="input-base" :class="{ 'input-error': passwordError }" style="padding-right:3rem"
-                placeholder="비밀번호를 입력하세요" autocomplete="current-password"
-                @blur="validatePassword" @input="generalError = ''" />
+          <div class="mb-6">
+            <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="login-password">비밀번호</label>
+            <div class="relative">
+              <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <Lock :size="16" />
+              </span>
+              <input
+                id="login-password"
+                v-model="password"
+                :type="showPw ? 'text' : 'password'"
+                class="w-full pl-11 pr-12 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                :class="{ 'border-red! shadow-[0_0_0_3px_rgba(235,87,87,0.15)]!': passwordError }"
+                placeholder="비밀번호를 입력하세요"
+                autocomplete="current-password"
+                @blur="validatePassword"
+                @input="generalError = ''"
+              />
               <button
                 type="button"
-                class="pw-toggle"
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-400/20 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-blue focus-visible:outline-offset-2"
                 :aria-label="showPw ? '비밀번호 숨기기' : '비밀번호 보기'"
                 :aria-pressed="showPw"
                 @click="showPw = !showPw"
@@ -95,22 +116,22 @@ async function handleSubmit() {
                 <Eye v-if="!showPw" :size="16" /><EyeOff v-else :size="16" />
               </button>
             </div>
-            <div v-if="passwordError" class="field-error" style="display:flex">
+            <div v-if="passwordError" class="flex items-center gap-1.5 mt-1.5 pl-1 text-red text-xs">
               <AlertCircle :size="14" /><span>{{ passwordError }}</span>
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-full" :disabled="loading" style="font-size:0.9375rem">
+          <BaseButton type="submit" :full="true" :disabled="loading">
             <Loader2 v-if="loading" :size="16" class="animate-spin" />
             <span>{{ loading ? '로그인 중...' : '로그인' }}</span>
-          </button>
+          </BaseButton>
         </form>
       </div>
 
-      <div class="auth-links">
-        <RouterLink to="/signup">회원가입</RouterLink>
-        <div class="auth-links-divider"></div>
-        <RouterLink to="/password-recovery">비밀번호 찾기</RouterLink>
+      <div class="flex items-center justify-center gap-4 mt-6">
+        <RouterLink to="/signup" class="text-gray-500 text-[0.8125rem] font-medium transition-colors hover:text-blue">회원가입</RouterLink>
+        <div class="w-px h-3.5 bg-[#d1d5db]"></div>
+        <RouterLink to="/password-recovery" class="text-gray-500 text-[0.8125rem] font-medium transition-colors hover:text-blue">비밀번호 찾기</RouterLink>
       </div>
     </div>
   </div>
