@@ -48,24 +48,6 @@ vworld:
   sido-retry-count: 3
   skip-limit: 1000
 
-cors:
-  allowed-origins:
-    - "http://localhost:5173"
-    - "http://localhost:3000"
-  allowed-methods:
-    - "GET"
-    - "POST"
-    - "PUT"
-    - "PATCH"
-    - "DELETE"
-    - "OPTIONS"
-  allowed-headers:
-    - "*"
-  exposed-headers:
-    - "Location"
-  allow-credentials: true
-  max-age: 3600
-
 jwt:
   secret: ${JWT_SECRET:test-jwt-secret-key-for-ssafy-home-project-2026}
   access-token-expiration-millis: ${JWT_ACCESS_TOKEN_EXPIRATION_MILLIS:3600000}
