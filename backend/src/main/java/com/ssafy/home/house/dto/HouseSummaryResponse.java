@@ -10,6 +10,8 @@ public record HouseSummaryResponse(
         String jibun,
         Integer buildYear,
         String houseType,
+        String regionCode,
+        String dongName,
         LatestDealResponse latestDeal
 ) {
     public static HouseSummaryResponse from(HouseSummaryResult row) {
@@ -19,6 +21,8 @@ public record HouseSummaryResponse(
                 row.getJibun(),
                 row.getBuildYear(),
                 row.getHouseType(),
+                row.getRegionCode(),
+                row.getDongName(),
                 LatestDealResponse.from(row)
         );
     }

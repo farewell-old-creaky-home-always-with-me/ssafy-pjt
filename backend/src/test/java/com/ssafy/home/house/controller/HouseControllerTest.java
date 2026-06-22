@@ -85,6 +85,8 @@ class HouseControllerTest {
                 "757",
                 2005,
                 "아파트",
+                "1168010100",
+                "역삼동",
                 new HouseSummaryResponse.LatestDealResponse(
                         "매매",
                         178000,

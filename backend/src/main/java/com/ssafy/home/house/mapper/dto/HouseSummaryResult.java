@@ -14,6 +14,8 @@ public class HouseSummaryResult {
     private String jibun;
     private Integer buildYear;
     private String houseType;
+    private String regionCode;
+    private String dongName;
     private String latestDealType;
     private Integer latestDealAmount;
     private Integer latestDepositAmount;
