@@ -3,7 +3,7 @@ import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, UserCircle } from 'lucide-vue-next'
 import { membersApi } from '@/api/index.js'
-import '@css/pages/auth.css'
+import BaseButton from '@/components/base/BaseButton.vue'
 
 const router = useRouter()
 const name = ref('')
@@ -51,53 +51,61 @@ async function handleSubmit() {
 </script>
 
 <template>
-  <div class="auth-page">
-    <div class="auth-wrap-md">
-      <div class="auth-card card-lg">
-        <div class="auth-card-header">
-          <div class="auth-logo-icon"><Home :size="20" /></div>
-          <h1 style="color:#1A3C6E;font-size:1.5rem;font-weight:700;margin-bottom:0.25rem">회원가입</h1>
-          <p style="color:#9ca3af;font-size:0.8125rem;margin:0">SSAFY Home 계정을 생성하세요</p>
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-[480px]">
+      <div class="w-full bg-white rounded-2xl shadow-[0_8px_32px_rgba(0,0,0,0.1)] border border-gray-100 overflow-hidden">
+        <div class="flex flex-col items-center px-8 pt-10 pb-6">
+          <div class="w-14 h-14 rounded-2xl bg-blue flex items-center justify-center text-white mb-5 shadow-[0_4px_12px_rgba(45,156,219,0.25)]">
+            <Home :size="20" />
+          </div>
+          <h1 class="text-navy text-2xl font-bold mb-1">회원가입</h1>
+          <p class="text-gray-400 text-[0.8125rem] m-0">SSAFY Home 계정을 생성하세요</p>
         </div>
 
-        <form class="auth-card-form" @submit.prevent="handleSubmit" novalidate>
-          <div v-if="generalError" class="general-error" style="display:flex">
+        <form class="px-8 pb-8" @submit.prevent="handleSubmit" novalidate>
+          <div v-if="generalError" class="flex items-center gap-2 bg-red/5 border border-red/20 rounded-xl px-4 py-3 mb-5 text-red text-[0.8125rem] font-medium">
             <AlertCircle :size="16" /><span>{{ generalError }}</span>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="signup-name">이름</label>
-            <div class="input-icon-wrap">
-              <span class="input-icon"><UserCircle :size="16" /></span>
-              <input id="signup-name" v-model="name" type="text" class="input-base"
-                :class="{ 'input-error': nameError }" placeholder="이름을 입력하세요"
-                @blur="validateName" />
+          <div class="mb-4">
+            <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="signup-name">이름</label>
+            <div class="relative">
+              <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><UserCircle :size="16" /></span>
+              <input id="signup-name" v-model="name" type="text"
+                class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                :class="{ 'border-red! shadow-[0_0_0_3px_rgba(235,87,87,0.15)]!': nameError }"
+                placeholder="이름을 입력하세요" @blur="validateName" />
             </div>
-            <div v-if="nameError" class="field-error" style="display:flex"><AlertCircle :size="14" /><span>{{ nameError }}</span></div>
+            <div v-if="nameError" class="flex items-center gap-1.5 mt-1.5 pl-1 text-red text-xs">
+              <AlertCircle :size="14" /><span>{{ nameError }}</span>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="signup-email">이메일</label>
-            <div class="input-icon-wrap">
-              <span class="input-icon"><Mail :size="16" /></span>
-              <input id="signup-email" v-model="email" type="email" class="input-base"
-                :class="{ 'input-error': emailError }" placeholder="이메일을 입력하세요"
-                @blur="validateEmail" />
+          <div class="mb-4">
+            <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="signup-email">이메일</label>
+            <div class="relative">
+              <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><Mail :size="16" /></span>
+              <input id="signup-email" v-model="email" type="email"
+                class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                :class="{ 'border-red! shadow-[0_0_0_3px_rgba(235,87,87,0.15)]!': emailError }"
+                placeholder="이메일을 입력하세요" @blur="validateEmail" />
             </div>
-            <div v-if="emailError" class="field-error" style="display:flex"><AlertCircle :size="14" /><span>{{ emailError }}</span></div>
+            <div v-if="emailError" class="flex items-center gap-1.5 mt-1.5 pl-1 text-red text-xs">
+              <AlertCircle :size="14" /><span>{{ emailError }}</span>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label" for="signup-password">비밀번호</label>
-            <div class="input-icon-wrap" style="position:relative">
-              <span class="input-icon"><Lock :size="16" /></span>
+          <div class="mb-6">
+            <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="signup-password">비밀번호</label>
+            <div class="relative">
+              <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><Lock :size="16" /></span>
               <input id="signup-password" v-model="password" :type="showPw ? 'text' : 'password'"
-                class="input-base" :class="{ 'input-error': passwordError }"
-                style="padding-right:3rem" placeholder="비밀번호 8자 이상"
-                @blur="validatePassword" />
+                class="w-full pl-11 pr-12 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                :class="{ 'border-red! shadow-[0_0_0_3px_rgba(235,87,87,0.15)]!': passwordError }"
+                placeholder="비밀번호 8자 이상" @blur="validatePassword" />
               <button
                 type="button"
-                class="pw-toggle"
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-400/20 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-blue focus-visible:outline-offset-2"
                 :aria-label="showPw ? '비밀번호 숨기기' : '비밀번호 보기'"
                 :aria-pressed="showPw"
                 @click="showPw = !showPw"
@@ -105,17 +113,20 @@ async function handleSubmit() {
                 <Eye v-if="!showPw" :size="16" /><EyeOff v-else :size="16" />
               </button>
             </div>
-            <div v-if="passwordError" class="field-error" style="display:flex"><AlertCircle :size="14" /><span>{{ passwordError }}</span></div>
+            <div v-if="passwordError" class="flex items-center gap-1.5 mt-1.5 pl-1 text-red text-xs">
+              <AlertCircle :size="14" /><span>{{ passwordError }}</span>
+            </div>
           </div>
 
-          <button type="submit" class="btn btn-primary btn-full" :disabled="loading">
+          <BaseButton type="submit" :full="true" :disabled="loading">
             <Loader2 v-if="loading" :size="16" class="animate-spin" />
             <span>{{ loading ? '가입 중...' : '회원가입' }}</span>
-          </button>
+          </BaseButton>
         </form>
       </div>
-      <div class="auth-links">
-        <RouterLink to="/login">이미 계정이 있으신가요? 로그인</RouterLink>
+
+      <div class="flex items-center justify-center gap-4 mt-6">
+        <RouterLink to="/login" class="text-gray-500 text-[0.8125rem] font-medium transition-colors hover:text-blue">이미 계정이 있으신가요? 로그인</RouterLink>
       </div>
     </div>
   </div>

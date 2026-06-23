@@ -22,12 +22,14 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = null
       throw Object.assign(new Error('관리자 계정이 아닙니다.'), { status: 403 })
     }
+    localStorage.setItem('accessToken', data.accessToken)
     user.value = { memberId: data.memberId, name: data.name, isAdmin: true }
     return data
   }
 
   async function logout() {
     await apiLogout()
+    localStorage.removeItem('accessToken')
     user.value = null
   }
 

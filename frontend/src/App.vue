@@ -1,18 +1,22 @@
 <template>
   <AppNavbar />
   <RouterView />
-  <footer>
-    <div class="footer-inner">
-      <div class="footer-logo">
-        <div class="footer-logo-icon"><Home :size="16" /></div>
-        <span class="footer-logo-text">SSAFY <span class="blue">Home</span></span>
+  <footer class="bg-[#0F2847] text-white/60 py-10">
+    <div class="max-w-[80rem] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row sm:justify-between items-center gap-4">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-[0.375rem] bg-blue flex items-center justify-center text-white">
+          <Home :size="16" />
+        </div>
+        <span class="text-white/80 text-[0.9375rem] font-semibold">
+          SSAFY <span class="text-blue">Home</span>
+        </span>
       </div>
-      <div class="footer-links">
-        <a href="#">이용약관</a>
-        <a href="#">개인정보처리방침</a>
-        <a href="#">고객센터</a>
+      <div class="flex items-center gap-6 text-[0.8125rem]">
+        <a href="#" class="text-white/60 transition-colors hover:text-white">이용약관</a>
+        <a href="#" class="text-white/60 transition-colors hover:text-white">개인정보처리방침</a>
+        <a href="#" class="text-white/60 transition-colors hover:text-white">고객센터</a>
       </div>
-      <p class="footer-copy">&copy; 2026 SSAFY Home. All rights reserved.</p>
+      <p class="text-xs">&copy; 2026 SSAFY Home. All rights reserved.</p>
     </div>
   </footer>
 </template>
