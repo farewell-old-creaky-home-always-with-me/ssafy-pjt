@@ -5,11 +5,7 @@ import router from './router/index.js'
 import { useAuthStore } from './stores/authStore.js'
 import { useFavoritesStore } from './stores/favoritesStore.js'
 
-import '../css/reset.css'
-import '../css/variables.css'
-import '../css/base.css'
-import '../css/layout.css'
-import '../css/components.css'
+import '../css/tailwind.css'
 
 const app = createApp(App)
 const pinia = createPinia()

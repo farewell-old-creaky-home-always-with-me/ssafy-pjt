@@ -24,40 +24,36 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="notices-page">
-    <div class="notices-wrap">
-      <button class="back-link" @click="router.push('/notices')">
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page py-8 px-4">
+    <div class="max-w-[56rem] mx-auto">
+      <button
+        class="inline-flex items-center gap-1.5 text-gray-500 text-[0.8125rem] font-medium cursor-pointer mb-4 transition-colors hover:text-blue"
+        @click="router.push('/notices')"
+      >
         <ChevronLeft :size="16" /> 목록으로
       </button>
 
-      <div v-if="loading" style="padding:4rem;text-align:center;color:#9ca3af">불러오는 중...</div>
-      <div v-else-if="error" style="display:flex;align-items:center;gap:0.5rem;padding:1rem 1.25rem;background:#FEF2F2;border:1px solid #FECACA;border-radius:0.75rem;color:#DC2626;font-size:0.875rem">
-        <AlertCircle :size="16" style="flex-shrink:0" />
+      <div v-if="loading" class="py-16 text-center text-gray-400">불러오는 중...</div>
+      <div v-else-if="error" class="flex items-center gap-2 px-5 py-4 bg-[#FEF2F2] border border-[#FECACA] rounded-xl text-[#DC2626] text-sm">
+        <AlertCircle :size="16" class="shrink-0" />
         {{ error }}
       </div>
-      <div v-else-if="notice" class="card" style="overflow:hidden">
-        <div style="padding:1.25rem 1.5rem;border-bottom:1px solid #f3f4f6">
-          <h2 style="color:#1A3C6E;font-size:1.25rem;font-weight:700;margin-bottom:0.75rem">{{ notice.title }}</h2>
-          <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap">
-            <span style="color:#9ca3af;font-size:0.75rem;display:flex;align-items:center;gap:0.25rem">
+      <div v-else-if="notice" class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100">
+          <h2 class="text-navy text-xl font-bold mb-3">{{ notice.title }}</h2>
+          <div class="flex items-center gap-4 flex-wrap">
+            <span class="text-gray-400 text-xs flex items-center gap-1">
               <FileText :size="14" />{{ notice.authorName }}
             </span>
-            <span style="color:#9ca3af;font-size:0.75rem;display:flex;align-items:center;gap:0.25rem">
+            <span class="text-gray-400 text-xs flex items-center gap-1">
               <Calendar :size="14" />{{ formatDate(notice.createdAt) }}
             </span>
           </div>
         </div>
-        <div style="padding:1.5rem">
-          <div style="white-space:pre-wrap;color:#4b5563;font-size:0.875rem;line-height:1.8">{{ notice.content }}</div>
+        <div class="px-6 py-6">
+          <div class="whitespace-pre-wrap text-[#4b5563] text-sm leading-relaxed">{{ notice.content }}</div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.notices-page { min-height:calc(100vh - 64px); background:#F4F6F9; padding:2rem 1rem; }
-.notices-wrap { max-width:56rem; margin:0 auto; }
-.back-link { display:inline-flex; align-items:center; gap:0.375rem; color:#6b7280; font-size:0.8125rem; font-weight:500; cursor:pointer; background:none; border:none; margin-bottom:1rem; transition:color 0.15s; }
-.back-link:hover { color:#2D9CDB; }
-</style>

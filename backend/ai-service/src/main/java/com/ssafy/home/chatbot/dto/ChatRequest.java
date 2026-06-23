@@ -1,0 +1,7 @@
+package com.ssafy.home.chatbot.dto;
+
+import jakarta.validation.constraints.NotBlank;
+
+public record ChatRequest(
+    @NotBlank String message
+) {}
