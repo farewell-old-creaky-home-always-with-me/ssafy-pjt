@@ -5,6 +5,7 @@ import com.ssafy.home.chatbot.dto.ChatResponse;
 import com.ssafy.home.chatbot.dto.SearchResponse;
 import com.ssafy.home.chatbot.service.ChatbotService;
 import com.ssafy.home.chatbot.service.DocumentService;
+import com.ssafy.home.global.interceptor.LoginRequired;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@LoginRequired
 @RestController
 @RequestMapping("/api/chat")
 @RequiredArgsConstructor

@@ -24,3 +24,7 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+
+jwt:
+  secret: ${JWT_SECRET:test-jwt-secret-key-for-ssafy-home-project-2026}
+  access-token-expiration-millis: 3600000
