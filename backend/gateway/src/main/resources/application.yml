@@ -1,0 +1,48 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ssafy-home-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: admin-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/admin/**
+            - id: admin-notice-service
+              uri: http://localhost:8081
+              predicates:
+                - Path=/api/notices,/api/notices/**
+                - Method=POST,PUT,DELETE
+            - id: main-notice-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/notices,/api/notices/**
+                - Method=GET
+            - id: main-service
+              uri: http://localhost:8082
+              predicates:
+                - Path=/api/**
+          globalcors:
+            cors-configurations:
+              "[/**]":
+                allowed-origins:
+                  - "http://localhost:5173"
+                  - "http://localhost:3000"
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowed-headers:
+                  - "*"
+                allow-credentials: true
+
+jwt:
+  secret: ${JWT_SECRET:test-jwt-secret-key-for-ssafy-home-project-2026}
