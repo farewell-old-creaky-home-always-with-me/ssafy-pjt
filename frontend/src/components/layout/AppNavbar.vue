@@ -16,6 +16,7 @@
         <RouterLink to="/commercial" class="nav-link"><Store :size="16" /> 상권 정보</RouterLink>
         <RouterLink to="/environment" class="nav-link"><TreePine :size="16" /> 환경 정보</RouterLink>
         <RouterLink to="/notices" class="nav-link"><FileText :size="16" /> 공지사항</RouterLink>
+        <RouterLink to="/qnas" class="nav-link"><FileText :size="16" /> Q&A</RouterLink>
       </div>
 
       <div class="navbar-auth">
@@ -49,6 +50,7 @@
       <RouterLink to="/commercial" class="mobile-nav-link" @click="mobileOpen = false"><Store :size="16" /> 상권 정보</RouterLink>
       <RouterLink to="/environment" class="mobile-nav-link" @click="mobileOpen = false"><TreePine :size="16" /> 환경 정보</RouterLink>
       <RouterLink to="/notices" class="mobile-nav-link" @click="mobileOpen = false"><FileText :size="16" /> 공지사항</RouterLink>
+      <RouterLink to="/qnas" class="mobile-nav-link" @click="mobileOpen = false"><FileText :size="16" /> Q&A</RouterLink>
       <template v-if="authStore.user">
         <RouterLink to="/profile" class="mobile-nav-link" @click="mobileOpen = false"><UserCircle :size="16" /> {{ authStore.user.name }}님</RouterLink>
         <button class="mobile-nav-link" style="background:none;border:none;cursor:pointer;text-align:left;width:100%" @click="handleLogout">

@@ -45,6 +45,30 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
+    path: '/qnas',
+    name: 'QnasPage',
+    component: () => import('@/features/qna/pages/QnasPage.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/qnas/new',
+    name: 'QnaCreatePage',
+    component: () => import('@/features/qna/pages/QnaCreatePage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/qnas/:id',
+    name: 'QnaDetailPage',
+    component: () => import('@/features/qna/pages/QnaDetailPage.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/qnas/:id/edit',
+    name: 'QnaEditPage',
+    component: () => import('@/features/qna/pages/QnaEditPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/login',
     name: 'LoginPage',
     component: () => import('@/features/auth/pages/LoginPage.vue'),
