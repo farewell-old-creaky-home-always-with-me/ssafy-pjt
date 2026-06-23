@@ -18,6 +18,7 @@ import java.util.Set;
 public class DocumentService {
 
     private static final Set<String> SUPPORTED_EXTENSIONS = Set.of("txt", "md", "pdf");
+    private static final TokenTextSplitter TEXT_SPLITTER = new TokenTextSplitter();
 
     private final VectorStore vectorStore;
 
@@ -34,8 +35,7 @@ public class DocumentService {
         TikaDocumentReader reader = new TikaDocumentReader(resource);
         List<Document> docs = reader.get();
 
-        TokenTextSplitter splitter = new TokenTextSplitter();
-        List<Document> chunks = splitter.apply(docs);
+        List<Document> chunks = TEXT_SPLITTER.apply(docs);
 
         vectorStore.add(chunks);
     }

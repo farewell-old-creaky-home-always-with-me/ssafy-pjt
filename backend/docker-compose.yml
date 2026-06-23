@@ -78,6 +78,11 @@ services:
     container_name: ssafy-home-chroma
     ports:
       - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   ai-service:
     image: eclipse-temurin:17-jre
@@ -92,7 +97,8 @@ services:
       - ./ai-service/build/libs/ai-service-0.0.1-SNAPSHOT.jar:/app/app.jar:ro
     command: ["java", "-jar", "/app/app.jar"]
     depends_on:
-      - chroma
+      chroma:
+        condition: service_healthy
 
   mysql:
     image: mysql:8.0
