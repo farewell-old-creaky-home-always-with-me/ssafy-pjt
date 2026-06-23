@@ -123,6 +123,21 @@ class ChatbotControllerTest {
     }
 
     @Test
+    void POST_api_chat_upload_빈_파일이면_400을_반환한다() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+            "file", "empty.txt", "text/plain", new byte[0]
+        );
+        doThrow(new IllegalArgumentException("빈 파일은 업로드할 수 없습니다."))
+            .when(documentService).ingest(any());
+
+        mockMvc.perform(multipart("/api/chat/upload")
+                .file(file)
+                .header("Authorization", generateTestToken()))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.message").value("빈 파일은 업로드할 수 없습니다."));
+    }
+
+    @Test
     void GET_api_chat_search_결과_목록을_반환한다() throws Exception {
         when(chatbotService.search(anyString(), anyInt()))
             .thenReturn(List.of(new SearchResponse("검색 내용", Map.of("source", "a.pdf"))));

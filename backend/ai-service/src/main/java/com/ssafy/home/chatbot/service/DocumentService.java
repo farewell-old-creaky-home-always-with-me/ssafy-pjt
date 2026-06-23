@@ -23,6 +23,9 @@ public class DocumentService {
     private final VectorStore vectorStore;
 
     public void ingest(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException("빈 파일은 업로드할 수 없습니다.");
+        }
         validateExtension(file.getOriginalFilename());
 
         ByteArrayResource resource = new ByteArrayResource(file.getBytes()) {
