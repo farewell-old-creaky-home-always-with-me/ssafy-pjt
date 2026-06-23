@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { AlertCircle, Calendar, ChevronLeft, ChevronRight, FileQuestion, PenLine, Search } from 'lucide-vue-next'
 import { qnasApi } from '@/api/index.js'
@@ -74,6 +74,10 @@ watch(() => filters.keyword, () => {
 
 watch(() => filters.status, () => loadPage(1))
 
+onBeforeUnmount(() => {
+  clearTimeout(searchTimer)
+})
+
 onMounted(() => loadPage(1))
 </script>
 
@@ -105,36 +109,37 @@ onMounted(() => loadPage(1))
       <div v-if="error" class="general-error" style="display:flex">
         <AlertCircle :size="16" /><span>{{ error }}</span>
       </div>
+      <div v-else-if="loading" class="qna-loading">불러오는 중...</div>
+      <template v-else>
+        <div class="card qna-list-card">
+          <div class="qna-list-header">
+            <span>번호</span>
+            <span>제목</span>
+            <span>작성자</span>
+            <span>상태</span>
+            <span>작성일</span>
+          </div>
 
-      <div v-if="loading" class="qna-loading">불러오는 중...</div>
-      <div v-else class="card qna-list-card">
-        <div class="qna-list-header">
-          <span>번호</span>
-          <span>제목</span>
-          <span>작성자</span>
-          <span>상태</span>
-          <span>작성일</span>
+          <div v-if="qnas.length === 0" class="qna-empty">
+            <FileQuestion :size="42" />
+            <p>등록된 질문이 없습니다.</p>
+          </div>
+
+          <button v-for="qna in qnas" :key="qnaId(qna)" class="qna-row" @click="router.push('/qnas/' + qnaId(qna))">
+            <span class="qna-no">{{ qnaId(qna) }}</span>
+            <span class="qna-title">{{ qna.title }}</span>
+            <span class="qna-author">{{ qna.authorName ?? qna.memberName ?? qna.writerName ?? '-' }}</span>
+            <span class="qna-status" :class="{ answered: qna.status === 'ANSWERED' }">{{ statusLabel(qna.status) }}</span>
+            <span class="qna-date"><Calendar :size="12" />{{ formatDate(qna.createdAt) }}</span>
+          </button>
         </div>
 
-        <div v-if="qnas.length === 0" class="qna-empty">
-          <FileQuestion :size="42" />
-          <p>등록된 질문이 없습니다.</p>
+        <div class="qna-pagination">
+          <button class="page-btn" :disabled="page === 1" @click="loadPage(page - 1)"><ChevronLeft :size="14" /></button>
+          <button v-for="p in pageRange" :key="p" class="page-btn" :class="{ active: p === page }" @click="loadPage(p)">{{ p }}</button>
+          <button class="page-btn" :disabled="page >= totalPages" @click="loadPage(page + 1)"><ChevronRight :size="14" /></button>
         </div>
-
-        <button v-for="qna in qnas" :key="qnaId(qna)" class="qna-row" @click="router.push('/qnas/' + qnaId(qna))">
-          <span class="qna-no">{{ qnaId(qna) }}</span>
-          <span class="qna-title">{{ qna.title }}</span>
-          <span class="qna-author">{{ qna.authorName ?? qna.memberName ?? qna.writerName ?? '-' }}</span>
-          <span class="qna-status" :class="{ answered: qna.status === 'ANSWERED' }">{{ statusLabel(qna.status) }}</span>
-          <span class="qna-date"><Calendar :size="12" />{{ formatDate(qna.createdAt) }}</span>
-        </button>
-      </div>
-
-      <div class="qna-pagination">
-        <button class="page-btn" :disabled="page === 1" @click="loadPage(page - 1)"><ChevronLeft :size="14" /></button>
-        <button v-for="p in pageRange" :key="p" class="page-btn" :class="{ active: p === page }" @click="loadPage(p)">{{ p }}</button>
-        <button class="page-btn" :disabled="page >= totalPages" @click="loadPage(page + 1)"><ChevronRight :size="14" /></button>
-      </div>
+      </template>
     </div>
   </div>
 </template>

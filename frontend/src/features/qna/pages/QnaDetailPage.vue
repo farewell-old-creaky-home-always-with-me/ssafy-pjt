@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { AlertCircle, Calendar, CheckCircle2, ChevronLeft, Clock3, FileQuestion, Pencil, Trash2, UserCircle } from 'lucide-vue-next'
 import { qnasApi } from '@/api/index.js'
@@ -17,16 +17,19 @@ const error = ref('')
 
 const qnaId = computed(() => qna.value?.qnaId ?? qna.value?.id ?? route.params.id)
 const authorId = computed(() => qna.value?.memberId ?? qna.value?.authorId ?? qna.value?.writerId)
-const canManage = computed(() => authStore.user && String(authStore.user.memberId) === String(authorId.value))
+const canManage = computed(() => {
+  const currentMemberId = authStore.user?.memberId
+  return currentMemberId != null && authorId.value != null && String(currentMemberId) === String(authorId.value)
+})
 const answered = computed(() => qna.value?.status === 'ANSWERED' || Boolean(qna.value?.answerContent ?? qna.value?.answer))
 const answerContent = computed(() => qna.value?.answerContent ?? qna.value?.answer?.content ?? qna.value?.answer ?? '')
 const answerCreatedAt = computed(() => qna.value?.answerCreatedAt ?? qna.value?.answeredAt ?? qna.value?.answer?.createdAt)
 
-async function loadQna() {
+async function loadQna(id = route.params.id) {
   loading.value = true
   error.value = ''
   try {
-    qna.value = await qnasApi.getQnaDetail(route.params.id)
+    qna.value = await qnasApi.getQnaDetail(id)
   } catch {
     error.value = 'Q&A 상세 내용을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
   } finally {
@@ -48,7 +51,7 @@ async function handleDelete() {
   }
 }
 
-onMounted(loadQna)
+watch(() => route.params.id, (id) => loadQna(id), { immediate: true })
 </script>
 
 <template>
