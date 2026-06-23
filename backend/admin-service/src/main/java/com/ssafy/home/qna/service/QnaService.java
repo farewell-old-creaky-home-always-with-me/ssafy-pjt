@@ -25,7 +25,10 @@ public class QnaService {
         QnaAnswerUpdateParam param = new QnaAnswerUpdateParam();
         param.setId(qna.getId());
         param.setAnswer(request.answer().trim());
-        qnaMapper.updateAnswerById(param);
+        int updated = qnaMapper.updateAnswerById(param);
+        if (updated == 0) {
+            throw new CustomException(QNA_NOT_FOUND);
+        }
         return QnaIdResponse.of(qnaId);
     }
 
@@ -35,7 +38,10 @@ public class QnaService {
         if (qna.getAnsweredAt() == null) {
             throw new CustomException(QNA_ANSWER_NOT_FOUND);
         }
-        qnaMapper.deleteAnswerById(qnaId);
+        int updated = qnaMapper.deleteAnswerById(qnaId);
+        if (updated == 0) {
+            throw new CustomException(QNA_NOT_FOUND);
+        }
     }
 
     private QnaResult requireQna(Long qnaId) {

@@ -21,6 +21,15 @@ class QnaMapperTest {
     private QnaMapper qnaMapper;
 
     @Test
+    @DisplayName("QnA 개수를 상태별로 조회한다")
+    void countAllByStatus() {
+        // when / then
+        assertThat(qnaMapper.countAll(null)).isEqualTo(2);
+        assertThat(qnaMapper.countAll(QnaStatus.WAITING)).isEqualTo(1);
+        assertThat(qnaMapper.countAll(QnaStatus.ANSWERED)).isEqualTo(1);
+    }
+
+    @Test
     @DisplayName("QnA 목록을 상태별로 조회한다")
     void findAllByStatus() {
         // when

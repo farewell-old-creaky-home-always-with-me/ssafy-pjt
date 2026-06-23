@@ -9,6 +9,7 @@ public record QnaCreateRequest(
         String title,
 
         @NotBlank(message = "내용은 필수입니다")
+        @Size(max = 65000, message = "내용은 65000자 이하여야 합니다")
         String content
 ) {
 }

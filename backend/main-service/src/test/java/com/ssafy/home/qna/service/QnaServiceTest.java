@@ -47,6 +47,26 @@ class QnaServiceTest {
     }
 
     @Test
+    @DisplayName("페이지 크기가 0이면 예외가 발생한다")
+    void getQnasThrowsWhenSizeIsZero() {
+        // when / then
+        assertThatThrownBy(() -> qnaService.getQnas(1, 0, null))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(COMMON_INVALID_PAGE));
+    }
+
+    @Test
+    @DisplayName("페이지 크기가 100을 초과하면 예외가 발생한다")
+    void getQnasThrowsWhenSizeExceedsMax() {
+        // when / then
+        assertThatThrownBy(() -> qnaService.getQnas(1, 101, null))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(COMMON_INVALID_PAGE));
+    }
+
+    @Test
     @DisplayName("QnA 목록을 상태별로 조회한다")
     void getQnasReturnsPage() {
         // given

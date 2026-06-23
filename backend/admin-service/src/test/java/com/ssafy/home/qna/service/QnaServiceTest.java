@@ -50,6 +50,7 @@ class QnaServiceTest {
     void updateAnswerTrimsRequest() {
         // given
         given(qnaMapper.findById(1L)).willReturn(qnaResult(null));
+        given(qnaMapper.updateAnswerById(org.mockito.ArgumentMatchers.any())).willReturn(1);
 
         // when
         var result = qnaService.updateAnswer(1L, new QnaAnswerRequest("  답변  "));
@@ -59,6 +60,20 @@ class QnaServiceTest {
         then(qnaMapper).should().updateAnswerById(org.mockito.ArgumentMatchers.argThat(param ->
                 param.getId().equals(1L) && param.getAnswer().equals("답변")
         ));
+    }
+
+    @Test
+    @DisplayName("답변 저장 영향 row가 없으면 예외가 발생한다")
+    void updateAnswerThrowsWhenNoRowsUpdated() {
+        // given
+        given(qnaMapper.findById(1L)).willReturn(qnaResult(null));
+        given(qnaMapper.updateAnswerById(org.mockito.ArgumentMatchers.any())).willReturn(0);
+
+        // when / then
+        assertThatThrownBy(() -> qnaService.updateAnswer(1L, new QnaAnswerRequest("답변")))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(QNA_NOT_FOUND));
     }
 
     @Test
@@ -79,12 +94,27 @@ class QnaServiceTest {
     void deleteAnswerDeletesWhenAnswered() {
         // given
         given(qnaMapper.findById(1L)).willReturn(qnaResult(LocalDateTime.of(2026, 6, 1, 10, 0)));
+        given(qnaMapper.deleteAnswerById(1L)).willReturn(1);
 
         // when
         qnaService.deleteAnswer(1L);
 
         // then
         then(qnaMapper).should().deleteAnswerById(1L);
+    }
+
+    @Test
+    @DisplayName("답변 삭제 영향 row가 없으면 예외가 발생한다")
+    void deleteAnswerThrowsWhenNoRowsUpdated() {
+        // given
+        given(qnaMapper.findById(1L)).willReturn(qnaResult(LocalDateTime.of(2026, 6, 1, 10, 0)));
+        given(qnaMapper.deleteAnswerById(1L)).willReturn(0);
+
+        // when / then
+        assertThatThrownBy(() -> qnaService.deleteAnswer(1L))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(QNA_NOT_FOUND));
     }
 
     private QnaResult qnaResult(LocalDateTime answeredAt) {
