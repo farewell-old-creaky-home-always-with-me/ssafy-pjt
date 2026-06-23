@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.notice.mapper.NoticeMapper">
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM notice
+    </select>
+
+    <select id="findAll" resultType="com.ssafy.home.notice.mapper.dto.NoticeResult">
+        SELECT
+            n.id,
+            n.member_id,
+            n.title,
+            n.content,
+            m.name AS author_name,
+            n.created_at,
+            n.updated_at
+        FROM notice n
+        INNER JOIN member m ON m.id = n.member_id
+        ORDER BY n.created_at DESC, n.id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="findById" resultType="com.ssafy.home.notice.mapper.dto.NoticeResult">
+        SELECT
+            n.id,
+            n.member_id,
+            n.title,
+            n.content,
+            m.name AS author_name,
+            n.created_at,
+            n.updated_at
+        FROM notice n
+        INNER JOIN member m ON m.id = n.member_id
+        WHERE n.id = #{noticeId}
+    </select>
+
+</mapper>
