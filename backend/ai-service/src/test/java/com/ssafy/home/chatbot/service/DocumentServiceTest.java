@@ -50,6 +50,17 @@ class DocumentServiceTest {
     }
 
     @Test
+    void 빈_파일이면_IllegalArgumentException을_던진다() {
+        MockMultipartFile file = new MockMultipartFile(
+            "file", "empty.txt", "text/plain", new byte[0]
+        );
+
+        assertThatThrownBy(() -> documentService.ingest(file))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessageContaining("빈 파일");
+    }
+
+    @Test
     void 파일명이_null이면_IllegalArgumentException을_던진다() {
         MockMultipartFile file = new MockMultipartFile(
             "file", null, "text/plain", "content".getBytes()
