@@ -15,4 +15,6 @@ public class HouseSearchParam {
     private int page;
     private int size;
     private int offset;
+    private String sortBy = "date";   // 신규, 기본값: date
+    private String sortDir = "desc";  // 신규, 기본값: desc
 }

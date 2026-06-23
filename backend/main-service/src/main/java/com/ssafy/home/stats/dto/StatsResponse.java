@@ -1,8 +1,8 @@
 package com.ssafy.home.stats.dto;
 
 public record StatsResponse(
-        long todayDealCount,
-        double todayDealCountChange,
+        long thisMonthDealCount,
+        double thisMonthDealCountChange,
         long avgSalePrice,
         double avgSalePriceChange,
         long avgLeasePrice,
@@ -10,13 +10,13 @@ public record StatsResponse(
 ) {
 
     public static StatsResponse of(
-            long todayCount,
-            double todayChange,
+            long thisMonthCount,
+            double thisMonthChange,
             long avgSalePrice,
             double saleChange,
             long avgLeasePrice,
             double leaseChange
     ) {
-        return new StatsResponse(todayCount, todayChange, avgSalePrice, saleChange, avgLeasePrice, leaseChange);
+        return new StatsResponse(thisMonthCount, thisMonthChange, avgSalePrice, saleChange, avgLeasePrice, leaseChange);
     }
 }
