@@ -10,6 +10,7 @@ import com.ssafy.home.house.mapper.HouseMapper;
 import com.ssafy.home.member.mapper.MemberMapper;
 import com.ssafy.home.notice.mapper.NoticeMapper;
 import com.ssafy.home.place.mapper.PlaceMapper;
+import com.ssafy.home.qna.mapper.QnaMapper;
 import com.ssafy.home.region.mapper.RegionMapper;
 import com.ssafy.home.route.mapper.FacilityMapper;
 import com.ssafy.home.route.mapper.RouteMapper;
@@ -62,6 +63,9 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     RegionMapper regionMapper;
+
+    @MockitoBean
+    QnaMapper qnaMapper;
 
     @Test
     void contextLoads() {

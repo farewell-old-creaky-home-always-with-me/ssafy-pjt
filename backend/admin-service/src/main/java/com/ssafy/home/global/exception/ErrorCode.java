@@ -45,6 +45,9 @@ public enum ErrorCode {
 
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 공지사항을 찾을 수 없습니다"),
 
+    QNA_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 QnA를 찾을 수 없습니다"),
+    QNA_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 답변을 찾을 수 없습니다"),
+
     COMMERCIAL_INVALID_COORDINATE(HttpStatus.BAD_REQUEST, "유효하지 않은 좌표입니다"),
     COMMERCIAL_INVALID_RADIUS(HttpStatus.BAD_REQUEST, "반경은 0보다 커야 합니다"),
 
