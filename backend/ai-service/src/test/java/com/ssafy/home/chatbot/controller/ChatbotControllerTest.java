@@ -136,6 +136,33 @@ class ChatbotControllerTest {
     }
 
     @Test
+    void GET_api_chat_search_query가_공백이면_400을_반환한다() throws Exception {
+        mockMvc.perform(get("/api/chat/search")
+                .header("Authorization", generateTestToken())
+                .param("query", "   ")
+                .param("k", "4"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void GET_api_chat_search_k가_0이면_400을_반환한다() throws Exception {
+        mockMvc.perform(get("/api/chat/search")
+                .header("Authorization", generateTestToken())
+                .param("query", "서울")
+                .param("k", "0"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void GET_api_chat_search_k가_21이면_400을_반환한다() throws Exception {
+        mockMvc.perform(get("/api/chat/search")
+                .header("Authorization", generateTestToken())
+                .param("query", "서울")
+                .param("k", "21"))
+            .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void Authorization_헤더_없이_chat_요청하면_401을_반환한다() throws Exception {
         mockMvc.perform(post("/api/chat")
                 .contentType(MediaType.APPLICATION_JSON)

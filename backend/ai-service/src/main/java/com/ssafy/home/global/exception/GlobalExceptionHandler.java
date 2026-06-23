@@ -1,6 +1,7 @@
 package com.ssafy.home.global.exception;
 
 import com.ssafy.home.global.response.ErrorDetail;
+import jakarta.validation.ConstraintViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,20 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorDetail> handleValidation(MethodArgumentNotValidException e) {
         String message = e.getBindingResult().getFieldErrors().stream()
             .map(fe -> fe.getField() + ": " + fe.getDefaultMessage())
+            .findFirst()
+            .orElse("입력값이 올바르지 않습니다.");
+        return ResponseEntity.badRequest()
+            .body(ErrorDetail.of("INVALID_INPUT", message));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorDetail> handleConstraintViolation(ConstraintViolationException e) {
+        String message = e.getConstraintViolations().stream()
+            .map(cv -> {
+                String path = cv.getPropertyPath().toString();
+                String param = path.contains(".") ? path.substring(path.lastIndexOf('.') + 1) : path;
+                return param + ": " + cv.getMessage();
+            })
             .findFirst()
             .orElse("입력값이 올바르지 않습니다.");
         return ResponseEntity.badRequest()

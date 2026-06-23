@@ -9,6 +9,7 @@ import com.ssafy.home.global.interceptor.LoginRequired;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,12 @@ public class ChatbotController implements ChatbotApiDocs {
         @RequestParam String query,
         @RequestParam(defaultValue = "4") int k
     ) {
+        if (!StringUtils.hasText(query)) {
+            throw new IllegalArgumentException("query: 공백일 수 없습니다.");
+        }
+        if (k < 1 || k > 20) {
+            throw new IllegalArgumentException("k: 1 이상 20 이하여야 합니다.");
+        }
         return ResponseEntity.ok(chatbotService.search(query, k));
     }
 }
