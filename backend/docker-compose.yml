@@ -87,8 +87,6 @@ services:
   ai-service:
     image: eclipse-temurin:17-jre
     container_name: ssafy-home-ai-service
-    ports:
-      - "8083:8083"
     environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       CHROMA_HOST: chroma
