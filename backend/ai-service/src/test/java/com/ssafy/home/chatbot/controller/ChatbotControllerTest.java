@@ -184,4 +184,19 @@ class ChatbotControllerTest {
                 .content(objectMapper.writeValueAsString(new ChatRequest("질문"))))
             .andExpect(status().isUnauthorized());
     }
+
+    @Test
+    void Authorization_헤더_없이_upload_요청하면_401을_반환한다() throws Exception {
+        MockMultipartFile file = new MockMultipartFile(
+            "file", "test.txt", "text/plain", "내용".getBytes()
+        );
+        mockMvc.perform(multipart("/api/chat/upload").file(file))
+            .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void Authorization_헤더_없이_search_요청하면_401을_반환한다() throws Exception {
+        mockMvc.perform(get("/api/chat/search").param("query", "서울"))
+            .andExpect(status().isUnauthorized());
+    }
 }
