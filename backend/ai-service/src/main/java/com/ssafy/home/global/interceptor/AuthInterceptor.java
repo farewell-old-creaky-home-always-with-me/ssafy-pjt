@@ -33,7 +33,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             throw new AuthException("인증이 필요합니다.");
         }
 
-        jwtTokenProvider.validateToken(token);
         Long memberId = jwtTokenProvider.getMemberId(token);
 
         request.setAttribute("memberId", memberId);

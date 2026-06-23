@@ -18,18 +18,12 @@ public class JwtTokenProvider {
     private static final String BEARER_PREFIX = "Bearer ";
 
     private final Key key;
-    private final long accessTokenExpirationMillis;
 
     public JwtTokenProvider(JwtProperties jwtProperties) {
         if (!StringUtils.hasText(jwtProperties.secret())) {
             throw new IllegalStateException("jwt.secret must be configured in application-secret.yml or JWT_SECRET.");
         }
-        if (jwtProperties.accessTokenExpirationMillis() <= 0) {
-            throw new IllegalStateException("jwt.access-token-expiration-millis must be greater than 0.");
-        }
-
         this.key = Keys.hmacShaKeyFor(jwtProperties.secret().getBytes(StandardCharsets.UTF_8));
-        this.accessTokenExpirationMillis = jwtProperties.accessTokenExpirationMillis();
     }
 
     public String resolveToken(HttpServletRequest request) {
