@@ -57,7 +57,7 @@
       <button
         class="flex lg:hidden text-white p-2 rounded-lg transition-colors hover:bg-white/10 relative"
         @click="mobileOpen = !mobileOpen"
-        aria-label="메뉴 열기"
+        :aria-label="mobileOpen ? '메뉴 닫기' : '메뉴 열기'"
       >
         <span v-if="!mobileOpen"><Menu :size="20" /></span>
         <span v-else><X :size="20" /></span>

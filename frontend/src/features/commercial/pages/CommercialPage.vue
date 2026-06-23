@@ -60,16 +60,19 @@ async function selectCategory(key) {
 
 function initMap() {
   const container = document.getElementById('map')
-  if (!container || typeof window.kakao === 'undefined') return
+  if (!container) return
   map = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.4979, 127.0276), level: 4 })
   fetchAndRender()
 }
 
-onMounted(initMap)
+onMounted(() => {
+  if (typeof window.kakao === 'undefined') return
+  window.kakao.maps.load(initMap)
+})
 </script>
 
 <template>
-  <div class="min-h-[calc(100vh-64px)] bg-bg-page flex flex-col">
+  <div class="min-h-[calc(100vh-64px)] bg-bg-page flex flex-col relative">
     <div id="map" style="width:100%;height:calc(100vh - 64px)"></div>
 
     <!-- Category tabs -->

@@ -152,7 +152,7 @@ async function toggleFavorite() {
 let map
 function initMap() {
   const container = document.getElementById('map')
-  if (!container || typeof window.kakao === 'undefined') return
+  if (!container) return
   map = new window.kakao.maps.Map(container, {
     center: new window.kakao.maps.LatLng(37.5665, 126.9780),
     level: 5,
@@ -175,7 +175,9 @@ onMounted(async () => {
 
   if (filters.value.regionCode) await fetchHouses()
 
-  initMap()
+  if (typeof window.kakao !== 'undefined') {
+    window.kakao.maps.load(initMap)
+  }
 })
 </script>
 
@@ -189,7 +191,7 @@ onMounted(async () => {
           class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden lg:w-[35%] lg:max-w-[320px] lg:shrink-0 lg:sticky lg:top-[88px] lg:self-start"
           :class="{ 'hidden lg:block': !sidebarOpen }"
         >
-          <div class="bg-navy px-5 py-4">
+          <div class="bg-navy px-5 py-4 flex items-center justify-between">
             <h2 class="text-white text-base font-semibold m-0">필터</h2>
             <button class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg text-white/70 hover:text-white transition-colors" @click="sidebarOpen = false"><X :size="16" /></button>
           </div>

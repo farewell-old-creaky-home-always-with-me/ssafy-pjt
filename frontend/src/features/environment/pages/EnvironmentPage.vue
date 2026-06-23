@@ -68,12 +68,15 @@ async function toggleLayer(key) {
 
 function initMap() {
   const container = document.getElementById('map')
-  if (!container || typeof window.kakao === 'undefined') return
+  if (!container) return
   map = new window.kakao.maps.Map(container, { center: new window.kakao.maps.LatLng(37.5665, 126.9780), level: 8 })
   infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1 })
 }
 
-onMounted(initMap)
+onMounted(() => {
+  if (typeof window.kakao === 'undefined') return
+  window.kakao.maps.load(initMap)
+})
 </script>
 
 <template>
@@ -86,7 +89,7 @@ onMounted(initMap)
     </div>
 
     <div class="flex-1 relative min-h-[500px]">
-      <div id="map" class="absolute inset-0 bg-gradient-to-br from-[#E8F0FE] to-[#D4E4F7] overflow-hidden"></div>
+      <div id="map" class="absolute inset-0 bg-gradient-to-br from-[#E8F0FE] to-[#D4E4F7]"></div>
 
       <div v-if="!hasActiveLayer" class="absolute inset-0 flex items-center justify-center flex-col z-[5] pointer-events-none">
         <div class="w-20 h-20 rounded-full bg-white/80 flex items-center justify-center mb-4">

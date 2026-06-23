@@ -1,4 +1,5 @@
 <script setup>
+defineOptions({ inheritAttrs: false })
 defineProps({
   variant: { type: String, default: 'primary' },
   size: { type: String, default: 'default' },

@@ -105,7 +105,7 @@ async function handleSubmit() {
                 placeholder="비밀번호 8자 이상" @blur="validatePassword" />
               <button
                 type="button"
-                class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-400/20 hover:text-gray-500"
+                class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-400/20 hover:text-gray-500 focus-visible:outline-2 focus-visible:outline-blue focus-visible:outline-offset-2"
                 :aria-label="showPw ? '비밀번호 숨기기' : '비밀번호 보기'"
                 :aria-pressed="showPw"
                 @click="showPw = !showPw"
