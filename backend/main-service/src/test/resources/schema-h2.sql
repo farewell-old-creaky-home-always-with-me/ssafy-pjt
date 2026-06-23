@@ -32,6 +32,19 @@ CREATE TABLE IF NOT EXISTS favorite_area (
     UNIQUE (member_id, region_code)
 );
 
+CREATE TABLE IF NOT EXISTS qna (
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id   BIGINT       NOT NULL,
+    title       VARCHAR(200) NOT NULL,
+    content     CLOB         NOT NULL,
+    answer      CLOB,
+    answered_at TIMESTAMP,
+    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(id)
+);
+
 CREATE TABLE IF NOT EXISTS house (
     id           BIGINT       NOT NULL AUTO_INCREMENT,
     region_code  VARCHAR(10)  NOT NULL,

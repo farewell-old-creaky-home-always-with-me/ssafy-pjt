@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.qna.mapper.QnaMapper">
+
+    <select id="findById" resultType="com.ssafy.home.qna.mapper.dto.QnaResult">
+        SELECT
+            id,
+            member_id,
+            title,
+            content,
+            answer,
+            answered_at
+        FROM qna
+        WHERE id = #{qnaId}
+    </select>
+
+    <update id="updateAnswerById" parameterType="com.ssafy.home.qna.mapper.dto.QnaAnswerUpdateParam">
+        UPDATE qna
+        SET
+            answer = #{answer},
+            answered_at = CURRENT_TIMESTAMP,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <update id="deleteAnswerById">
+        UPDATE qna
+        SET
+            answer = NULL,
+            answered_at = NULL,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{qnaId}
+    </update>
+</mapper>
