@@ -79,8 +79,7 @@ public class BatchReportSummaryService {
         }
         String trimmed = content.trim();
         if (trimmed.startsWith("```")) {
-            trimmed = trimmed.replaceFirst("^```json\\s*", "")
-                    .replaceFirst("^```\\s*", "")
+            trimmed = trimmed.replaceFirst("(?i)^```[a-z0-9_-]*\\s*", "")
                     .replaceFirst("\\s*```$", "");
         }
         return trimmed;
