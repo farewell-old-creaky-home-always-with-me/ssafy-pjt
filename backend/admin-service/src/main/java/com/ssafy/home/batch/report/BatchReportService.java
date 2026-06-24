@@ -111,7 +111,7 @@ public class BatchReportService {
             YearMonth parsed = YearMonth.parse(yearMonth, YEAR_MONTH);
             return new DateRange(parsed.atDay(1), parsed.plusMonths(1).atDay(1));
         } catch (DateTimeParseException exception) {
-            return new DateRange(null, null);
+            throw new IllegalStateException("Invalid batch collection yearMonth: " + yearMonth, exception);
         }
     }
 

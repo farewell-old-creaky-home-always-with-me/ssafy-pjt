@@ -92,6 +92,7 @@
             ended_at
         FROM batch_collection_log
         WHERE data_type = 'HOUSE_DEAL'
+          AND status = 'COMPLETED'
         ORDER BY created_at DESC, id DESC
         LIMIT 1
     </select>

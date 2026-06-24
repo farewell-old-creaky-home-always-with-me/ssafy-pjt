@@ -1,14 +1,19 @@
 package com.ssafy.home.batch.report;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
 
 import com.ssafy.home.batch.report.dto.BatchCollectionLogResult;
 import com.ssafy.home.batch.report.dto.BatchReportAiUpdateParam;
 import com.ssafy.home.batch.report.dto.BatchReportCreateParam;
+import com.ssafy.home.batch.report.dto.BatchReportFailureUpdateParam;
 import com.ssafy.home.batch.report.dto.BatchReportPdfUpdateParam;
+import com.ssafy.home.batch.report.dto.BatchAiReportResult;
 import com.ssafy.home.batch.report.dto.PdfReportResult;
 import java.nio.file.Path;
 import java.time.LocalDate;
@@ -78,11 +83,91 @@ class BatchReportServiceTest {
         assertThat(pdfCaptor.getValue().getStatus()).isEqualTo(BatchReportStatus.PDF_COMPLETED.name());
     }
 
+    @Test
+    @DisplayName("Invalid collection year month fails without unbounded deal query")
+    void invalidYearMonth() {
+        given(batchReportMapper.findLatestHouseDealCollectionLog()).willReturn(collectionLog("202613"));
+        givenInsertedReportId();
+
+        assertThatThrownBy(() -> batchReportService.generateLatestHouseDealReport(100L))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("Invalid batch collection yearMonth");
+
+        then(batchReportMapper).should(never()).findRecentHouseDeals(any(), any(), any(), anyInt());
+        ArgumentCaptor<BatchReportFailureUpdateParam> failureCaptor =
+                ArgumentCaptor.forClass(BatchReportFailureUpdateParam.class);
+        then(batchReportMapper).should().updateFailure(failureCaptor.capture());
+        assertThat(failureCaptor.getValue().getStatus()).isEqualTo(BatchReportStatus.FAILED.name());
+    }
+
+    @Test
+    @DisplayName("AI report failure updates report as failed and rethrows")
+    void aiReportFailure() {
+        RuntimeException aiException = new IllegalStateException("AI failed");
+        given(batchReportMapper.findLatestHouseDealCollectionLog()).willReturn(collectionLog());
+        givenRecentHouseDeals();
+        given(batchAiClient.createReport(any())).willThrow(aiException);
+        givenInsertedReportId();
+
+        assertThatThrownBy(() -> batchReportService.generateLatestHouseDealReport(100L))
+                .isSameAs(aiException);
+
+        ArgumentCaptor<BatchReportFailureUpdateParam> failureCaptor =
+                ArgumentCaptor.forClass(BatchReportFailureUpdateParam.class);
+        then(batchReportMapper).should().updateFailure(failureCaptor.capture());
+        assertThat(failureCaptor.getValue().getId()).isEqualTo(11L);
+        assertThat(failureCaptor.getValue().getStatus()).isEqualTo(BatchReportStatus.FAILED.name());
+        assertThat(failureCaptor.getValue().getErrorMessage()).isEqualTo("AI failed");
+        then(pdfReportService).shouldHaveNoInteractions();
+    }
+
+    @Test
+    @DisplayName("PDF report failure updates report as failed and rethrows")
+    void pdfReportFailure() {
+        RuntimeException pdfException = new IllegalStateException("PDF failed");
+        given(batchReportMapper.findLatestHouseDealCollectionLog()).willReturn(collectionLog());
+        givenRecentHouseDeals();
+        given(batchAiClient.createReport(any())).willReturn(new BatchAiReportResult("summary", "translated"));
+        given(pdfReportService.generate(any())).willThrow(pdfException);
+        givenInsertedReportId();
+
+        assertThatThrownBy(() -> batchReportService.generateLatestHouseDealReport(100L))
+                .isSameAs(pdfException);
+
+        ArgumentCaptor<BatchReportFailureUpdateParam> failureCaptor =
+                ArgumentCaptor.forClass(BatchReportFailureUpdateParam.class);
+        then(batchReportMapper).should().updateFailure(failureCaptor.capture());
+        assertThat(failureCaptor.getValue().getId()).isEqualTo(11L);
+        assertThat(failureCaptor.getValue().getStatus()).isEqualTo(BatchReportStatus.FAILED.name());
+        assertThat(failureCaptor.getValue().getErrorMessage()).isEqualTo("PDF failed");
+    }
+
+    private void givenRecentHouseDeals() {
+        given(batchReportMapper.findRecentHouseDeals(
+                "11680",
+                LocalDate.of(2026, 6, 1),
+                LocalDate.of(2026, 7, 1),
+                20
+        )).willReturn(List.of());
+    }
+
+    private void givenInsertedReportId() {
+        org.mockito.BDDMockito.willAnswer(invocation -> {
+            BatchReportCreateParam param = invocation.getArgument(0);
+            param.setId(11L);
+            return null;
+        }).given(batchReportMapper).insert(any());
+    }
+
     private BatchCollectionLogResult collectionLog() {
+        return collectionLog("202606");
+    }
+
+    private BatchCollectionLogResult collectionLog(String yearMonth) {
         BatchCollectionLogResult log = new BatchCollectionLogResult();
         log.setId(1L);
         log.setRegionCode("11680");
-        log.setYearMonth("202606");
+        log.setYearMonth(yearMonth);
         log.setCollectedCount(10L);
         log.setSkippedCount(1L);
         log.setFailedCount(0);

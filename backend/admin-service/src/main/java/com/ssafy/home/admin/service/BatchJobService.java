@@ -101,7 +101,7 @@ public class BatchJobService {
     public BatchReportGenerateResponse generateBatchReport(Long memberId) {
         JobParameters parameters = new JobParametersBuilder()
                 .addLong("requestedMemberId", memberId, false)
-                .addLong("requestedAt", clock.millis(), false)
+                .addLong("requestedAt", clock.millis())
                 .toJobParameters();
         return launch(batchReportGenerateJob, parameters, execution -> new BatchReportGenerateResponse(
                 execution.getId(),

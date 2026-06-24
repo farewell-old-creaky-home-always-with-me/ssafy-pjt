@@ -1,12 +1,17 @@
 package com.ssafy.home.batch.report;
 
+import com.ssafy.home.admin.dto.BatchReportGenerateResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
+import com.ssafy.home.admin.dto.HouseDealCollectResponse;
 import com.ssafy.home.admin.service.BatchJobService;
 import java.time.Clock;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -19,13 +24,22 @@ public class BatchReportScheduler {
     private final BatchJobService batchJobService;
     private final BatchSchedulerProperties properties;
     private final Clock clock;
+    private final JobExplorer jobExplorer;
     private final AtomicBoolean houseDealRunning = new AtomicBoolean(false);
+    private final AtomicReference<Long> houseDealExecutionId = new AtomicReference<>();
     private final AtomicBoolean reportRunning = new AtomicBoolean(false);
+    private final AtomicReference<Long> reportExecutionId = new AtomicReference<>();
 
-    public BatchReportScheduler(BatchJobService batchJobService, BatchSchedulerProperties properties, Clock clock) {
+    public BatchReportScheduler(
+            BatchJobService batchJobService,
+            BatchSchedulerProperties properties,
+            Clock clock,
+            JobExplorer jobExplorer
+    ) {
         this.batchJobService = batchJobService;
         this.properties = properties;
         this.clock = clock;
+        this.jobExplorer = jobExplorer;
     }
 
     @Scheduled(cron = "${batch.scheduler.house-deal-cron:0 0 3 * * *}")
@@ -33,12 +47,12 @@ public class BatchReportScheduler {
         if (!properties.enabled()) {
             return;
         }
-        if (!houseDealRunning.compareAndSet(false, true)) {
+        if (!tryStart(houseDealRunning, houseDealExecutionId)) {
             log.info("Skip scheduled house deal collection because previous execution is still running");
             return;
         }
         try {
-            batchJobService.collectHouseDeals(
+            HouseDealCollectResponse response = batchJobService.collectHouseDeals(
                     properties.systemMemberId(),
                     new HouseDealCollectRequest(
                             properties.regionCode(),
@@ -47,8 +61,11 @@ public class BatchReportScheduler {
                             properties.dealType()
                     )
             );
-        } finally {
+            houseDealExecutionId.set(response.jobExecutionId());
+        } catch (RuntimeException exception) {
             houseDealRunning.set(false);
+            houseDealExecutionId.set(null);
+            throw exception;
         }
     }
 
@@ -57,15 +74,38 @@ public class BatchReportScheduler {
         if (!properties.enabled()) {
             return;
         }
-        if (!reportRunning.compareAndSet(false, true)) {
+        if (!tryStart(reportRunning, reportExecutionId)) {
             log.info("Skip scheduled batch report generation because previous execution is still running");
             return;
         }
         try {
-            batchJobService.generateBatchReport(properties.systemMemberId());
-        } finally {
+            BatchReportGenerateResponse response = batchJobService.generateBatchReport(properties.systemMemberId());
+            reportExecutionId.set(response.jobExecutionId());
+        } catch (RuntimeException exception) {
             reportRunning.set(false);
+            reportExecutionId.set(null);
+            throw exception;
         }
+    }
+
+    private boolean tryStart(AtomicBoolean running, AtomicReference<Long> executionId) {
+        if (running.compareAndSet(false, true)) {
+            return true;
+        }
+        if (isExecutionRunning(executionId.get())) {
+            return false;
+        }
+        running.set(false);
+        executionId.set(null);
+        return running.compareAndSet(false, true);
+    }
+
+    private boolean isExecutionRunning(Long executionId) {
+        if (executionId == null) {
+            return false;
+        }
+        JobExecution execution = jobExplorer.getJobExecution(executionId);
+        return execution != null && execution.isRunning();
     }
 
     private String resolveYearMonth() {

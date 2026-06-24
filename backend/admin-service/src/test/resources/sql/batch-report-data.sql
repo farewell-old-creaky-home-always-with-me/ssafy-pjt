@@ -18,4 +18,9 @@ INSERT INTO batch_collection_log (
     1, 100, 'houseDealCollectJob', 'HOUSE_DEAL', '11680', '202606',
     'APARTMENT', 'SALE', 10, 1, 0,
     'COMPLETED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+),
+(
+    2, 101, 'houseDealCollectJob', 'HOUSE_DEAL', '11680', '202606',
+    'APARTMENT', 'SALE', 0, 0, 1,
+    'FAILED', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
 );
