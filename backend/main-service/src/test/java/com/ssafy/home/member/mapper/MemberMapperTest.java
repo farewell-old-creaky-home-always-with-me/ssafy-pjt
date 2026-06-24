@@ -36,7 +36,7 @@ class MemberMapperTest {
         MemberDetailResult found = memberMapper.findByNameAndEmailAndPhone(
                 "홍길동",
                 "user@example.com",
-                "010-1234-5678"
+                "01012345678"
         );
 
         // then
@@ -59,7 +59,7 @@ class MemberMapperTest {
         createParam.setEmail("new@example.com");
         createParam.setPassword("encoded-password");
         createParam.setName("신규회원");
-        createParam.setPhone("010-1111-2222");
+        createParam.setPhone("01011112222");
 
         // when
         memberMapper.insert(createParam);
@@ -73,7 +73,7 @@ class MemberMapperTest {
         updateParam.setId(createParam.getId());
         updateParam.setName("수정회원");
         updateParam.setPassword("new-encoded-password");
-        updateParam.setPhone("010-9999-8888");
+        updateParam.setPhone("01099998888");
 
         // when
         int updated = memberMapper.updateById(updateParam);
