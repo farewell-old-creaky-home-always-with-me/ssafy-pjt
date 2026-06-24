@@ -5,7 +5,9 @@ spring:
   application:
     name: ssafy-home-backend
   config:
-    import: classpath:secret/application-secret.yml
+    import:
+      - optional:classpath:secret/application-secret.yml
+      - optional:file:../secret/application-secret.yml
   sql:
     init:
       mode: never

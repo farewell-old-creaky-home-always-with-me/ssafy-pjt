@@ -4,6 +4,10 @@ server:
 spring:
   application:
     name: ssafy-home-gateway
+  config:
+    import:
+      - optional:classpath:secret/application-secret.yml
+      - optional:file:../secret/application-secret.yml
   cloud:
     gateway:
       server:
@@ -51,5 +55,3 @@ spring:
                   - "*"
                 allow-credentials: true
 
-jwt:
-  secret: ${JWT_SECRET:test-jwt-secret-key-for-ssafy-home-project-2026}

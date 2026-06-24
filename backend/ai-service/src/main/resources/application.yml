@@ -4,9 +4,12 @@ server:
 spring:
   application:
     name: ssafy-home-ai-service
+  config:
+    import:
+      - optional:classpath:secret/application-secret.yml
+      - optional:file:../secret/application-secret.yml
   ai:
     openai:
-      api-key: ${OPENAI_API_KEY}
       chat:
         options:
           model: gpt-4o-mini
@@ -26,5 +29,4 @@ spring:
       max-request-size: 10MB
 
 jwt:
-  secret: ${JWT_SECRET}
   access-token-expiration-millis: 3600000

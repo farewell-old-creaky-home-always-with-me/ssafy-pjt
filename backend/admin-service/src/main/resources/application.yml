@@ -10,7 +10,9 @@ spring:
     jdbc:
       initialize-schema: never
   config:
-    import: optional:classpath:secret/application-secret.yml
+    import:
+      - optional:classpath:secret/application-secret.yml
+      - optional:file:../secret/application-secret.yml
   sql:
     init:
       mode: never
@@ -31,7 +33,7 @@ mybatis:
 molit:
   apartment-sale-url: ${MOLIT_APARTMENT_SALE_URL:https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev}
   multi-family-sale-url: ${MOLIT_MULTI_FAMILY_SALE_URL:https://apis.data.go.kr/1613000/RTMSDataSvcRHTradeDev/getRTMSDataSvcRHTradeDev}
-  service-key: ${MOLIT_SERVICE_KEY:your-data-go-kr-service-key}
+
   page-size: 100
   timeout: 10s
   retry-count: 2
@@ -39,7 +41,7 @@ molit:
 
 vworld:
   data-url: ${VWORLD_DATA_URL:https://api.vworld.kr/req/data}
-  api-key: ${VWORLD_API_KEY:your-vworld-api-key}
+
   domain: ${VWORLD_DOMAIN:localhost}
   legal-emd-layer: LT_C_ADEMD_INFO
   page-size: 1000
@@ -49,7 +51,6 @@ vworld:
   skip-limit: 1000
 
 jwt:
-  secret: ${JWT_SECRET:test-jwt-secret-key-for-ssafy-home-project-2026}
   access-token-expiration-millis: ${JWT_ACCESS_TOKEN_EXPIRATION_MILLIS:3600000}
 
 management:
