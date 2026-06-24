@@ -14,9 +14,10 @@ public class EnvironmentProcessor implements ItemProcessor<SeoulRawEnvironment, 
 
     @Override
     public NormalizedEnvironment process(SeoulRawEnvironment item) {
+        String category = required(item.category(), "category");
         String itemName = required(item.itemName(), "itemName");
         return new NormalizedEnvironment(
-                item.category() + " - " + itemName,
+                category + " - " + itemName,
                 parseOptionalDecimal(item.value(), "value"),
                 blankToNull(item.unit()),
                 parseOptionalDate(item.measuredDate()),

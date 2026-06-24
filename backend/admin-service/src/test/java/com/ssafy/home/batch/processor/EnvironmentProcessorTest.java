@@ -75,4 +75,22 @@ class EnvironmentProcessorTest {
         assertThatThrownBy(() -> processor.process(raw))
                 .isInstanceOf(InvalidEnvironmentException.class);
     }
+
+    @Test
+    @DisplayName("분류명이 없으면 InvalidEnvironmentException을 던진다")
+    void processThrowsWhenCategoryMissing() {
+        SeoulRawEnvironment raw = new SeoulRawEnvironment(
+                "green",
+                null,
+                "테스트 녹지",
+                null,
+                null,
+                null,
+                "37.5665000",
+                "126.9780000"
+        );
+
+        assertThatThrownBy(() -> processor.process(raw))
+                .isInstanceOf(InvalidEnvironmentException.class);
+    }
 }
