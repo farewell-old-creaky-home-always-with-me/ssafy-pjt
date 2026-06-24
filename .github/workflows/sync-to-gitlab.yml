@@ -27,6 +27,7 @@ jobs:
           SYNC_ADMIN_SERVICE=false
           SYNC_AI_SERVICE=false
           SYNC_MAIN_SERVICE=false
+          SYNC_GATEWAY=false
           SYNC_FRONTEND=false
           SYNC_FRONTEND_ADMIN=false
 
@@ -42,6 +43,9 @@ jobs:
           if echo "$CHANGED" | grep -q "^backend/main-service/"; then
             SYNC_MAIN_SERVICE=true
           fi
+          if echo "$CHANGED" | grep -q "^backend/gateway/"; then
+            SYNC_GATEWAY=true
+          fi
           if echo "$CHANGED" | grep -q "^frontend/"; then
             SYNC_FRONTEND=true
           fi
@@ -53,6 +57,7 @@ jobs:
           echo "sync_admin_service=$SYNC_ADMIN_SERVICE" >> "$GITHUB_OUTPUT"
           echo "sync_ai_service=$SYNC_AI_SERVICE" >> "$GITHUB_OUTPUT"
           echo "sync_main_service=$SYNC_MAIN_SERVICE" >> "$GITHUB_OUTPUT"
+          echo "sync_gateway=$SYNC_GATEWAY" >> "$GITHUB_OUTPUT"
           echo "sync_frontend=$SYNC_FRONTEND" >> "$GITHUB_OUTPUT"
           echo "sync_frontend_admin=$SYNC_FRONTEND_ADMIN" >> "$GITHUB_OUTPUT"
 
@@ -80,7 +85,7 @@ jobs:
             echo "No changes to artifact, skipping push"
           else
             git commit -m "$COMMIT_MSG"
-            git push -u origin main
+            git push -u origin HEAD:main
           fi
 
       - name: Sync admin-service to GitLab
@@ -107,7 +112,7 @@ jobs:
             echo "No changes to admin-service, skipping push"
           else
             git commit -m "$COMMIT_MSG"
-            git push -u origin main
+            git push -u origin HEAD:main
           fi
 
       - name: Sync ai-service to GitLab
@@ -134,7 +139,7 @@ jobs:
             echo "No changes to ai-service, skipping push"
           else
             git commit -m "$COMMIT_MSG"
-            git push -u origin main
+            git push -u origin HEAD:main
           fi
 
       - name: Sync main-service to GitLab
@@ -161,7 +166,34 @@ jobs:
             echo "No changes to main-service, skipping push"
           else
             git commit -m "$COMMIT_MSG"
-            git push -u origin main
+            git push -u origin HEAD:main
+          fi
+
+      - name: Sync gateway to GitLab
+        if: steps.detect.outputs.sync_gateway == 'true'
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
+          COMMIT_EMAIL=$(git log -1 --pretty="%ae")
+
+          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/gateway" /tmp/gateway-gitlab
+
+          find /tmp/gateway-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+
+          rsync -av --exclude='.git' --exclude='src/main/resources/secret' backend/gateway/ /tmp/gateway-gitlab/
+
+          cd /tmp/gateway-gitlab
+          git config user.name "$COMMIT_AUTHOR"
+          git config user.email "$COMMIT_EMAIL"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to gateway, skipping push"
+          else
+            git commit -m "$COMMIT_MSG"
+            git push -u origin HEAD:main
           fi
 
       - name: Sync frontend to GitLab
@@ -188,7 +220,7 @@ jobs:
             echo "No changes to frontend, skipping push"
           else
             git commit -m "$COMMIT_MSG"
-            git push -u origin main
+            git push -u origin HEAD:main
           fi
 
       - name: Sync frontend-admin to GitLab
@@ -215,5 +247,5 @@ jobs:
             echo "No changes to frontend-admin, skipping push"
           else
             git commit -m "$COMMIT_MSG"
-            git push -u origin main
+            git push -u origin HEAD:main
           fi
