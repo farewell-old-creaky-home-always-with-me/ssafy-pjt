@@ -1,0 +1,47 @@
+package com.ssafy.home.batch.report;
+
+import static com.ssafy.home.global.exception.ErrorCode.BATCH_REPORT_NOT_FOUND;
+import static com.ssafy.home.global.exception.ErrorCode.BATCH_REPORT_PDF_NOT_FOUND;
+
+import com.ssafy.home.batch.report.dto.BatchReportPdfFile;
+import com.ssafy.home.batch.report.dto.BatchReportResult;
+import com.ssafy.home.global.exception.CustomException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+@Service
+public class BatchReportFileService {
+
+    private final BatchReportMapper batchReportMapper;
+    private final BatchReportProperties properties;
+
+    public BatchReportFileService(BatchReportMapper batchReportMapper, BatchReportProperties properties) {
+        this.batchReportMapper = batchReportMapper;
+        this.properties = properties;
+    }
+
+    public BatchReportPdfFile getPdfFile(Long reportId) {
+        BatchReportResult report = batchReportMapper.findById(reportId);
+        if (report == null) {
+            throw new CustomException(BATCH_REPORT_NOT_FOUND);
+        }
+        if (!StringUtils.hasText(report.getPdfFilePath())) {
+            throw new CustomException(BATCH_REPORT_PDF_NOT_FOUND);
+        }
+        Path baseDir;
+        Path filePath;
+        try {
+            baseDir = properties.outputDir().toRealPath();
+            filePath = Path.of(report.getPdfFilePath()).toRealPath();
+        } catch (IOException exception) {
+            throw new CustomException(BATCH_REPORT_PDF_NOT_FOUND);
+        }
+        if (!filePath.startsWith(baseDir) || !Files.isRegularFile(filePath)) {
+            throw new CustomException(BATCH_REPORT_PDF_NOT_FOUND);
+        }
+        return new BatchReportPdfFile(report.getPdfFileName(), filePath);
+    }
+}

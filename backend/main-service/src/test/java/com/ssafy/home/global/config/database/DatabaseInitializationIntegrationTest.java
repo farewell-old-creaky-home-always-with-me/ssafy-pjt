@@ -85,6 +85,7 @@ class DatabaseInitializationIntegrationTest {
                       'member_place',
                       'notice',
                       'qna',
+                      'batch_report',
                       'commercial_area',
                       'environment_info',
                       'facility',
@@ -123,7 +124,7 @@ class DatabaseInitializationIntegrationTest {
                 """, Integer.class);
 
         // Then
-        assertThat(managedTableCount).isEqualTo(23);
+        assertThat(managedTableCount).isEqualTo(24);
         assertThat(successfulMigrationCount).isEqualTo(4);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);

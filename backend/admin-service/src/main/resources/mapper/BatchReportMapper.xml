@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.batch.report.BatchReportMapper">
+
+    <insert id="insert" parameterType="com.ssafy.home.batch.report.dto.BatchReportCreateParam" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO batch_report (
+            job_execution_id,
+            batch_collection_log_id,
+            report_type,
+            source_type,
+            region_code,
+            `year_month`,
+            status
+        ) VALUES (
+            #{jobExecutionId},
+            #{batchCollectionLogId},
+            #{reportType},
+            #{sourceType},
+            #{regionCode},
+            #{yearMonth},
+            #{status}
+        )
+    </insert>
+
+    <update id="updateAiResult" parameterType="com.ssafy.home.batch.report.dto.BatchReportAiUpdateParam">
+        UPDATE batch_report
+        SET
+            summary = #{summary},
+            translated_summary = #{translatedSummary},
+            status = #{status},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePdfResult" parameterType="com.ssafy.home.batch.report.dto.BatchReportPdfUpdateParam">
+        UPDATE batch_report
+        SET
+            pdf_file_name = #{pdfFileName},
+            pdf_file_path = #{pdfFilePath},
+            status = #{status},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateFailure" parameterType="com.ssafy.home.batch.report.dto.BatchReportFailureUpdateParam">
+        UPDATE batch_report
+        SET
+            status = #{status},
+            error_message = #{errorMessage},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <select id="findById" resultType="com.ssafy.home.batch.report.dto.BatchReportResult">
+        SELECT
+            id,
+            job_execution_id,
+            batch_collection_log_id,
+            report_type,
+            source_type,
+            region_code,
+            `year_month`,
+            summary,
+            translated_summary,
+            pdf_file_name,
+            pdf_file_path,
+            status,
+            error_message,
+            created_at,
+            updated_at
+        FROM batch_report
+        WHERE id = #{reportId}
+    </select>
+
+    <select id="findLatestHouseDealCollectionLog" resultType="com.ssafy.home.batch.report.dto.BatchCollectionLogResult">
+        SELECT
+            id,
+            job_execution_id,
+            job_name,
+            data_type,
+            region_code,
+            `year_month`,
+            house_type,
+            deal_type,
+            collected_count,
+            skipped_count,
+            failed_count,
+            status,
+            started_at,
+            ended_at
+        FROM batch_collection_log
+        WHERE data_type = 'HOUSE_DEAL'
+          AND status = 'COMPLETED'
+        ORDER BY created_at DESC, id DESC
+        LIMIT 1
+    </select>
+
+    <select id="findRecentHouseDeals" resultType="com.ssafy.home.batch.report.dto.HouseDealReportRow">
+        SELECT
+            h.apt_name,
+            rc.dong_name,
+            h.house_type,
+            hd.deal_type,
+            hd.deal_amount,
+            hd.deal_date,
+            hd.area,
+            hd.floor
+        FROM house_deal hd
+        INNER JOIN house h ON h.id = hd.house_id
+        INNER JOIN region_code rc ON rc.region_code = h.region_code
+        <where>
+            <if test="regionCode != null and regionCode != ''">
+                AND h.region_code LIKE CONCAT(#{regionCode}, '%')
+            </if>
+            <if test="startDate != null">
+                AND hd.deal_date &gt;= #{startDate}
+            </if>
+            <if test="endDate != null">
+                AND hd.deal_date &lt; #{endDate}
+            </if>
+        </where>
+        ORDER BY hd.deal_date DESC, hd.id DESC
+        LIMIT #{limit}
+    </select>
+</mapper>

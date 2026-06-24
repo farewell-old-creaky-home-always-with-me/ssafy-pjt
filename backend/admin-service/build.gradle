@@ -24,6 +24,7 @@ dependencies {
 	implementation 'io.micrometer:micrometer-registry-prometheus'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.5'
 	implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
+	implementation 'org.apache.pdfbox:pdfbox:3.0.4'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 	runtimeOnly 'com.mysql:mysql-connector-j'

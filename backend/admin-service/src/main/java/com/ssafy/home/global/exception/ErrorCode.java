@@ -28,6 +28,8 @@ public enum ErrorCode {
     BATCH_INVALID_PARAMETER(HttpStatus.BAD_REQUEST, "배치 파라미터가 올바르지 않습니다"),
     BATCH_ALREADY_RUNNING(HttpStatus.CONFLICT, "동일한 배치가 실행 중입니다"),
     BATCH_LAUNCH_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "배치 실행에 실패했습니다"),
+    BATCH_REPORT_NOT_FOUND(HttpStatus.NOT_FOUND, "배치 보고서를 찾을 수 없습니다"),
+    BATCH_REPORT_PDF_NOT_FOUND(HttpStatus.NOT_FOUND, "배치 보고서 PDF를 찾을 수 없습니다"),
 
     FAVORITE_DUPLICATE(HttpStatus.CONFLICT, "이미 등록된 관심 지역입니다"),
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 관심 지역을 찾을 수 없습니다"),
