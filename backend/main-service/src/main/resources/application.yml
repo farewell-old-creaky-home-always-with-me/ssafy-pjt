@@ -27,7 +27,7 @@ jwt:
 
 batch:
   report:
-    output-dir: ${BATCH_REPORT_OUTPUT_DIR:./reports/batch}
+    output-dir: ${BATCH_REPORT_OUTPUT_DIR}
 
 management:
   endpoints:

@@ -27,6 +27,10 @@ jwt:
   secret: test-jwt-secret-key-for-ssafy-home-project-2026
   access-token-expiration-millis: 3600000
 
+batch:
+  report:
+    output-dir: ${java.io.tmpdir}/ssafy-home-test-reports
+
 cors:
   allowed-origins:
     - http://localhost:3000
