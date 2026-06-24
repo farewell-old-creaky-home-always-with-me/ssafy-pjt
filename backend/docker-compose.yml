@@ -1,106 +1,126 @@
 services:
   gateway:
-    image: eclipse-temurin:17-jre
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
     container_name: ssafy-home-gateway
     ports:
       - "8080:8080"
     environment:
-      JWT_SECRET: ${JWT_SECRET:-test-jwt-secret-key-for-ssafy-home-project-2026}
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_ID: admin-service
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_URI: http://admin-service:8081
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_0_PREDICATES_0: Path=/api/admin/**
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_ID: admin-notice-service
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_URI: http://admin-service:8081
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_PREDICATES_0: Path=/api/notices,/api/notices/**
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_1_PREDICATES_1: Method=POST,PUT,DELETE
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_2_ID: main-notice-service
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_2_URI: http://main-service:8082
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_2_PREDICATES_0: Path=/api/notices,/api/notices/**
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_2_PREDICATES_1: Method=GET
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_3_ID: ai-service
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_3_URI: http://ai-service:8083
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_3_PREDICATES_0: Path=/api/chat/**
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_4_ID: main-service
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_4_URI: http://main-service:8082
-      SPRING_CLOUD_GATEWAY_SERVER_WEBFLUX_ROUTES_4_PREDICATES_0: Path=/api/**
-    volumes:
-      - ./gateway/build/libs/gateway-0.0.1-SNAPSHOT.jar:/app/app.jar:ro
-    command: ["java", "-jar", "/app/app.jar"]
+      SPRING_PROFILES_ACTIVE: docker
+    restart: unless-stopped
     depends_on:
-      - admin-service
-      - main-service
-      - ai-service
+      admin-service:
+        condition: service_healthy
+      main-service:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
 
   admin-service:
-    image: eclipse-temurin:17-jre
+    build:
+      context: .
+      dockerfile: admin-service/Dockerfile
     container_name: ssafy-home-admin-service
     ports:
       - "8081:8081"
     environment:
-      JWT_SECRET: ${JWT_SECRET:-test-jwt-secret-key-for-ssafy-home-project-2026}
-      SPRING_CONFIG_IMPORT: optional:classpath:secret/application-secret.yml
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ssafy
       SPRING_DATASOURCE_PASSWORD: ssafy
-      MOLIT_APARTMENT_SALE_URL: ${MOLIT_APARTMENT_SALE_URL:-https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev}
-      MOLIT_MULTI_FAMILY_SALE_URL: ${MOLIT_MULTI_FAMILY_SALE_URL:-https://apis.data.go.kr/1613000/RTMSDataSvcRHTradeDev/getRTMSDataSvcRHTradeDev}
-      MOLIT_SERVICE_KEY: ${MOLIT_SERVICE_KEY:-your-data-go-kr-service-key}
-      VWORLD_DATA_URL: ${VWORLD_DATA_URL:-https://api.vworld.kr/req/data}
-      VWORLD_API_KEY: ${VWORLD_API_KEY:-your-vworld-api-key}
-      VWORLD_DOMAIN: ${VWORLD_DOMAIN:-localhost}
-    volumes:
-      - ./admin-service/build/libs/admin-service-0.0.1-SNAPSHOT.jar:/app/app.jar:ro
-    command: ["java", "-jar", "/app/app.jar"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       mysql:
         condition: service_healthy
 
   main-service:
-    image: eclipse-temurin:17-jre
+    build:
+      context: .
+      dockerfile: main-service/Dockerfile
     container_name: ssafy-home-main-service
     ports:
       - "8082:8082"
     environment:
-      JWT_SECRET: ${JWT_SECRET:-test-jwt-secret-key-for-ssafy-home-project-2026}
-      SPRING_CONFIG_IMPORT: optional:classpath:secret/application-secret.yml
+      SPRING_PROFILES_ACTIVE: docker
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       SPRING_DATASOURCE_USERNAME: ssafy
       SPRING_DATASOURCE_PASSWORD: ssafy
-    volumes:
-      - ./main-service/build/libs/main-service-0.0.1-SNAPSHOT.jar:/app/app.jar:ro
-    command: ["java", "-jar", "/app/app.jar"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       mysql:
         condition: service_healthy
 
   chroma:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.6.3
     container_name: ssafy-home-chroma
     ports:
       - "8000:8000"
+    restart: unless-stopped
+    volumes:
+      - chroma_data:/chroma/chroma
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  ai-service:
-    image: eclipse-temurin:17-jre
-    container_name: ssafy-home-ai-service
-    environment:
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-      CHROMA_HOST: chroma
-      CHROMA_PORT: 8000
-    volumes:
-      - ./ai-service/build/libs/ai-service-0.0.1-SNAPSHOT.jar:/app/app.jar:ro
-    command: ["java", "-jar", "/app/app.jar"]
+  chroma-init:
+    image: curlimages/curl:latest
+    container_name: ssafy-home-chroma-init
     depends_on:
       chroma:
         condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        curl -sf -X POST http://chroma:8000/api/v2/tenants \
+          -H "Content-Type: application/json" \
+          -d '{"name":"SpringAiTenant"}' || true
+        curl -sf -X POST http://chroma:8000/api/v2/tenants/SpringAiTenant/databases \
+          -H "Content-Type: application/json" \
+          -d '{"name":"SpringAiDatabase"}' || true
+        curl -sf -X POST http://chroma:8000/api/v2/tenants/SpringAiTenant/databases/SpringAiDatabase/collections \
+          -H "Content-Type: application/json" \
+          -d '{"name":"ssafy-home-docs","metadata":{"hnsw:space":"cosine"},"get_or_create":true}'
+    restart: on-failure
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: ai-service/Dockerfile
+    container_name: ssafy-home-ai-service
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      chroma:
+        condition: service_healthy
+      chroma-init:
+        condition: service_completed_successfully
 
   mysql:
     image: mysql:8.0
     container_name: ssafy-home-mysql
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ssafy_home
@@ -173,6 +193,7 @@ services:
 
 volumes:
   mysql_data:
+  chroma_data:
   loki_data:
   grafana_data:
   prometheus_data:

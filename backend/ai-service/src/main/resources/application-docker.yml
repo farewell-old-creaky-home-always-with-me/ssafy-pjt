@@ -1,0 +1,7 @@
+spring:
+  ai:
+    vectorstore:
+      chroma:
+        client:
+          host: http://chroma
+          port: 8000

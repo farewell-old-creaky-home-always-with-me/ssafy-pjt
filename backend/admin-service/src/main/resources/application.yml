@@ -10,16 +10,15 @@ spring:
     jdbc:
       initialize-schema: never
   config:
-    import: optional:classpath:secret/application-secret.yml
+    import:
+      - optional:classpath:secret/application-secret.yml
+      - optional:file:../secret/application-secret.yml
   sql:
     init:
       mode: never
   flyway:
     enabled: false
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8}
-    username: ${SPRING_DATASOURCE_USERNAME:ssafy}
-    password: ${SPRING_DATASOURCE_PASSWORD:ssafy}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis:
@@ -29,18 +28,13 @@ mybatis:
     map-underscore-to-camel-case: true
 
 molit:
-  apartment-sale-url: ${MOLIT_APARTMENT_SALE_URL:https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev}
-  multi-family-sale-url: ${MOLIT_MULTI_FAMILY_SALE_URL:https://apis.data.go.kr/1613000/RTMSDataSvcRHTradeDev/getRTMSDataSvcRHTradeDev}
-  service-key: ${MOLIT_SERVICE_KEY:your-data-go-kr-service-key}
   page-size: 100
   timeout: 10s
   retry-count: 2
   skip-limit: 1000
 
 vworld:
-  data-url: ${VWORLD_DATA_URL:https://api.vworld.kr/req/data}
-  api-key: ${VWORLD_API_KEY:your-vworld-api-key}
-  domain: ${VWORLD_DOMAIN:localhost}
+  data-url: https://api.vworld.kr/req/data
   legal-emd-layer: LT_C_ADEMD_INFO
   page-size: 1000
   timeout: 10s
@@ -49,8 +43,7 @@ vworld:
   skip-limit: 1000
 
 jwt:
-  secret: ${JWT_SECRET:test-jwt-secret-key-for-ssafy-home-project-2026}
-  access-token-expiration-millis: ${JWT_ACCESS_TOKEN_EXPIRATION_MILLIS:3600000}
+  access-token-expiration-millis: 3600000
 
 management:
   endpoints:

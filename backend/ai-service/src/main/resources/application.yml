@@ -4,27 +4,41 @@ server:
 spring:
   application:
     name: ssafy-home-ai-service
+  config:
+    import:
+      - optional:classpath:secret/application-secret.yml
+      - optional:file:../secret/application-secret.yml
   ai:
     openai:
-      api-key: ${OPENAI_API_KEY}
+      base-url: https://gms.ssafy.io/gmsapi/api.openai.com
       chat:
         options:
-          model: gpt-4o-mini
+          model: gpt-5.4-mini
       embedding:
         options:
           model: text-embedding-ada-002
     vectorstore:
       chroma:
         client:
-          host: ${CHROMA_HOST:localhost}
-          port: ${CHROMA_PORT:8000}
+          host: http://localhost
+          port: 8000
         collection-name: ssafy-home-docs
         initialize-schema: true
+        tenant: SpringAiTenant
+        database: SpringAiDatabase
   servlet:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
 
 jwt:
-  secret: ${JWT_SECRET}
   access-token-expiration-millis: 3600000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: when-authorized
