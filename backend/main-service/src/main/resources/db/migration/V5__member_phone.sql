@@ -1,0 +1,2 @@
+ALTER TABLE member
+    ADD COLUMN phone VARCHAR(20) NULL COMMENT '전화번호' AFTER name;

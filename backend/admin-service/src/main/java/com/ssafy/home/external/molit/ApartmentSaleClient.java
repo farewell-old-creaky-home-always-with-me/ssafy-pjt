@@ -17,6 +17,6 @@ public class ApartmentSaleClient extends AbstractMolitHouseDealClient {
 
     @Override
     protected String extractName(JsonNode item) {
-        return text(item.path("aptNm"));
+        return text(item, "aptNm", "아파트");
     }
 }

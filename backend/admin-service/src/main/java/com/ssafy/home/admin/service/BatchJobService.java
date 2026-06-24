@@ -33,8 +33,11 @@ public class BatchJobService {
 
     public static final String HOUSE_DEAL_JOB_NAME = "houseDealCollectJob";
     public static final String REGION_CODE_JOB_NAME = "regionCodeCollectJob";
+    public static final String ALL_REGION_CODE = "ALL";
     public static final String BATCH_REPORT_JOB_NAME = "batchReportGenerateJob";
     private static final String REGION_SYNC_SCOPE = "FULL";
+    private static final int LAWD_CODE_LENGTH = 5;
+    private static final int LEGAL_DONG_CODE_LENGTH = 10;
     private static final DateTimeFormatter YEAR_MONTH = DateTimeFormatter
             .ofPattern("uuuuMM").withResolverStyle(ResolverStyle.STRICT);
 
@@ -63,9 +66,10 @@ public class BatchJobService {
             HouseDealCollectRequest request
     ) {
         validateHouseDealRequest(request);
+        String regionCode = normalizeRegionCode(request.regionCode());
         HouseType houseType = HouseType.from(request.houseType());
         JobParameters parameters = new JobParametersBuilder()
-                .addString("regionCode", request.regionCode())
+                .addString("regionCode", regionCode)
                 .addString("yearMonth", request.yearMonth())
                 .addString("houseType", houseType.name())
                 .addString("dealType", request.dealType())
@@ -77,12 +81,37 @@ public class BatchJobService {
                 HOUSE_DEAL_JOB_NAME,
                 execution.getStatus().name(),
                 new HouseDealCollectResponse.Parameters(
-                        request.regionCode(),
+                        regionCode,
                         request.yearMonth(),
                         houseType.name(),
                         request.dealType()
                 )
         ));
+    }
+
+    private void validateHouseDealRequest(HouseDealCollectRequest request) {
+        try {
+            YearMonth.parse(request.yearMonth(), YEAR_MONTH);
+        } catch (DateTimeParseException | NullPointerException exception) {
+            throw new CustomException(BATCH_INVALID_PARAMETER);
+        }
+        if (!"SALE".equals(request.dealType())) {
+            throw new CustomException(BATCH_INVALID_PARAMETER);
+        }
+    }
+
+    private String normalizeRegionCode(String regionCode) {
+        if (regionCode == null || regionCode.isBlank()) {
+            return ALL_REGION_CODE;
+        }
+        String trimmed = regionCode.trim();
+        if (!trimmed.matches("\\d{5}|\\d{10}")) {
+            throw new CustomException(BATCH_INVALID_PARAMETER);
+        }
+        if (trimmed.length() == LEGAL_DONG_CODE_LENGTH) {
+            return trimmed.substring(0, LAWD_CODE_LENGTH);
+        }
+        return trimmed;
     }
 
     public RegionCodeCollectResponse collectRegionCodes(Long memberId) {
@@ -122,17 +151,6 @@ public class BatchJobService {
             throw new CustomException(BATCH_ALREADY_RUNNING);
         } catch (JobRestartException | JobParametersInvalidException exception) {
             throw new CustomException(BATCH_LAUNCH_FAILED);
-        }
-    }
-
-    private void validateHouseDealRequest(HouseDealCollectRequest request) {
-        try {
-            YearMonth.parse(request.yearMonth(), YEAR_MONTH);
-        } catch (DateTimeParseException | NullPointerException exception) {
-            throw new CustomException(BATCH_INVALID_PARAMETER);
-        }
-        if (!"SALE".equals(request.dealType())) {
-            throw new CustomException(BATCH_INVALID_PARAMETER);
         }
     }
 }

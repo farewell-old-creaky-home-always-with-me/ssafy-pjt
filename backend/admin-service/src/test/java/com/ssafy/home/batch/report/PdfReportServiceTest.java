@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.ssafy.home.batch.report.dto.PdfReportRequest;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -86,7 +87,21 @@ class PdfReportServiceTest {
         );
         return candidates.stream()
                 .filter(Files::isRegularFile)
+                .filter(PdfReportServiceTest::isTrueTypeFont)
                 .findFirst()
                 .orElse(null);
+    }
+
+    // PDFBox only supports plain TTF (not TTC or OTF). Check magic bytes to filter candidates.
+    private static boolean isTrueTypeFont(Path path) {
+        try (var in = Files.newInputStream(path)) {
+            byte[] magic = in.readNBytes(4);
+            if (magic.length < 4) return false;
+            int sig = ((magic[0] & 0xFF) << 24) | ((magic[1] & 0xFF) << 16)
+                    | ((magic[2] & 0xFF) << 8) | (magic[3] & 0xFF);
+            return sig == 0x00010000 || sig == 0x74727565; // TTF signatures
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

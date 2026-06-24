@@ -7,6 +7,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.time.Instant;
@@ -19,6 +20,7 @@ import org.springframework.util.StringUtils;
 public class JwtTokenProvider {
 
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ACCESS_TOKEN_COOKIE = "access_token";
     private static final String IS_ADMIN_CLAIM = "isAdmin";
 
     private final Key key;
@@ -51,11 +53,29 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest request) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.hasText(authorization) || !authorization.startsWith(BEARER_PREFIX)) {
-            return null;
+        if (StringUtils.hasText(authorization) && authorization.startsWith(BEARER_PREFIX)) {
+            String bearerToken = authorization.substring(BEARER_PREFIX.length());
+            if (isUsableToken(bearerToken)) {
+                return bearerToken;
+            }
         }
 
-        return authorization.substring(BEARER_PREFIX.length());
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if (ACCESS_TOKEN_COOKIE.equals(cookie.getName()) && isUsableToken(cookie.getValue())) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    private boolean isUsableToken(String token) {
+        return StringUtils.hasText(token)
+                && !"undefined".equals(token)
+                && !"null".equals(token);
     }
 
     public Long getMemberId(String token) {

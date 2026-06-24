@@ -17,7 +17,7 @@ public class MultiFamilySaleClient extends AbstractMolitHouseDealClient {
 
     @Override
     protected String extractName(JsonNode item) {
-        String name = text(item.path("mhouseNm"));
-        return name == null ? text(item.path("houseType")) : name;
+        String name = text(item, "mhouseNm", "연립다세대");
+        return name == null ? text(item, "houseType", "주택유형") : name;
     }
 }

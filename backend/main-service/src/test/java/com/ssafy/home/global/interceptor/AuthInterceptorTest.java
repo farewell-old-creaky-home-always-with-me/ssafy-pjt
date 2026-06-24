@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.ssafy.home.global.auth.JwtProperties;
 import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.global.exception.GlobalExceptionHandler;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,20 @@ class AuthInterceptorTest {
         // when / then
         mockMvc.perform(get("/login-required")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Authorization 헤더가 빈 Bearer이면 유효한 쿠키 토큰으로 로그인 필수 API를 통과한다")
+    void loginRequiredEndpointFallsBackToCookieWhenBearerTokenIsBlank() throws Exception {
+        // given
+        String token = jwtTokenProvider.createAccessToken(1L, false);
+
+        // when / then
+        mockMvc.perform(get("/login-required")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ")
+                        .cookie(new Cookie("access_token", token))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

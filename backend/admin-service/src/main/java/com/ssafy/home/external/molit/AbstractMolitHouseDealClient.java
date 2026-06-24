@@ -47,7 +47,7 @@ public abstract class AbstractMolitHouseDealClient implements MolitHouseDealClie
                     .uri(requestUri(regionCode, yearMonth, pageNumber))
                     .retrieve()
                     .body(String.class);
-            return parse(response);
+            return parse(response, regionCode);
         } catch (RestClientResponseException exception) {
             boolean retryable = exception.getStatusCode().is5xxServerError()
                     || exception.getStatusCode().value() == 429;
@@ -71,7 +71,7 @@ public abstract class AbstractMolitHouseDealClient implements MolitHouseDealClie
                 .toUri();
     }
 
-    private MolitHouseDealPage parse(String source) {
+    private MolitHouseDealPage parse(String source, String lawdCode) {
         if (source == null || source.isBlank()) {
             throw new MolitApiException("Blank MOLIT response", null, true);
         }
@@ -89,9 +89,9 @@ public abstract class AbstractMolitHouseDealClient implements MolitHouseDealClie
             }
             List<MolitRawHouseDeal> deals = new ArrayList<>();
             if (item.isArray()) {
-                item.forEach(node -> deals.add(toRaw(node)));
+                item.forEach(node -> deals.add(toRaw(node, lawdCode)));
             } else if (item.isObject()) {
-                deals.add(toRaw(item));
+                deals.add(toRaw(item, lawdCode));
             }
             return new MolitHouseDealPage(deals, integer(body.path("totalCount")));
         } catch (JsonProcessingException exception) {
@@ -99,13 +99,19 @@ public abstract class AbstractMolitHouseDealClient implements MolitHouseDealClie
         }
     }
 
-    private MolitRawHouseDeal toRaw(JsonNode item) {
+    private MolitRawHouseDeal toRaw(JsonNode item, String lawdCode) {
         return new MolitRawHouseDeal(
-                legalDongCode(item), extractName(item), text(item.path("jibun")),
-                text(item.path("dealAmount")), text(item.path("dealYear")),
-                text(item.path("dealMonth")), text(item.path("dealDay")),
-                text(item.path("excluUseAr")), text(item.path("floor")),
-                text(item.path("buildYear"))
+                legalDongCode(item),
+                lawdCode,
+                text(item, "umdNm", "법정동"),
+                extractName(item), text(item, "jibun", "지번"),
+                text(item, "dealAmount", "거래금액"),
+                text(item, "dealYear", "년"),
+                text(item, "dealMonth", "월"),
+                text(item, "dealDay", "일"),
+                text(item, "excluUseAr", "전용면적"),
+                text(item, "floor", "층"),
+                text(item, "buildYear", "건축년도")
         );
     }
 
@@ -119,9 +125,19 @@ public abstract class AbstractMolitHouseDealClient implements MolitHouseDealClie
         return value.isEmpty() ? null : value;
     }
 
+    protected String text(JsonNode item, String... fieldNames) {
+        for (String fieldName : fieldNames) {
+            String value = text(item.path(fieldName));
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     private String legalDongCode(JsonNode item) {
-        String sgg = text(item.path("sggCd"));
-        String umd = text(item.path("umdCd"));
+        String sgg = text(item, "sggCd", "법정동시군구코드");
+        String umd = text(item, "umdCd", "법정동읍면동코드");
         if (sgg == null || !sgg.matches("\\d{5}")
                 || umd == null || !umd.matches("\\d{1,5}")) {
             return null;

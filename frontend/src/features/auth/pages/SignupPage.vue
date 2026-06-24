@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
-import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, UserCircle } from 'lucide-vue-next'
+import { Home, Mail, Lock, Eye, EyeOff, AlertCircle, Loader2, UserCircle, Phone } from 'lucide-vue-next'
 import { membersApi } from '@/api/index.js'
 import BaseButton from '@/components/base/BaseButton.vue'
 
@@ -9,12 +9,14 @@ const router = useRouter()
 const name = ref('')
 const email = ref('')
 const password = ref('')
+const phone = ref('')
 const showPw = ref(false)
 const loading = ref(false)
 const generalError = ref('')
 const nameError = ref('')
 const emailError = ref('')
 const passwordError = ref('')
+const phoneError = ref('')
 
 function validateName() {
   if (!name.value.trim()) { nameError.value = '이름을 입력해 주세요'; return false }
@@ -30,16 +32,26 @@ function validatePassword() {
   if (password.value.length < 8) { passwordError.value = '비밀번호는 8자 이상이어야 합니다'; return false }
   passwordError.value = ''; return true
 }
+function validatePhone() {
+  if (!phone.value.trim()) { phoneError.value = '전화번호를 입력해 주세요'; return false }
+  phoneError.value = ''; return true
+}
 
 async function handleSubmit() {
   const nameValid = validateName()
   const emailValid = validateEmail()
   const passwordValid = validatePassword()
-  const ok = nameValid && emailValid && passwordValid
+  const phoneValid = validatePhone()
+  const ok = nameValid && emailValid && passwordValid && phoneValid
   if (!ok) return
   loading.value = true
   try {
-    await membersApi.createMember({ email: email.value.trim(), password: password.value, name: name.value.trim() })
+    await membersApi.createMember({
+      email: email.value.trim(),
+      password: password.value,
+      name: name.value.trim(),
+      phone: phone.value.trim()
+    })
     alert('회원가입이 완료되었습니다. 로그인해 주세요.')
     router.push('/login')
   } catch (err) {
@@ -92,6 +104,20 @@ async function handleSubmit() {
             </div>
             <div v-if="emailError" class="flex items-center gap-1.5 mt-1.5 pl-1 text-red text-xs">
               <AlertCircle :size="14" /><span>{{ emailError }}</span>
+            </div>
+          </div>
+
+          <div class="mb-4">
+            <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="signup-phone">전화번호</label>
+            <div class="relative">
+              <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><Phone :size="16" /></span>
+              <input id="signup-phone" v-model="phone" type="tel"
+                class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                :class="{ 'border-red! shadow-[0_0_0_3px_rgba(235,87,87,0.15)]!': phoneError }"
+                placeholder="010-1234-5678" @blur="validatePhone" />
+            </div>
+            <div v-if="phoneError" class="flex items-center gap-1.5 mt-1.5 pl-1 text-red text-xs">
+              <AlertCircle :size="14" /><span>{{ phoneError }}</span>
             </div>
           </div>
 

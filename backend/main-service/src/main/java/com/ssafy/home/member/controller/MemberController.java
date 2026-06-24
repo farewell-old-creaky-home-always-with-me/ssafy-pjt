@@ -4,6 +4,7 @@ import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.member.dto.MemberCreateRequest;
 import com.ssafy.home.member.dto.MemberDetailResponse;
+import com.ssafy.home.member.dto.MemberPasswordResetRequest;
 import com.ssafy.home.member.dto.MemberUpdateResponse;
 import com.ssafy.home.member.dto.MemberUpdateRequest;
 import com.ssafy.home.member.service.MemberService;
@@ -31,6 +32,13 @@ public class MemberController implements MemberApiDocs {
     public ResponseEntity<MemberDetailResponse> createMember(@Valid @RequestBody MemberCreateRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(memberService.createMember(request));
+    }
+
+    @PostMapping("/password-reset")
+    @Override
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody MemberPasswordResetRequest request) {
+        memberService.resetPassword(request);
+        return ResponseEntity.noContent().build();
     }
 
     @LoginRequired

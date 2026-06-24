@@ -86,6 +86,62 @@ class JwtAuthenticationGlobalFilterTest {
     }
 
     @Test
+    @DisplayName("API 요청의 쿠키 토큰이 유효하면 다음 필터를 호출한다")
+    void filterCallsChainWhenCookieTokenValid() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.get("/api/members/me")
+                        .cookie(new org.springframework.http.HttpCookie("access_token", validToken()))
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("Authorization 헤더가 undefined이면 유효한 쿠키 토큰으로 다음 필터를 호출한다")
+    void filterFallsBackToCookieWhenBearerTokenIsUndefined() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/admin/batch/region-codes")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer undefined")
+                        .cookie(new org.springframework.http.HttpCookie("access_token", validToken()))
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("Authorization 헤더가 빈 Bearer이면 유효한 쿠키 토큰으로 다음 필터를 호출한다")
+    void filterFallsBackToCookieWhenBearerTokenIsBlank() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/admin/batch/region-codes")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ")
+                        .cookie(new org.springframework.http.HttpCookie("access_token", validToken()))
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
     @DisplayName("OPTIONS 요청은 토큰 없이 다음 필터를 호출한다")
     void filterCallsChainForOptionsRequest() {
         // given
@@ -125,6 +181,23 @@ class JwtAuthenticationGlobalFilterTest {
         // given
         MockServerWebExchange exchange = MockServerWebExchange.from(
                 MockServerHttpRequest.post("/api/members")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
+    @DisplayName("비밀번호 재설정 요청은 토큰 없이 다음 필터를 호출한다")
+    void filterCallsChainForPasswordResetRequest() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/members/password-reset")
         );
         AtomicBoolean chainCalled = new AtomicBoolean(false);
 

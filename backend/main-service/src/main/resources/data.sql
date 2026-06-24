@@ -86,14 +86,15 @@ status = VALUES(status),
 started_at = VALUES(started_at),
 ended_at = VALUES(ended_at);
 
-INSERT INTO member (id, email, password, name, is_admin) VALUES
-(1, 'admin@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '관리자', 1),
-(2, 'user@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '김싸피', 0),
-(3, 'agent@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '박중개', 0)
+INSERT INTO member (id, email, password, name, phone, is_admin) VALUES
+(1, 'admin@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '관리자', '010-0000-0001', 1),
+(2, 'user@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '김싸피', '010-0000-0002', 0),
+(3, 'agent@example.com', '$2a$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '박중개', '010-0000-0003', 0)
 ON DUPLICATE KEY UPDATE
 email = VALUES(email),
 password = VALUES(password),
 name = VALUES(name),
+phone = VALUES(phone),
 is_admin = VALUES(is_admin);
 
 INSERT INTO favorite_area (id, member_id, region_code) VALUES

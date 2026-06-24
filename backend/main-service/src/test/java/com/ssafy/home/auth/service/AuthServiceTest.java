@@ -20,6 +20,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpHeaders;
+import jakarta.servlet.http.Cookie;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -97,6 +98,24 @@ class AuthServiceTest {
         assertThat(response.memberId()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("tester");
         assertThat(response.isAdmin()).isTrue();
+    }
+
+    @Test
+    @DisplayName("유효한 JWT 쿠키이면 현재 회원 정보를 반환한다")
+    void getAuthMeReturnsAuthenticatedMemberWhenCookieIsValid() {
+        // given
+        String token = jwtTokenProvider.createAccessToken(1L, true);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setCookies(new Cookie("access_token", token));
+        given(memberMapper.findById(1L))
+                .willReturn(memberDetailResult(1L, "user@example.com", "tester", "encoded", true));
+
+        // when
+        AuthMeResponse response = authService.getAuthMe(request);
+
+        // then
+        assertThat(response.isAuthenticated()).isTrue();
+        assertThat(response.memberId()).isEqualTo(1L);
     }
 
     @Test

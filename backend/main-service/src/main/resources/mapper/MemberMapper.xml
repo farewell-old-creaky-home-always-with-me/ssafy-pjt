@@ -17,11 +17,13 @@
             email,
             password,
             name,
+            phone,
             is_admin
         ) VALUES (
             #{email},
             #{password},
             #{name},
+            #{phone},
             #{admin}
         )
     </insert>
@@ -32,6 +34,7 @@
             email,
             password,
             name,
+            phone,
             is_admin,
             created_at,
             updated_at
@@ -45,6 +48,7 @@
             email,
             password,
             name,
+            phone,
             is_admin,
             created_at,
             updated_at
@@ -52,13 +56,38 @@
         WHERE email = #{email}
     </select>
 
+    <select id="findByNameAndEmailAndPhone" resultType="com.ssafy.home.member.mapper.dto.MemberDetailResult">
+        SELECT
+            id,
+            email,
+            password,
+            name,
+            phone,
+            is_admin,
+            created_at,
+            updated_at
+        FROM member
+        WHERE name = #{name}
+          AND email = #{email}
+          AND phone = #{phone}
+    </select>
+
     <update id="updateById" parameterType="com.ssafy.home.member.mapper.dto.MemberUpdateParam">
         UPDATE member
         SET
             name = #{name},
             password = #{password},
+            phone = #{phone},
             updated_at = CURRENT_TIMESTAMP
         WHERE id = #{id}
+    </update>
+
+    <update id="updatePasswordById">
+        UPDATE member
+        SET
+            password = #{password},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{memberId}
     </update>
 
     <delete id="deleteById">

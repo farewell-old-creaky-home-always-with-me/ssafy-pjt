@@ -18,11 +18,13 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 
     private static final String API_PATH_PREFIX = "/api/";
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ACCESS_TOKEN_COOKIE = "access_token";
     private static final PublicEndpoint[] PUBLIC_ENDPOINTS = {
             PublicEndpoint.exact(HttpMethod.POST, "/api/auth/login"),
             PublicEndpoint.exact(HttpMethod.POST, "/api/auth/logout"),
             PublicEndpoint.exact(HttpMethod.GET, "/api/auth/me"),
             PublicEndpoint.exact(HttpMethod.POST, "/api/members"),
+            PublicEndpoint.exact(HttpMethod.POST, "/api/members/password-reset"),
             PublicEndpoint.exact(HttpMethod.GET, "/api/notices"),
             PublicEndpoint.prefix(HttpMethod.GET, "/api/notices/"),
             PublicEndpoint.exact(HttpMethod.GET, "/api/houses"),
@@ -83,10 +85,21 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 
     private String resolveToken(ServerWebExchange exchange) {
         String authorization = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.hasText(authorization) || !authorization.startsWith(BEARER_PREFIX)) {
-            return null;
+        if (StringUtils.hasText(authorization) && authorization.startsWith(BEARER_PREFIX)) {
+            String bearerToken = authorization.substring(BEARER_PREFIX.length());
+            if (isUsableToken(bearerToken)) {
+                return bearerToken;
+            }
         }
-        return authorization.substring(BEARER_PREFIX.length());
+        return exchange.getRequest().getCookies().getFirst(ACCESS_TOKEN_COOKIE) == null
+                ? null
+                : exchange.getRequest().getCookies().getFirst(ACCESS_TOKEN_COOKIE).getValue();
+    }
+
+    private boolean isUsableToken(String token) {
+        return StringUtils.hasText(token)
+                && !"undefined".equals(token)
+                && !"null".equals(token);
     }
 
     private record PublicEndpoint(HttpMethod method, String path, boolean prefix) {

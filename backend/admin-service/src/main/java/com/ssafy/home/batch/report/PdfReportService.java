@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.fontbox.ttf.TrueTypeCollection;
+import org.apache.fontbox.ttf.TrueTypeFont;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -43,8 +45,10 @@ public class PdfReportService {
                 throw new IllegalStateException("Batch report PDF path is outside output directory");
             }
 
-            try (PDDocument document = new PDDocument()) {
-                PDFont font = loadFont(document);
+            boolean isTtc = properties.fontPath().toLowerCase().endsWith(".ttc");
+            try (TrueTypeCollection ttc = isTtc ? new TrueTypeCollection(Path.of(properties.fontPath()).toFile()) : null;
+                 PDDocument document = new PDDocument()) {
+                PDFont font = loadFont(document, ttc);
                 writeLines(document, font, buildLines(request, true));
                 document.save(filePath.toFile());
             }
@@ -67,9 +71,21 @@ public class PdfReportService {
         return sanitized.isBlank() ? "UNKNOWN" : sanitized;
     }
 
-    private PDFont loadFont(PDDocument document) throws IOException {
+    private PDFont loadFont(PDDocument document, TrueTypeCollection ttc) throws IOException {
         if (!hasExternalFont()) {
             throw new IllegalStateException("Batch report PDF font must be configured with a readable font file");
+        }
+        if (ttc != null) {
+            TrueTypeFont[] holder = {null};
+            ttc.processAllFonts(font -> {
+                if (holder[0] == null) {
+                    holder[0] = font;
+                }
+            });
+            if (holder[0] == null) {
+                throw new IOException("No fonts found in TTC file: " + properties.fontPath());
+            }
+            return PDType0Font.load(document, holder[0], true);
         }
         return PDType0Font.load(document, Path.of(properties.fontPath()).toFile());
     }

@@ -11,5 +11,6 @@ public class MemberCreateParam {
     private String email;
     private String password;
     private String name;
+    private String phone;
     private boolean isAdmin;
 }

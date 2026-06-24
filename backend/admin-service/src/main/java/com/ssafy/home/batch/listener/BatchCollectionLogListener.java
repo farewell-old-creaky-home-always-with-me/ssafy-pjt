@@ -8,6 +8,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionListener;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepExecution;
+import org.springframework.batch.item.ExecutionContext;
 
 @Slf4j
 public class BatchCollectionLogListener implements JobExecutionListener {
@@ -74,6 +75,7 @@ public class BatchCollectionLogListener implements JobExecutionListener {
                     log.error("[BATCH] job={} dataType={} status=FAILED collected={} skipped={} failed={} exception={}",
                             jobName, dataType, collectedCount, skippedCount, failedCount, e.getMessage()));
         }
+        logSkipReasons(jobName, jobExecution);
     }
 
     private long collectedCount(StepExecution stepExecution) {
@@ -88,5 +90,19 @@ public class BatchCollectionLogListener implements JobExecutionListener {
                 + stepExecution.getReadSkipCount()
                 + stepExecution.getProcessSkipCount()
                 + stepExecution.getWriteSkipCount();
+    }
+
+    private void logSkipReasons(String jobName, JobExecution jobExecution) {
+        jobExecution.getStepExecutions().forEach(stepExecution -> {
+            ExecutionContext context = stepExecution.getExecutionContext();
+            context.entrySet().stream()
+                    .filter(entry -> entry.getKey().startsWith("skip.houseDeal.reason."))
+                    .forEach(entry -> log.warn(
+                            "[BATCH_SKIP_SUMMARY] job={} reason={} count={}",
+                            jobName,
+                            entry.getKey().substring("skip.houseDeal.reason.".length()),
+                            entry.getValue()
+                    ));
+        });
     }
 }

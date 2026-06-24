@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.member.dto.MemberCreateRequest;
 import com.ssafy.home.member.dto.MemberDetailResponse;
+import com.ssafy.home.member.dto.MemberPasswordResetRequest;
 import com.ssafy.home.member.service.MemberService;
 import com.ssafy.home.support.WebMvcTestConfig;
 import java.time.LocalDateTime;
@@ -64,7 +65,12 @@ class MemberControllerTest {
     @DisplayName("이메일 형식이 잘못되면 400을 반환한다")
     void createMemberReturns400WhenEmailInvalid() throws Exception {
         // given
-        MemberCreateRequest request = new MemberCreateRequest("invalid-email", "password123", "홍길동");
+        MemberCreateRequest request = new MemberCreateRequest(
+                "invalid-email",
+                "password123",
+                "홍길동",
+                "010-1234-5678"
+        );
 
         // when / then
         mockMvc.perform(post("/api/members")
@@ -72,6 +78,44 @@ class MemberControllerTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
+    }
+
+    @Test
+    @DisplayName("전화번호에 숫자와 하이픈 외 문자가 있으면 400을 반환한다")
+    void createMemberReturns400WhenPhoneInvalid() throws Exception {
+        // given
+        MemberCreateRequest request = new MemberCreateRequest(
+                "user@example.com",
+                "password123",
+                "홍길동",
+                "010-ABCD-5678"
+        );
+
+        // when / then
+        mockMvc.perform(post("/api/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
+    }
+
+    @Test
+    @DisplayName("비밀번호 재설정 요청이 유효하면 204를 반환한다")
+    void resetPasswordReturns204() throws Exception {
+        // given
+        MemberPasswordResetRequest request = new MemberPasswordResetRequest(
+                "홍길동",
+                "user@example.com",
+                "010-1234-5678"
+        );
+
+        // when / then
+        mockMvc.perform(post("/api/members/password-reset")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isNoContent());
+
+        verify(memberService).resetPassword(any(MemberPasswordResetRequest.class));
     }
 
     @Test
@@ -114,11 +158,17 @@ class MemberControllerTest {
     }
 
     private MemberCreateRequest createRequest() {
-        return new MemberCreateRequest("user@example.com", "password123", "홍길동");
+        return new MemberCreateRequest("user@example.com", "password123", "홍길동", "010-1234-5678");
     }
 
     private MemberDetailResponse memberResponse() {
-        return new MemberDetailResponse(1L, "user@example.com", "홍길동", LocalDateTime.of(2026, 6, 1, 10, 0));
+        return new MemberDetailResponse(
+                1L,
+                "user@example.com",
+                "홍길동",
+                "010-1234-5678",
+                LocalDateTime.of(2026, 6, 1, 10, 0)
+        );
     }
 
     private void authenticateMember(Long memberId) {

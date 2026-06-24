@@ -39,5 +39,7 @@ management:
       show-details: when-authorized
 
 app:
+  auth:
+    cookie-secure: false
   database:
     seed-enabled: true

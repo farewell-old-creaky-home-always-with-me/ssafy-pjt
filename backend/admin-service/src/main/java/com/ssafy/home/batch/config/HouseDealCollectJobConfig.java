@@ -1,13 +1,16 @@
 package com.ssafy.home.batch.config;
 
+import static com.ssafy.home.admin.service.BatchJobService.ALL_REGION_CODE;
+
 import com.ssafy.home.batch.domain.HouseType;
 import com.ssafy.home.batch.domain.NormalizedHouseDeal;
 import com.ssafy.home.batch.listener.BatchCollectionLogListener;
+import com.ssafy.home.batch.listener.HouseDealSkipLogListener;
 import com.ssafy.home.batch.mapper.BatchCollectionLogMapper;
 import com.ssafy.home.batch.mapper.HouseDealBatchMapper;
 import com.ssafy.home.batch.processor.HouseDealProcessor;
-import com.ssafy.home.batch.processor.InvalidHouseDealException;
 import com.ssafy.home.batch.reader.MolitHouseDealReader;
+import com.ssafy.home.batch.skip.HouseDealSkipPolicy;
 import com.ssafy.home.batch.writer.HouseDealWriter;
 import com.ssafy.home.external.molit.MolitApiException;
 import com.ssafy.home.external.molit.MolitHouseDealClient;
@@ -15,10 +18,12 @@ import com.ssafy.home.external.molit.MolitProperties;
 import com.ssafy.home.external.molit.MolitRawHouseDeal;
 import java.util.List;
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.SkipListener;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
+import org.springframework.batch.core.StepExecutionListener;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.classify.BinaryExceptionClassifier;
@@ -57,6 +62,8 @@ public class HouseDealCollectJobConfig {
             MolitHouseDealReader houseDealReader,
             HouseDealProcessor houseDealProcessor,
             HouseDealWriter houseDealWriter,
+            HouseDealSkipPolicy houseDealSkipPolicy,
+            HouseDealSkipLogListener houseDealSkipLogListener,
             MolitProperties properties
     ) {
         return new StepBuilder("houseDealCollectStep", jobRepository)
@@ -66,9 +73,11 @@ public class HouseDealCollectJobConfig {
                 .writer(houseDealWriter)
                 .faultTolerant()
                 .retryPolicy(molitRetryPolicy(properties))
-                .skip(InvalidHouseDealException.class)
-                .skipLimit(properties.skipLimit())
+                .skipPolicy(houseDealSkipPolicy)
                 .listener(houseDealWriter)
+                .listener((SkipListener<? super MolitRawHouseDeal, ? super NormalizedHouseDeal>)
+                        houseDealSkipLogListener)
+                .listener((StepExecutionListener) houseDealSkipLogListener)
                 .build();
     }
 
@@ -86,8 +95,21 @@ public class HouseDealCollectJobConfig {
 
     @Bean
     @StepScope
+    public HouseDealSkipPolicy houseDealSkipPolicy(MolitProperties properties) {
+        return new HouseDealSkipPolicy(properties.skipLimit());
+    }
+
+    @Bean
+    @StepScope
+    public HouseDealSkipLogListener houseDealSkipLogListener() {
+        return new HouseDealSkipLogListener();
+    }
+
+    @Bean
+    @StepScope
     public MolitHouseDealReader houseDealReader(
             List<MolitHouseDealClient> clients,
+            HouseDealBatchMapper mapper,
             @Value("#{jobParameters['regionCode']}") String regionCode,
             @Value("#{jobParameters['yearMonth']}") String yearMonth,
             @Value("#{jobParameters['houseType']}") String houseType
@@ -99,7 +121,13 @@ public class HouseDealCollectJobConfig {
                 .orElseThrow(() -> new IllegalStateException(
                         "No MOLIT client supports " + type
                 ));
-        return new MolitHouseDealReader(client, regionCode, yearMonth);
+        List<String> regionCodes = ALL_REGION_CODE.equals(regionCode)
+                ? mapper.findAllLawdCodes()
+                : List.of(regionCode);
+        if (regionCodes.isEmpty()) {
+            throw new IllegalStateException("No region codes available for house deal collection");
+        }
+        return new MolitHouseDealReader(client, regionCodes, yearMonth);
     }
 
     @Bean

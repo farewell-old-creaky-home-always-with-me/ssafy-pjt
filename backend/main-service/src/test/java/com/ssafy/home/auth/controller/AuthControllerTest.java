@@ -5,6 +5,7 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -12,8 +13,10 @@ import com.ssafy.home.auth.dto.AuthLoginRequest;
 import com.ssafy.home.auth.dto.AuthMeResponse;
 import com.ssafy.home.auth.dto.LoginResponse;
 import com.ssafy.home.auth.service.AuthService;
+import com.ssafy.home.global.auth.JwtProperties;
 import com.ssafy.home.global.auth.JwtTokenProvider;
 import com.ssafy.home.support.WebMvcTestConfig;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,14 @@ class AuthControllerTest {
     @MockitoBean
     private JwtTokenProvider jwtTokenProvider;
 
+    @MockitoBean
+    private JwtProperties jwtProperties;
+
+    @BeforeEach
+    void setUp() {
+        given(jwtProperties.accessTokenExpirationMillis()).willReturn(3_600_000L);
+    }
+
     @Test
     @DisplayName("로그인 요청이 성공하면 200을 반환한다")
     void loginReturns200() throws Exception {
@@ -56,7 +67,10 @@ class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.memberId").value(1L))
                 .andExpect(jsonPath("$.name").value("tester"))
-                .andExpect(jsonPath("$.accessToken").value("access-token"));
+                .andExpect(jsonPath("$.accessToken").doesNotExist())
+                .andExpect(cookie().httpOnly("access_token", true))
+                .andExpect(cookie().secure("access_token", true))
+                .andExpect(cookie().value("access_token", "access-token"));
     }
 
     @Test
@@ -78,6 +92,8 @@ class AuthControllerTest {
     void logoutReturns200() throws Exception {
         // when / then
         mockMvc.perform(post("/api/auth/logout"))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(cookie().secure("access_token", true))
+                .andExpect(cookie().maxAge("access_token", 0));
     }
 }

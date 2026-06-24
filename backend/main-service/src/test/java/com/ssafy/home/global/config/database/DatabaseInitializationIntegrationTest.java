@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.catchThrowable;
 
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
@@ -71,37 +73,39 @@ class DatabaseInitializationIntegrationTest {
         // The Spring application context has initialized the database with Flyway.
 
         // When
-        Integer managedTableCount = jdbcTemplate.queryForObject("""
-                SELECT COUNT(*)
-                FROM information_schema.tables
-                WHERE table_schema = DATABASE()
-                  AND table_name IN (
-                      'region_code',
-                      'house',
-                      'house_deal',
-                      'batch_collection_log',
-                      'member',
-                      'favorite_area',
-                      'member_place',
-                      'notice',
-                      'qna',
-                      'batch_report',
-                      'commercial_area',
-                      'environment_info',
-                      'facility',
-                      'route_request',
-                      'route_path',
-                      'BATCH_JOB_INSTANCE',
-                      'BATCH_JOB_EXECUTION',
-                      'BATCH_JOB_EXECUTION_PARAMS',
-                      'BATCH_STEP_EXECUTION',
-                      'BATCH_STEP_EXECUTION_CONTEXT',
-                      'BATCH_JOB_EXECUTION_CONTEXT',
-                      'BATCH_STEP_EXECUTION_SEQ',
-                      'BATCH_JOB_EXECUTION_SEQ',
-                      'BATCH_JOB_SEQ'
-                  )
-                """, Integer.class);
+        List<String> missingTables = jdbcTemplate.queryForList("""
+                SELECT t FROM (
+                    SELECT 'region_code'              AS t UNION ALL
+                    SELECT 'house'                         UNION ALL
+                    SELECT 'house_deal'                    UNION ALL
+                    SELECT 'batch_collection_log'          UNION ALL
+                    SELECT 'member'                        UNION ALL
+                    SELECT 'favorite_area'                 UNION ALL
+                    SELECT 'member_place'                  UNION ALL
+                    SELECT 'notice'                        UNION ALL
+                    SELECT 'qna'                           UNION ALL
+                    SELECT 'batch_report'                  UNION ALL
+                    SELECT 'commercial_area'               UNION ALL
+                    SELECT 'environment_info'              UNION ALL
+                    SELECT 'facility'                      UNION ALL
+                    SELECT 'route_request'                 UNION ALL
+                    SELECT 'route_path'                    UNION ALL
+                    SELECT 'BATCH_JOB_INSTANCE'            UNION ALL
+                    SELECT 'BATCH_JOB_EXECUTION'           UNION ALL
+                    SELECT 'BATCH_JOB_EXECUTION_PARAMS'    UNION ALL
+                    SELECT 'BATCH_STEP_EXECUTION'          UNION ALL
+                    SELECT 'BATCH_STEP_EXECUTION_CONTEXT'  UNION ALL
+                    SELECT 'BATCH_JOB_EXECUTION_CONTEXT'   UNION ALL
+                    SELECT 'BATCH_STEP_EXECUTION_SEQ'      UNION ALL
+                    SELECT 'BATCH_JOB_EXECUTION_SEQ'       UNION ALL
+                    SELECT 'BATCH_JOB_SEQ'
+                ) AS expected
+                WHERE t NOT IN (
+                    SELECT table_name
+                    FROM information_schema.tables
+                    WHERE table_schema = DATABASE()
+                )
+                """, String.class);
         Integer successfulMigrationCount = jdbcTemplate.queryForObject("""
                 SELECT COUNT(*)
                 FROM flyway_schema_history
@@ -122,13 +126,23 @@ class DatabaseInitializationIntegrationTest {
                 FROM BATCH_JOB_SEQ
                 WHERE ID = 0 AND UNIQUE_KEY = '0'
                 """, Integer.class);
+        String memberPhoneNullable = jdbcTemplate.queryForObject("""
+                SELECT IS_NULLABLE
+                FROM information_schema.columns
+                WHERE table_schema = DATABASE()
+                  AND table_name = 'member'
+                  AND column_name = 'phone'
+                """, String.class);
 
         // Then
-        assertThat(managedTableCount).isEqualTo(24);
-        assertThat(successfulMigrationCount).isEqualTo(4);
+        assertThat(missingTables)
+                .as("Flyway migration did not create these expected tables")
+                .isEmpty();
+        assertThat(successfulMigrationCount).isEqualTo(6);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);
+        assertThat(memberPhoneNullable).isEqualTo("NO");
     }
 
     @Test
@@ -160,6 +174,7 @@ class DatabaseInitializationIntegrationTest {
     }
 
     @Test
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @DisplayName("초기 데이터 적재 중 실패하면 예외를 전파하고 이전 변경을 롤백한다")
     void propagatesSeedFailureAndRollsBackEarlierChanges() {
         // Given

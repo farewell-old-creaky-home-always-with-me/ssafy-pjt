@@ -3,6 +3,7 @@ package com.ssafy.home.member.controller;
 import com.ssafy.home.global.auth.LoginMemberId;
 import com.ssafy.home.member.dto.MemberCreateRequest;
 import com.ssafy.home.member.dto.MemberDetailResponse;
+import com.ssafy.home.member.dto.MemberPasswordResetRequest;
 import com.ssafy.home.member.dto.MemberUpdateResponse;
 import com.ssafy.home.member.dto.MemberUpdateRequest;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +23,15 @@ public interface MemberApiDocs {
     ResponseEntity<MemberDetailResponse> createMember(
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "회원 가입 요청", required = true)
             @Valid @RequestBody MemberCreateRequest request
+    );
+
+    @Operation(
+            summary = "비밀번호 재설정",
+            description = "이름, 이메일, 전화번호가 일치하는 회원의 임시 비밀번호를 이메일로 발송합니다."
+    )
+    ResponseEntity<Void> resetPassword(
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "비밀번호 재설정 요청", required = true)
+            @Valid @RequestBody MemberPasswordResetRequest request
     );
 
     @Operation(

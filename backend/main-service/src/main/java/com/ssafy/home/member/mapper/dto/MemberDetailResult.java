@@ -12,6 +12,7 @@ public class MemberDetailResult {
     private String email;
     private String password;
     private String name;
+    private String phone;
     private boolean isAdmin;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

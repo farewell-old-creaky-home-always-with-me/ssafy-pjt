@@ -6,6 +6,7 @@ public record MemberDetailResponse(
         Long memberId,
         String email,
         String name,
+        String phone,
         LocalDateTime createdAt
 ) {
 
@@ -14,6 +15,7 @@ public record MemberDetailResponse(
                 member.getId(),
                 member.getEmail(),
                 member.getName(),
+                member.getPhone(),
                 member.getCreatedAt()
         );
     }
