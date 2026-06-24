@@ -28,7 +28,7 @@ class SeoulEnvironmentClientTest {
         RestClient.Builder builder = RestClient.builder();
         server = MockRestServiceServer.bindTo(builder).build();
         SeoulEnvironmentProperties properties = new SeoulEnvironmentProperties(
-                URI.create("http://openapi.seoul.go.kr:8088"),
+                URI.create("https://openapi.seoul.go.kr:8088"),
                 "TEST_KEY",
                 10,
                 Duration.ofSeconds(5),

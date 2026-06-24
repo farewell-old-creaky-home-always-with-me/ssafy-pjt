@@ -27,6 +27,9 @@ public record SeoulEnvironmentProperties(
         if (timeout != null && (timeout.isZero() || timeout.isNegative())) {
             throw new IllegalArgumentException("timeout must be positive");
         }
+        if (baseUrl != null && !"https".equalsIgnoreCase(baseUrl.getScheme())) {
+            throw new IllegalArgumentException("seoul.environment.base-url must use HTTPS");
+        }
     }
 
     public record Dataset(
