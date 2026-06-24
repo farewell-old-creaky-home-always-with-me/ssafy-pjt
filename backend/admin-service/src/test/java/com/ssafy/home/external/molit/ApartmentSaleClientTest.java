@@ -49,6 +49,8 @@ class ApartmentSaleClientTest {
         assertThat(page.items()).hasSize(1);
         MolitRawHouseDeal deal = page.items().get(0);
         assertThat(deal.legalDongCode()).isEqualTo("1111010100");
+        assertThat(deal.lawdCode()).isEqualTo("11110");
+        assertThat(deal.legalDongName()).isEqualTo("청운동");
         assertThat(deal.name()).isEqualTo("청운아파트");
         assertThat(deal.dealAmount()).isEqualTo("10,000");
         server.verify();
@@ -67,6 +69,7 @@ class ApartmentSaleClientTest {
                         "item": {
                           "법정동시군구코드": "11110",
                           "법정동읍면동코드": "10100",
+                          "법정동": "청운동",
                           "아파트": "청운아파트",
                           "지번": "1-1",
                           "거래금액": "10,000",

@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Param;
 public interface HouseDealBatchMapper {
     boolean existsRegionCode(@Param("regionCode") String regionCode);
     List<String> findAllLawdCodes();
+    String findRegionCodeByLawdCodeAndDongName(@Param("lawdCode") String lawdCode,
+                                               @Param("dongName") String dongName);
     Long findHouseId(NormalizedHouseDeal deal);
     int insertHouse(NormalizedHouseDeal deal);
     int insertDealIfAbsent(@Param("houseId") long houseId,

@@ -42,6 +42,8 @@ class MolitHouseDealReaderTest {
     private MolitRawHouseDeal rawDeal(String legalDongCode) {
         return new MolitRawHouseDeal(
                 legalDongCode,
+                legalDongCode.substring(0, 5),
+                "청운동",
                 "테스트아파트",
                 "1-1",
                 "10,000",

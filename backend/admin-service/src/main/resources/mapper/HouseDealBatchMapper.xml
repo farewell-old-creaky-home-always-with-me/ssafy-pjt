@@ -18,6 +18,14 @@
         ORDER BY SUBSTRING(region_code, 1, 5)
     </select>
 
+    <select id="findRegionCodeByLawdCodeAndDongName" resultType="string">
+        SELECT region_code
+        FROM region_code
+        WHERE SUBSTRING(region_code, 1, 5) = #{lawdCode}
+          AND TRIM(dong_name) = TRIM(#{dongName})
+        LIMIT 1
+    </select>
+
     <select id="findHouseId" resultType="long">
         SELECT id
         FROM house
@@ -36,23 +44,13 @@
     </insert>
 
     <insert id="insertDealIfAbsent">
-        INSERT INTO house_deal (
+        INSERT IGNORE INTO house_deal (
             house_id, deal_type, deal_amount, deposit_amount, monthly_rent,
             deal_date, area, floor
-        )
-        SELECT
+        ) VALUES (
             #{houseId}, #{deal.dealType}, #{deal.dealAmount},
             #{deal.depositAmount}, #{deal.monthlyRent},
             #{deal.dealDate}, #{deal.area}, #{deal.floor}
-        WHERE NOT EXISTS (
-            SELECT 1
-            FROM house_deal
-            WHERE house_id = #{houseId}
-              AND deal_type = #{deal.dealType}
-              AND deal_date = #{deal.dealDate}
-              AND area = #{deal.area}
-              AND floor = #{deal.floor}
-              AND deal_amount = #{deal.dealAmount}
         )
     </insert>
 
