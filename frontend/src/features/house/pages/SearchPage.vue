@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/authStore.js'
 import { housesApi, regionsApi } from '@/api/index.js'
 import BaseButton from '@/components/base/BaseButton.vue'
 import { escapeHtml } from '@/utils/html.js'
+import { buildHouseSearchParams } from './searchParams.js'
 
 const route = useRoute()
 const favoritesStore = useFavoritesStore()
@@ -36,7 +37,14 @@ const currentPage = ref(1)
 const sortKey = ref('date')
 const sortDir = ref('desc')
 
-const filters = ref({ regionCode: '', houseName: '', buildingType: '아파트', transactionType: '매매' })
+const filters = ref({
+  regionCode: '',
+  houseName: '',
+  buildingType: '아파트',
+  transactionType: '매매',
+  minAmount: '',
+  maxAmount: '',
+})
 
 function formatManwon(manwon) {
   if (manwon == null) return '-'
@@ -61,16 +69,13 @@ async function fetchHouses() {
   loading.value = true
   loadError.value = false
   try {
-    const res = await housesApi.searchHouses({
-      regionCode: filters.value.regionCode,
-      houseName: filters.value.houseName.trim() || undefined,
-      houseType: filters.value.buildingType || undefined,
-      dealType: filters.value.transactionType || undefined,
-      sortBy: sortKey.value,
+    const res = await housesApi.searchHouses(buildHouseSearchParams({
+      filters: filters.value,
+      sortKey: sortKey.value,
       sortDir: sortDir.value,
       page: currentPage.value,
       size: PAGE_SIZE,
-    })
+    }))
     pageData.value = res.items
     totalItems.value = res.total
     renderMapMarkers()
@@ -113,7 +118,14 @@ function goPage(n) {
 
 function applyFilter() { currentPage.value = 1; sidebarOpen.value = false; fetchHouses() }
 function resetFilter() {
-  filters.value = { regionCode: '', houseName: '', buildingType: '아파트', transactionType: '매매' }
+  filters.value = {
+    regionCode: '',
+    houseName: '',
+    buildingType: '아파트',
+    transactionType: '매매',
+    minAmount: '',
+    maxAmount: '',
+  }
   currentPage.value = 1
   pageData.value = []
   totalItems.value = 0
@@ -307,6 +319,27 @@ onMounted(async () => {
                   :class="{ 'bg-navy border-navy text-white font-semibold': filters.transactionType === t }"
                   @click="filters.transactionType = t"
                 >{{ t }}</button>
+              </div>
+            </div>
+            <div>
+              <label class="flex items-center gap-1.5 text-navy text-[0.8125rem] font-semibold mb-2">거래금액</label>
+              <div class="grid grid-cols-2 gap-2">
+                <input
+                  v-model="filters.minAmount"
+                  type="number"
+                  min="0"
+                  inputmode="numeric"
+                  class="w-full px-3 py-2.5 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-[0.8125rem] outline-none transition-colors focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                  placeholder="최소"
+                >
+                <input
+                  v-model="filters.maxAmount"
+                  type="number"
+                  min="0"
+                  inputmode="numeric"
+                  class="w-full px-3 py-2.5 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-[0.8125rem] outline-none transition-colors focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                  placeholder="최대"
+                >
               </div>
             </div>
             <div class="flex gap-2 mt-4">
