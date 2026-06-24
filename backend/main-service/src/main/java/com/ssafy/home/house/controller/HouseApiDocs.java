@@ -20,6 +20,8 @@ public interface HouseApiDocs {
     ResponseEntity<PageResponse<HouseSummaryResponse>> searchHouses(
             @Parameter(description = "법정동 지역 코드", example = "1111010100")
             @RequestParam String regionCode,
+            @Parameter(description = "아파트명", example = "래미안")
+            @RequestParam(required = false) String houseName,
             @Parameter(description = "주택 유형 (아파트, 다세대)", example = "아파트")
             @RequestParam(required = false) String houseType,
             @Parameter(description = "거래 유형 (매매, 전세, 월세, 전월세)", example = "매매")

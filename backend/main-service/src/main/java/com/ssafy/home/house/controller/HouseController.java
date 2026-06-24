@@ -23,6 +23,7 @@ public class HouseController implements HouseApiDocs {
     @Override
     public ResponseEntity<PageResponse<HouseSummaryResponse>> searchHouses(
             @RequestParam String regionCode,
+            @RequestParam(required = false) String houseName,
             @RequestParam(required = false) String houseType,
             @RequestParam(required = false) String dealType,
             @RequestParam(required = false) Integer minAmount,
@@ -33,7 +34,7 @@ public class HouseController implements HouseApiDocs {
             @RequestParam(defaultValue = "desc") String sortDir
     ) {
         return ResponseEntity.ok(
-                houseService.searchHouses(regionCode, houseType, dealType, minAmount, maxAmount,
+                houseService.searchHouses(regionCode, houseName, houseType, dealType, minAmount, maxAmount,
                         page, size, sortBy, sortDir));
     }
 
