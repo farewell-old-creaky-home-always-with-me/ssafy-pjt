@@ -147,7 +147,7 @@ public class BatchJobService {
     public CommercialAreaCollectResponse collectCommercialAreas(Long memberId) {
         JobParameters parameters = new JobParametersBuilder()
                 .addLong("requestedMemberId", memberId, false)
-                .addLong("requestedAt", clock.millis(), false)
+                .addLong("requestedAt", clock.millis())
                 .toJobParameters();
         return launch(commercialAreaCollectJob, parameters, execution -> new CommercialAreaCollectResponse(
                 execution.getId(),

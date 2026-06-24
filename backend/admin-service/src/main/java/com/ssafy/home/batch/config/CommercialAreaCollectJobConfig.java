@@ -8,7 +8,6 @@ import com.ssafy.home.batch.processor.CommercialAreaProcessor;
 import com.ssafy.home.batch.processor.InvalidCommercialAreaException;
 import com.ssafy.home.batch.reader.SdscStoreReader;
 import com.ssafy.home.batch.writer.CommercialAreaWriter;
-import com.ssafy.home.external.sdsc.SdscApiException;
 import com.ssafy.home.external.sdsc.SdscProperties;
 import com.ssafy.home.external.sdsc.SdscRawStore;
 import com.ssafy.home.external.sdsc.SdscStoreClient;
@@ -18,11 +17,8 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
-import org.springframework.classify.BinaryExceptionClassifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.RetryPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 @Configuration
@@ -62,23 +58,10 @@ public class CommercialAreaCollectJobConfig {
                 .processor(commercialAreaProcessor)
                 .writer(commercialAreaWriter)
                 .faultTolerant()
-                .retryPolicy(sdscRetryPolicy(properties))
                 .skip(InvalidCommercialAreaException.class)
                 .skipLimit(properties.skipLimit())
                 .listener(commercialAreaWriter)
                 .build();
-    }
-
-    @Bean
-    public RetryPolicy sdscRetryPolicy(SdscProperties properties) {
-        BinaryExceptionClassifier classifier = new BinaryExceptionClassifier(false) {
-            @Override
-            public Boolean classify(Throwable throwable) {
-                return throwable instanceof SdscApiException exception
-                        && exception.retryable();
-            }
-        };
-        return new SimpleRetryPolicy(properties.retryCount() + 1, classifier);
     }
 
     @Bean
