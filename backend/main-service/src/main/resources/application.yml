@@ -23,7 +23,7 @@ mybatis:
     map-underscore-to-camel-case: true
 
 jwt:
-  access-token-expiration-millis: ${JWT_ACCESS_TOKEN_EXPIRATION_MILLIS:3600000}
+  access-token-expiration-millis: 3600000
 
 management:
   endpoints:

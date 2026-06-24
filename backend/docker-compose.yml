@@ -8,10 +8,14 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+    restart: unless-stopped
     depends_on:
-      - admin-service
-      - main-service
-      - ai-service
+      admin-service:
+        condition: service_healthy
+      main-service:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
 
   admin-service:
     build:
@@ -22,6 +26,13 @@ services:
       - "8081:8081"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       mysql:
         condition: service_healthy
@@ -34,20 +45,24 @@ services:
     ports:
       - "8082:8082"
     environment:
-      JWT_SECRET: ${JWT_SECRET:-test-jwt-secret-key-for-ssafy-home-project-2026}
-      SPRING_CONFIG_IMPORT: optional:classpath:secret/application-secret.yml
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: ssafy
-      SPRING_DATASOURCE_PASSWORD: ssafy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       mysql:
         condition: service_healthy
 
   chroma:
-    image: chromadb/chroma:latest
+    image: chromadb/chroma:0.5.23
     container_name: ssafy-home-chroma
     ports:
       - "8000:8000"
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
       interval: 10s
@@ -60,8 +75,14 @@ services:
       dockerfile: ai-service/Dockerfile
     container_name: ssafy-home-ai-service
     environment:
-      CHROMA_HOST: chroma
-      CHROMA_PORT: 8000
+      SPRING_PROFILES_ACTIVE: docker
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     depends_on:
       chroma:
         condition: service_healthy
@@ -69,6 +90,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: ssafy-home-mysql
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ssafy_home

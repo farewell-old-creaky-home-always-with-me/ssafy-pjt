@@ -19,8 +19,8 @@ spring:
     vectorstore:
       chroma:
         client:
-          host: ${CHROMA_HOST:localhost}
-          port: ${CHROMA_PORT:8000}
+          host: http://localhost
+          port: 8000
         collection-name: ssafy-home-docs
         initialize-schema: true
   servlet:
@@ -30,3 +30,12 @@ spring:
 
 jwt:
   access-token-expiration-millis: 3600000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "health,info"
+  endpoint:
+    health:
+      show-details: when-authorized
