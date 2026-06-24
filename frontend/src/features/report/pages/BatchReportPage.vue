@@ -7,6 +7,7 @@ import { formatDate } from '@/utils/date.js'
 const report = ref(null)
 const loading = ref(false)
 const error = ref('')
+const pdfOpenError = ref('')
 
 const isEmpty = computed(() => error.value === 'NOT_FOUND')
 const canOpenPdf = computed(() => report.value?.reportId && report.value?.status === 'PDF_COMPLETED')
@@ -50,6 +51,7 @@ function statusLabel(value) {
 async function loadLatestReport() {
   loading.value = true
   error.value = ''
+  pdfOpenError.value = ''
   try {
     report.value = await batchReportsApi.getLatestBatchReport()
   } catch (err) {
@@ -63,9 +65,10 @@ async function loadLatestReport() {
 function openPdf() {
   if (!canOpenPdf.value) return
 
+  pdfOpenError.value = ''
   const pdfWindow = window.open(batchReportsApi.getBatchReportPdfUrl(report.value.reportId), '_blank', 'noopener')
   if (!pdfWindow) {
-    error.value = 'PDF_OPEN_FAILED'
+    pdfOpenError.value = 'PDF를 열 수 없습니다. 팝업 차단 여부를 확인해 주세요.'
   }
 }
 
@@ -100,10 +103,15 @@ onMounted(loadLatestReport)
 
       <div v-else-if="error" class="flex items-center gap-2 bg-red/5 border border-red/20 rounded-xl px-4 py-3 text-red text-[0.8125rem] font-medium">
         <AlertCircle :size="16" />
-        <span>{{ error === 'PDF_OPEN_FAILED' ? 'PDF를 열 수 없습니다. 팝업 차단 여부를 확인해 주세요.' : 'AI 리포트를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.' }}</span>
+        <span>AI 리포트를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</span>
       </div>
 
       <article v-else-if="report" class="space-y-4">
+        <div v-if="pdfOpenError" class="flex items-center gap-2 bg-red/5 border border-red/20 rounded-xl px-4 py-3 text-red text-[0.8125rem] font-medium">
+          <AlertCircle :size="16" />
+          <span>{{ pdfOpenError }}</span>
+        </div>
+
         <section class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] overflow-hidden">
           <div class="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-4 flex-wrap">
             <div>

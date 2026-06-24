@@ -72,7 +72,7 @@ const routes = [
     path: '/reports/batch',
     name: 'BatchReportPage',
     component: () => import('@/features/report/pages/BatchReportPage.vue'),
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/login',
