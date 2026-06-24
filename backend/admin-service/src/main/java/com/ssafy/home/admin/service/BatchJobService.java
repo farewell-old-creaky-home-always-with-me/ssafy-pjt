@@ -4,6 +4,7 @@ import static com.ssafy.home.global.exception.ErrorCode.BATCH_ALREADY_RUNNING;
 import static com.ssafy.home.global.exception.ErrorCode.BATCH_INVALID_PARAMETER;
 import static com.ssafy.home.global.exception.ErrorCode.BATCH_LAUNCH_FAILED;
 
+import com.ssafy.home.admin.dto.BatchReportGenerateResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
 import com.ssafy.home.admin.dto.RegionCodeCollectResponse;
@@ -32,6 +33,7 @@ public class BatchJobService {
 
     public static final String HOUSE_DEAL_JOB_NAME = "houseDealCollectJob";
     public static final String REGION_CODE_JOB_NAME = "regionCodeCollectJob";
+    public static final String BATCH_REPORT_JOB_NAME = "batchReportGenerateJob";
     private static final String REGION_SYNC_SCOPE = "FULL";
     private static final DateTimeFormatter YEAR_MONTH = DateTimeFormatter
             .ofPattern("uuuuMM").withResolverStyle(ResolverStyle.STRICT);
@@ -39,17 +41,20 @@ public class BatchJobService {
     private final JobLauncher jobLauncher;
     private final Job houseDealCollectJob;
     private final Job regionCodeCollectJob;
+    private final Job batchReportGenerateJob;
     private final Clock clock;
 
     public BatchJobService(
             @Qualifier("asyncJobLauncher") JobLauncher jobLauncher,
             @Qualifier(HOUSE_DEAL_JOB_NAME) Job houseDealCollectJob,
             @Qualifier(REGION_CODE_JOB_NAME) Job regionCodeCollectJob,
+            @Qualifier(BATCH_REPORT_JOB_NAME) Job batchReportGenerateJob,
             Clock clock
     ) {
         this.jobLauncher = jobLauncher;
         this.houseDealCollectJob = houseDealCollectJob;
         this.regionCodeCollectJob = regionCodeCollectJob;
+        this.batchReportGenerateJob = batchReportGenerateJob;
         this.clock = clock;
     }
 
@@ -89,6 +94,18 @@ public class BatchJobService {
         return launch(regionCodeCollectJob, parameters, execution -> new RegionCodeCollectResponse(
                 execution.getId(),
                 REGION_CODE_JOB_NAME,
+                execution.getStatus().name()
+        ));
+    }
+
+    public BatchReportGenerateResponse generateBatchReport(Long memberId) {
+        JobParameters parameters = new JobParametersBuilder()
+                .addLong("requestedMemberId", memberId, false)
+                .addLong("requestedAt", clock.millis(), false)
+                .toJobParameters();
+        return launch(batchReportGenerateJob, parameters, execution -> new BatchReportGenerateResponse(
+                execution.getId(),
+                BATCH_REPORT_JOB_NAME,
                 execution.getStatus().name()
         ));
     }

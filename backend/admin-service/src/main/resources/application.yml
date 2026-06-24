@@ -42,6 +42,24 @@ vworld:
   sido-retry-count: 3
   skip-limit: 1000
 
+batch:
+  ai-service:
+    base-url: ${AI_SERVICE_BASE_URL:http://localhost:8083}
+    timeout: ${AI_SERVICE_TIMEOUT:30s}
+  report:
+    output-dir: ${BATCH_REPORT_OUTPUT_DIR:./reports/batch}
+    font-path: ${BATCH_REPORT_FONT_PATH:}
+    max-deals: ${BATCH_REPORT_MAX_DEALS:20}
+  scheduler:
+    enabled: ${BATCH_SCHEDULER_ENABLED:false}
+    region-code: ${BATCH_SCHEDULER_REGION_CODE:11110}
+    year-month: ${BATCH_SCHEDULER_YEAR_MONTH:}
+    house-type: ${BATCH_SCHEDULER_HOUSE_TYPE:APARTMENT}
+    deal-type: ${BATCH_SCHEDULER_DEAL_TYPE:SALE}
+    system-member-id: ${BATCH_SCHEDULER_SYSTEM_MEMBER_ID:0}
+    house-deal-cron: ${BATCH_SCHEDULER_HOUSE_DEAL_CRON:0 0 3 * * *}
+    report-cron: ${BATCH_SCHEDULER_REPORT_CRON:0 30 3 * * *}
+
 jwt:
   access-token-expiration-millis: 3600000
 
