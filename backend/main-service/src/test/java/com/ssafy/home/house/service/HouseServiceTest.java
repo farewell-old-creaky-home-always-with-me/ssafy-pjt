@@ -2,7 +2,9 @@ package com.ssafy.home.house.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import static com.ssafy.home.global.exception.ErrorCode.COMMON_INVALID_INPUT;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_INVALID_REGION;
@@ -10,10 +12,13 @@ import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
 
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.house.mapper.HouseMapper;
+import com.ssafy.home.house.mapper.dto.HouseSearchParam;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -28,6 +33,23 @@ class HouseServiceTest {
     @BeforeEach
     void setUp() {
         houseService = new HouseService(houseMapper);
+    }
+
+    @Test
+    @DisplayName("아파트명 검색 조건을 전달한다")
+    void searchHousesPassesHouseNameCondition() {
+        // given
+        given(houseMapper.existsByRegionCode("1168010100")).willReturn(true);
+        given(houseMapper.countBySearch(any(HouseSearchParam.class))).willReturn(0L);
+        given(houseMapper.search(any(HouseSearchParam.class))).willReturn(List.of());
+
+        // when
+        houseService.searchHouses("1168010100", " 래미안 ", null, null, null, null, 1, 20, "date", "desc");
+
+        // then
+        ArgumentCaptor<HouseSearchParam> captor = ArgumentCaptor.forClass(HouseSearchParam.class);
+        then(houseMapper).should().countBySearch(captor.capture());
+        assertThat(captor.getValue().getHouseName()).isEqualTo("래미안");
     }
 
     @Test
