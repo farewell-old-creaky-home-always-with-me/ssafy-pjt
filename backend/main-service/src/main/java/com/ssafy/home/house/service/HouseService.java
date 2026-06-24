@@ -41,6 +41,7 @@ public class HouseService {
     @Transactional(readOnly = true)
     public PageResponse<HouseSummaryResponse> searchHouses(
             String regionCode,
+            String houseName,
             String houseType,
             String dealType,
             Integer minAmount,
@@ -64,6 +65,7 @@ public class HouseService {
 
         HouseSearchParam condition = new HouseSearchParam();
         condition.setRegionCode(normalizedRegionCode);
+        condition.setHouseName(normalizeBlankToNull(houseName));
         condition.setHouseType(normalizeNullable(houseType));
         condition.setDealType(normalizeNullable(dealType));
         condition.setMinAmount(minAmount);
@@ -159,5 +161,12 @@ public class HouseService {
 
     private String normalizeNullable(String value) {
         return value == null ? null : value.trim();
+    }
+
+    private String normalizeBlankToNull(String value) {
+        if (value == null || value.trim().isEmpty()) {
+            return null;
+        }
+        return value.trim();
     }
 }

@@ -20,6 +20,9 @@
 
     <sql id="searchConditions">
         WHERE h.region_code = #{regionCode}
+        <if test="houseName != null">
+            AND h.apt_name LIKE CONCAT('%', #{houseName}, '%')
+        </if>
         <if test="houseType != null">
             AND h.house_type = #{houseType}
         </if>

@@ -8,6 +8,7 @@ import lombok.Setter;
 public class HouseSearchParam {
 
     private String regionCode;
+    private String houseName;
     private String houseType;
     private String dealType;
     private Integer minAmount;
