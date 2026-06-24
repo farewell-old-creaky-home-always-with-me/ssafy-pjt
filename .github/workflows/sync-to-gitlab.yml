@@ -24,15 +24,23 @@ jobs:
           echo "$CHANGED"
 
           SYNC_ARTIFACT=false
-          SYNC_BACKEND=false
+          SYNC_ADMIN_SERVICE=false
+          SYNC_AI_SERVICE=false
+          SYNC_MAIN_SERVICE=false
           SYNC_FRONTEND=false
           SYNC_FRONTEND_ADMIN=false
 
           if echo "$CHANGED" | grep -q "^artifact/"; then
             SYNC_ARTIFACT=true
           fi
-          if echo "$CHANGED" | grep -q "^backend/"; then
-            SYNC_BACKEND=true
+          if echo "$CHANGED" | grep -q "^backend/admin-service/"; then
+            SYNC_ADMIN_SERVICE=true
+          fi
+          if echo "$CHANGED" | grep -q "^backend/ai-service/"; then
+            SYNC_AI_SERVICE=true
+          fi
+          if echo "$CHANGED" | grep -q "^backend/main-service/"; then
+            SYNC_MAIN_SERVICE=true
           fi
           if echo "$CHANGED" | grep -q "^frontend/"; then
             SYNC_FRONTEND=true
@@ -42,7 +50,9 @@ jobs:
           fi
 
           echo "sync_artifact=$SYNC_ARTIFACT" >> "$GITHUB_OUTPUT"
-          echo "sync_backend=$SYNC_BACKEND" >> "$GITHUB_OUTPUT"
+          echo "sync_admin_service=$SYNC_ADMIN_SERVICE" >> "$GITHUB_OUTPUT"
+          echo "sync_ai_service=$SYNC_AI_SERVICE" >> "$GITHUB_OUTPUT"
+          echo "sync_main_service=$SYNC_MAIN_SERVICE" >> "$GITHUB_OUTPUT"
           echo "sync_frontend=$SYNC_FRONTEND" >> "$GITHUB_OUTPUT"
           echo "sync_frontend_admin=$SYNC_FRONTEND_ADMIN" >> "$GITHUB_OUTPUT"
 
@@ -73,8 +83,8 @@ jobs:
             git push -u origin main
           fi
 
-      - name: Sync backend to GitLab
-        if: steps.detect.outputs.sync_backend == 'true'
+      - name: Sync admin-service to GitLab
+        if: steps.detect.outputs.sync_admin_service == 'true'
         env:
           GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
         run: |
@@ -82,19 +92,73 @@ jobs:
           COMMIT_AUTHOR=$(git log -1 --pretty="%an")
           COMMIT_EMAIL=$(git log -1 --pretty="%ae")
 
-          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/backend" /tmp/backend-gitlab
+          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/admin-backend" /tmp/admin-backend-gitlab
 
-          find /tmp/backend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+          find /tmp/admin-backend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
 
-          rsync -av --exclude='.git' --exclude='src/main/resources/secret' backend/ /tmp/backend-gitlab/
+          rsync -av --exclude='.git' --exclude='src/main/resources/secret' backend/admin-service/ /tmp/admin-backend-gitlab/
 
-          cd /tmp/backend-gitlab
+          cd /tmp/admin-backend-gitlab
           git config user.name "$COMMIT_AUTHOR"
           git config user.email "$COMMIT_EMAIL"
           git add -A
 
           if git diff --cached --quiet; then
-            echo "No changes to backend, skipping push"
+            echo "No changes to admin-service, skipping push"
+          else
+            git commit -m "$COMMIT_MSG"
+            git push -u origin main
+          fi
+
+      - name: Sync ai-service to GitLab
+        if: steps.detect.outputs.sync_ai_service == 'true'
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
+          COMMIT_EMAIL=$(git log -1 --pretty="%ae")
+
+          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/ai-backend" /tmp/ai-backend-gitlab
+
+          find /tmp/ai-backend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+
+          rsync -av --exclude='.git' --exclude='src/main/resources/secret' backend/ai-service/ /tmp/ai-backend-gitlab/
+
+          cd /tmp/ai-backend-gitlab
+          git config user.name "$COMMIT_AUTHOR"
+          git config user.email "$COMMIT_EMAIL"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to ai-service, skipping push"
+          else
+            git commit -m "$COMMIT_MSG"
+            git push -u origin main
+          fi
+
+      - name: Sync main-service to GitLab
+        if: steps.detect.outputs.sync_main_service == 'true'
+        env:
+          GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty="%an")
+          COMMIT_EMAIL=$(git log -1 --pretty="%ae")
+
+          git clone "https://서울_10반_관통_9조:$GITLAB_TOKEN@lab.ssafy.com/s15/a10/project/finalproject/9jo/main-backend" /tmp/main-backend-gitlab
+
+          find /tmp/main-backend-gitlab -mindepth 1 -maxdepth 1 -not -name '.git' -exec rm -rf {} +
+
+          rsync -av --exclude='.git' --exclude='src/main/resources/secret' backend/main-service/ /tmp/main-backend-gitlab/
+
+          cd /tmp/main-backend-gitlab
+          git config user.name "$COMMIT_AUTHOR"
+          git config user.email "$COMMIT_EMAIL"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to main-service, skipping push"
           else
             git commit -m "$COMMIT_MSG"
             git push -u origin main
