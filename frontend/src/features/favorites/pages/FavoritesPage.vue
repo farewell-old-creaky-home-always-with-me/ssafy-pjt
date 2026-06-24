@@ -2,13 +2,17 @@
 import { ref, computed, onMounted } from 'vue'
 import { Plus, X, Search, Heart, MapPin, Calendar, Trash2, AlertTriangle, Loader2 } from 'lucide-vue-next'
 import { useFavoritesStore } from '@/stores/favoritesStore.js'
+import { regionsApi } from '@/api/index.js'
 import { formatDate } from '@/utils/date.js'
 import BaseButton from '@/components/base/BaseButton.vue'
 
 const favoritesStore = useFavoritesStore()
 
 const showAdd = ref(false)
-const newRegionCode = ref('')
+const regionKeyword = ref('')
+const regionResults = ref([])
+const selectedRegion = ref(null)
+const searchingRegions = ref(false)
 const adding = ref(false)
 const searchQuery = ref('')
 const pendingDelete = ref(null)
@@ -21,15 +25,49 @@ const filtered = computed(() => {
   )
 })
 
-async function handleAdd() {
-  if (!newRegionCode.value.trim() || newRegionCode.value.length !== 10) {
-    alert('지역코드는 10자리여야 합니다')
+function formatRegion(region) {
+  return [region.sidoName, region.sigunguName, region.dongName]
+    .filter(Boolean)
+    .join(' ')
+}
+
+async function searchRegions() {
+  const keyword = regionKeyword.value.trim()
+  selectedRegion.value = null
+  regionResults.value = []
+
+  if (keyword.length < 2) {
     return
   }
+
+  searchingRegions.value = true
+  try {
+    regionResults.value = await regionsApi.getRegions(keyword)
+  } catch (err) {
+    alert(err.data?.message ?? '지역 검색에 실패했습니다')
+  } finally {
+    searchingRegions.value = false
+  }
+}
+
+function selectRegion(region) {
+  selectedRegion.value = region
+  regionKeyword.value = formatRegion(region)
+  regionResults.value = []
+}
+
+async function handleAdd() {
+  if (!selectedRegion.value) {
+    alert('관심지역으로 등록할 지역을 선택해 주세요')
+    return
+  }
+
   adding.value = true
   try {
-    await favoritesStore.addFavorite(newRegionCode.value.trim())
-    newRegionCode.value = ''
+    await favoritesStore.addFavorite(selectedRegion.value.regionCode)
+    regionKeyword.value = ''
+    regionResults.value = []
+    selectedRegion.value = null
     showAdd.value = false
   } catch (err) {
     alert(err.data?.message ?? '추가에 실패했습니다')
@@ -74,22 +112,53 @@ onMounted(() => favoritesStore.fetchFavorites())
       <!-- Add form -->
       <div v-if="showAdd" class="bg-white rounded-2xl border border-gray-100 shadow-[0_1px_3px_rgba(0,0,0,0.05)] p-5 mb-6">
         <h3 class="text-navy text-[0.9375rem] font-semibold mb-4">새 관심지역 등록</h3>
-        <div class="flex flex-col sm:flex-row sm:items-end gap-3">
-          <div class="flex-1">
-            <label class="block text-navy text-xs font-semibold mb-1.5">지역코드 (10자리)</label>
-            <input
-              v-model="newRegionCode"
-              type="text"
-              class="w-full px-4 py-2.5 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)] placeholder:text-gray-400"
-              placeholder="예: 1168010100"
-              maxlength="10"
-            />
+        <div class="flex flex-col gap-3">
+          <div>
+            <label class="block text-navy text-xs font-semibold mb-1.5" for="favorite-region-search">지역명 검색</label>
+            <div class="relative">
+              <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none">
+                <Search :size="16" />
+              </span>
+              <input
+                id="favorite-region-search"
+                v-model="regionKeyword"
+                type="text"
+                class="w-full py-2.5 pl-10 pr-4 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all placeholder:text-gray-400 focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                placeholder="예: 역삼동"
+                @input="searchRegions"
+              />
+            </div>
           </div>
-          <BaseButton size="sm" variant="navy" class="h-10 whitespace-nowrap" :disabled="adding" @click="handleAdd">
-            <Loader2 v-if="adding" :size="14" class="animate-spin" />추가
+
+          <div v-if="searchingRegions" class="flex items-center gap-2 text-gray-400 text-sm px-1">
+            <Loader2 :size="14" class="animate-spin" />
+            지역을 검색하는 중입니다
+          </div>
+
+          <div v-else-if="regionResults.length > 0" class="max-h-56 overflow-y-auto rounded-xl border border-gray-100 bg-white">
+            <button
+              v-for="region in regionResults"
+              :key="region.regionCode"
+              type="button"
+              class="w-full text-left px-4 py-3 border-b border-gray-100 last:border-b-0 transition-colors hover:bg-bg-page focus-visible:outline-2 focus-visible:outline-blue focus-visible:outline-offset-[-2px]"
+              @click="selectRegion(region)"
+            >
+              <span class="block text-navy text-sm font-semibold">{{ region.dongName || region.sigunguName }}</span>
+              <span class="block text-gray-400 text-xs mt-0.5">{{ formatRegion(region) }}</span>
+            </button>
+          </div>
+
+          <div v-if="selectedRegion" class="flex items-center gap-2 rounded-xl bg-blue/5 border border-blue/20 px-4 py-3 text-sm">
+            <MapPin :size="16" class="text-blue shrink-0" />
+            <span class="text-navy font-semibold">{{ formatRegion(selectedRegion) }}</span>
+          </div>
+
+          <BaseButton size="sm" variant="navy" class="h-10 whitespace-nowrap" :disabled="adding || !selectedRegion" @click="handleAdd">
+            <Loader2 v-if="adding" :size="14" class="animate-spin" />
+            추가
           </BaseButton>
         </div>
-        <p class="text-gray-400 text-xs mt-2">지역코드는 검색 페이지의 실거래가 상세 정보에서 확인할 수 있습니다.</p>
+        <p class="text-gray-400 text-xs mt-2">동 이름을 검색한 뒤 목록에서 관심지역을 선택하세요.</p>
       </div>
 
       <!-- Search -->
