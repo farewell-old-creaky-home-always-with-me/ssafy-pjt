@@ -54,7 +54,10 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(authorization) && authorization.startsWith(BEARER_PREFIX)) {
-            return authorization.substring(BEARER_PREFIX.length());
+            String bearerToken = authorization.substring(BEARER_PREFIX.length());
+            if (isUsableToken(bearerToken)) {
+                return bearerToken;
+            }
         }
 
         Cookie[] cookies = request.getCookies();
@@ -62,11 +65,17 @@ public class JwtTokenProvider {
             return null;
         }
         for (Cookie cookie : cookies) {
-            if (ACCESS_TOKEN_COOKIE.equals(cookie.getName()) && StringUtils.hasText(cookie.getValue())) {
+            if (ACCESS_TOKEN_COOKIE.equals(cookie.getName()) && isUsableToken(cookie.getValue())) {
                 return cookie.getValue();
             }
         }
         return null;
+    }
+
+    private boolean isUsableToken(String token) {
+        return StringUtils.hasText(token)
+                && !"undefined".equals(token)
+                && !"null".equals(token);
     }
 
     public Long getMemberId(String token) {

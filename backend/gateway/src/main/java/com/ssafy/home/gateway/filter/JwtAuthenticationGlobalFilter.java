@@ -86,11 +86,20 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
     private String resolveToken(ServerWebExchange exchange) {
         String authorization = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (StringUtils.hasText(authorization) && authorization.startsWith(BEARER_PREFIX)) {
-            return authorization.substring(BEARER_PREFIX.length());
+            String bearerToken = authorization.substring(BEARER_PREFIX.length());
+            if (isUsableToken(bearerToken)) {
+                return bearerToken;
+            }
         }
         return exchange.getRequest().getCookies().getFirst(ACCESS_TOKEN_COOKIE) == null
                 ? null
                 : exchange.getRequest().getCookies().getFirst(ACCESS_TOKEN_COOKIE).getValue();
+    }
+
+    private boolean isUsableToken(String token) {
+        return StringUtils.hasText(token)
+                && !"undefined".equals(token)
+                && !"null".equals(token);
     }
 
     private record PublicEndpoint(HttpMethod method, String path, boolean prefix) {

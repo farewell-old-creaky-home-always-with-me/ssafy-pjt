@@ -10,6 +10,7 @@ import com.ssafy.home.global.exception.GlobalExceptionHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import jakarta.servlet.http.Cookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -67,6 +68,20 @@ class AuthInterceptorTest {
         // when / then
         mockMvc.perform(get("/admin-only")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    @DisplayName("Authorization 헤더가 undefined이면 유효한 쿠키 토큰으로 관리자 API를 통과한다")
+    void adminOnlyEndpointFallsBackToCookieWhenBearerTokenIsUndefined() throws Exception {
+        // given
+        String token = jwtTokenProvider.createAccessToken(1L, true);
+
+        // when / then
+        mockMvc.perform(get("/admin-only")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer undefined")
+                        .cookie(new Cookie("access_token", token))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }
