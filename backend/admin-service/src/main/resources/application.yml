@@ -42,6 +42,13 @@ vworld:
   sido-retry-count: 3
   skip-limit: 1000
 
+sdsc:
+  store-list-url: https://apis.data.go.kr/B553077/api/open/sdsc2/storeListInUpjong
+  page-size: 1000
+  timeout: 15s
+  retry-count: 2
+  skip-limit: 500
+
 batch:
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL}
