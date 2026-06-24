@@ -343,12 +343,15 @@
 | 파라미터 | 필수 | 설명 |
 |---------|------|------|
 | regionCode | O | 행정구역 코드 |
+| houseName | | 아파트명 부분 검색어 |
 | houseType | | 주택 유형 (`아파트`, `다세대`) |
-| dealType | | 거래 유형 (`매매`, `전세`, `월세`) |
+| dealType | | 거래 유형 (`매매`, `전세`, `월세`, `전월세`) |
 | minAmount | | 최소 거래금액 (만 원) |
 | maxAmount | | 최대 거래금액 (만 원) |
 | page | | 페이지 번호 (기본 1) |
 | size | | 페이지 크기 (기본 20) |
+| sortBy | | 정렬 기준 (`name`, `area`, `floor`, `price`, `date`, 기본 `date`) |
+| sortDir | | 정렬 방향 (`asc`, `desc`, 기본 `desc`) |
 
 **응답 (200)**
 ```json
@@ -362,6 +365,10 @@
         "jibun": "123",
         "buildYear": 2005,
         "houseType": "아파트",
+        "regionCode": "1111010100",
+        "dongName": "청운동",
+        "latitude": 37.5861000,
+        "longitude": 126.9707000,
         "latestDeal": {
           "dealType": "매매",
           "dealAmount": 80000,

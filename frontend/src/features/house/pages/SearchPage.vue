@@ -8,6 +8,7 @@ import { useFavoritesStore } from '@/stores/favoritesStore.js'
 import { useAuthStore } from '@/stores/authStore.js'
 import { housesApi, regionsApi } from '@/api/index.js'
 import BaseButton from '@/components/base/BaseButton.vue'
+import { escapeHtml } from '@/utils/html.js'
 
 const route = useRoute()
 const favoritesStore = useFavoritesStore()
@@ -35,7 +36,7 @@ const currentPage = ref(1)
 const sortKey = ref('date')
 const sortDir = ref('desc')
 
-const filters = ref({ regionCode: '', buildingType: '아파트', transactionType: '매매' })
+const filters = ref({ regionCode: '', houseName: '', buildingType: '아파트', transactionType: '매매' })
 
 function formatManwon(manwon) {
   if (manwon == null) return '-'
@@ -62,6 +63,7 @@ async function fetchHouses() {
   try {
     const res = await housesApi.searchHouses({
       regionCode: filters.value.regionCode,
+      houseName: filters.value.houseName.trim() || undefined,
       houseType: filters.value.buildingType || undefined,
       dealType: filters.value.transactionType || undefined,
       sortBy: sortKey.value,
@@ -71,10 +73,12 @@ async function fetchHouses() {
     })
     pageData.value = res.items
     totalItems.value = res.total
+    renderMapMarkers()
   } catch {
     loadError.value = true
     pageData.value = []
     totalItems.value = 0
+    renderMapMarkers()
   } finally {
     loading.value = false
   }
@@ -109,10 +113,11 @@ function goPage(n) {
 
 function applyFilter() { currentPage.value = 1; sidebarOpen.value = false; fetchHouses() }
 function resetFilter() {
-  filters.value = { regionCode: '', buildingType: '아파트', transactionType: '매매' }
+  filters.value = { regionCode: '', houseName: '', buildingType: '아파트', transactionType: '매매' }
   currentPage.value = 1
   pageData.value = []
   totalItems.value = 0
+  clearMarkers()
 }
 
 const modalInfoItems = computed(() => {
@@ -135,7 +140,11 @@ const isFavItem = computed(() => {
   return favoritesStore.items.some(f => f.regionCode === modalItem.value.regionCode)
 })
 
-function openModal(item) { selectedHouseId.value = item.houseId; modalItem.value = item }
+function openModal(item) {
+  selectedHouseId.value = item.houseId
+  modalItem.value = item
+  focusMapItem(item)
+}
 function closeModal() { modalItem.value = null; selectedHouseId.value = null }
 
 async function toggleFavorite() {
@@ -150,6 +159,66 @@ async function toggleFavorite() {
 }
 
 let map
+let infowindow
+let markers = []
+
+function clearMarkers() {
+  markers.forEach(({ marker }) => marker.setMap(null))
+  markers = []
+  if (infowindow) infowindow.close()
+}
+
+function getPosition(item) {
+  if (item.latitude == null || item.longitude == null || typeof window.kakao === 'undefined') return null
+  const latitude = Number(item.latitude)
+  const longitude = Number(item.longitude)
+  if (Number.isNaN(latitude) || Number.isNaN(longitude)) return null
+  return new window.kakao.maps.LatLng(latitude, longitude)
+}
+
+function showMarkerInfo(item) {
+  if (!map || !infowindow) return
+  const entry = markers.find(({ item: markerItem }) => markerItem.houseId === item.houseId)
+  if (!entry) return
+  infowindow.setContent(
+    `<div style="padding:8px 10px;font-size:12px;font-weight:600;white-space:nowrap;">${escapeHtml(item.aptName)}</div>`
+  )
+  infowindow.open(map, entry.marker)
+}
+
+function focusMapItem(item) {
+  if (!map) return
+  const position = getPosition(item)
+  if (!position) return
+  map.panTo(position)
+  showMarkerInfo(item)
+}
+
+function renderMapMarkers() {
+  if (!map || typeof window.kakao === 'undefined') return
+  clearMarkers()
+
+  const bounds = new window.kakao.maps.LatLngBounds()
+  let hasMarker = false
+
+  pageData.value.forEach((item) => {
+    const position = getPosition(item)
+    if (!position) return
+
+    const marker = new window.kakao.maps.Marker({
+      map,
+      position,
+      title: item.aptName,
+    })
+    window.kakao.maps.event.addListener(marker, 'click', () => openModal(item))
+    markers.push({ marker, item })
+    bounds.extend(position)
+    hasMarker = true
+  })
+
+  if (hasMarker) map.setBounds(bounds)
+}
+
 function initMap() {
   const container = document.getElementById('map')
   if (!container) return
@@ -157,6 +226,8 @@ function initMap() {
     center: new window.kakao.maps.LatLng(37.5665, 126.9780),
     level: 5,
   })
+  infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1 })
+  renderMapMarkers()
 }
 
 onMounted(async () => {
@@ -205,6 +276,16 @@ onMounted(async () => {
                   {{ r.sidoName }} {{ r.sigunguName }} {{ r.dongName }}
                 </option>
               </select>
+            </div>
+            <div>
+              <label class="flex items-center gap-1.5 text-navy text-[0.8125rem] font-semibold mb-2">아파트명</label>
+              <input
+                v-model="filters.houseName"
+                type="search"
+                placeholder="아파트명을 입력하세요"
+                class="w-full px-3 py-2.5 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-[0.8125rem] outline-none transition-colors focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]"
+                @keyup.enter="applyFilter"
+              />
             </div>
             <div>
               <label class="flex items-center gap-1.5 text-navy text-[0.8125rem] font-semibold mb-2">건물유형</label>

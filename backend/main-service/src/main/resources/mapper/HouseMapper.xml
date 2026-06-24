@@ -70,6 +70,8 @@
             h.house_type,
             h.region_code,
             rc.dong_name,
+            h.latitude,
+            h.longitude,
             ld.deal_type AS latest_deal_type,
             ld.deal_amount AS latest_deal_amount,
             ld.deposit_amount AS latest_deposit_amount,

@@ -12,6 +12,8 @@ public record HouseSummaryResponse(
         String houseType,
         String regionCode,
         String dongName,
+        BigDecimal latitude,
+        BigDecimal longitude,
         LatestDealResponse latestDeal
 ) {
     public static HouseSummaryResponse from(HouseSummaryResult row) {
@@ -23,6 +25,8 @@ public record HouseSummaryResponse(
                 row.getHouseType(),
                 row.getRegionCode(),
                 row.getDongName(),
+                row.getLatitude(),
+                row.getLongitude(),
                 LatestDealResponse.from(row)
         );
     }

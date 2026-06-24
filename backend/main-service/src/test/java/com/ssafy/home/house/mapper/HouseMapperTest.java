@@ -68,6 +68,9 @@ class HouseMapperTest {
         assertThat(total).isEqualTo(1L);
         assertThat(houses).hasSize(1);
         assertThat(houses.get(0).getAptName()).isEqualTo("역삼래미안");
+        assertThat(houses.get(0).getLatestDealType()).isEqualTo("매매");
+        assertThat(houses.get(0).getLatitude()).isEqualByComparingTo("37.5006130");
+        assertThat(houses.get(0).getLongitude()).isEqualByComparingTo("127.0364310");
     }
 
     @Test
