@@ -25,6 +25,10 @@ mybatis:
 jwt:
   access-token-expiration-millis: 3600000
 
+batch:
+  report:
+    output-dir: ${BATCH_REPORT_OUTPUT_DIR}
+
 management:
   endpoints:
     web:

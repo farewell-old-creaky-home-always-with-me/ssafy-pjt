@@ -12,6 +12,7 @@ import com.ssafy.home.notice.mapper.NoticeMapper;
 import com.ssafy.home.place.mapper.PlaceMapper;
 import com.ssafy.home.qna.mapper.QnaMapper;
 import com.ssafy.home.region.mapper.RegionMapper;
+import com.ssafy.home.report.mapper.BatchReportMapper;
 import com.ssafy.home.route.mapper.FacilityMapper;
 import com.ssafy.home.route.mapper.RouteMapper;
 import com.ssafy.home.stats.mapper.StatsMapper;
@@ -66,6 +67,9 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     QnaMapper qnaMapper;
+
+    @MockitoBean
+    BatchReportMapper batchReportMapper;
 
     @Test
     void contextLoads() {
