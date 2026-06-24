@@ -4,9 +4,26 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      target:
+        description: GitLab sync target
+        required: true
+        default: gateway
+        type: choice
+        options:
+          - gateway
+          - all
+          - artifact
+          - admin-service
+          - ai-service
+          - main-service
+          - frontend
+          - frontend-admin
 
 jobs:
   sync:
+    if: github.event_name != 'workflow_dispatch' || github.ref_name == 'master'
     runs-on: ubuntu-latest
 
     steps:
@@ -19,10 +36,6 @@ jobs:
       - name: Detect changed directories
         id: detect
         run: |
-          CHANGED=$(git diff ${{ github.event.before }}..${{ github.sha }} --name-only)
-          echo "Changed files:"
-          echo "$CHANGED"
-
           SYNC_ARTIFACT=false
           SYNC_ADMIN_SERVICE=false
           SYNC_AI_SERVICE=false
@@ -31,26 +44,57 @@ jobs:
           SYNC_FRONTEND=false
           SYNC_FRONTEND_ADMIN=false
 
-          if echo "$CHANGED" | grep -q "^artifact/"; then
-            SYNC_ARTIFACT=true
-          fi
-          if echo "$CHANGED" | grep -q "^backend/admin-service/"; then
-            SYNC_ADMIN_SERVICE=true
-          fi
-          if echo "$CHANGED" | grep -q "^backend/ai-service/"; then
-            SYNC_AI_SERVICE=true
-          fi
-          if echo "$CHANGED" | grep -q "^backend/main-service/"; then
-            SYNC_MAIN_SERVICE=true
-          fi
-          if echo "$CHANGED" | grep -q "^backend/gateway/"; then
-            SYNC_GATEWAY=true
-          fi
-          if echo "$CHANGED" | grep -q "^frontend/"; then
-            SYNC_FRONTEND=true
-          fi
-          if echo "$CHANGED" | grep -q "^frontend-admin/"; then
-            SYNC_FRONTEND_ADMIN=true
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET="${{ inputs.target }}"
+            echo "Manual sync target: $TARGET"
+
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "artifact" ]; then
+              SYNC_ARTIFACT=true
+            fi
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "admin-service" ]; then
+              SYNC_ADMIN_SERVICE=true
+            fi
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "ai-service" ]; then
+              SYNC_AI_SERVICE=true
+            fi
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "main-service" ]; then
+              SYNC_MAIN_SERVICE=true
+            fi
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "gateway" ]; then
+              SYNC_GATEWAY=true
+            fi
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "frontend" ]; then
+              SYNC_FRONTEND=true
+            fi
+            if [ "$TARGET" = "all" ] || [ "$TARGET" = "frontend-admin" ]; then
+              SYNC_FRONTEND_ADMIN=true
+            fi
+          else
+            CHANGED=$(git diff ${{ github.event.before }}..${{ github.sha }} --name-only)
+            echo "Changed files:"
+            echo "$CHANGED"
+
+            if echo "$CHANGED" | grep -q "^artifact/"; then
+              SYNC_ARTIFACT=true
+            fi
+            if echo "$CHANGED" | grep -q "^backend/admin-service/"; then
+              SYNC_ADMIN_SERVICE=true
+            fi
+            if echo "$CHANGED" | grep -q "^backend/ai-service/"; then
+              SYNC_AI_SERVICE=true
+            fi
+            if echo "$CHANGED" | grep -q "^backend/main-service/"; then
+              SYNC_MAIN_SERVICE=true
+            fi
+            if echo "$CHANGED" | grep -q "^backend/gateway/"; then
+              SYNC_GATEWAY=true
+            fi
+            if echo "$CHANGED" | grep -q "^frontend/"; then
+              SYNC_FRONTEND=true
+            fi
+            if echo "$CHANGED" | grep -q "^frontend-admin/"; then
+              SYNC_FRONTEND_ADMIN=true
+            fi
           fi
 
           echo "sync_artifact=$SYNC_ARTIFACT" >> "$GITHUB_OUTPUT"
