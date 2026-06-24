@@ -1,40 +1,24 @@
 package com.ssafy.home.member.service.mail;
 
-import java.util.Properties;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 @Component
 public class JavaMailPasswordResetMailSender implements PasswordResetMailSender {
 
-    private final JavaMailSenderImpl javaMailSender;
+    private final ObjectProvider<JavaMailSender> javaMailSenderProvider;
 
-    public JavaMailPasswordResetMailSender(
-            @Value("${spring.mail.host:}") String host,
-            @Value("${spring.mail.port:587}") int port,
-            @Value("${spring.mail.username:}") String username,
-            @Value("${spring.mail.password:}") String password,
-            @Value("${spring.mail.properties.mail.smtp.auth:true}") boolean auth,
-            @Value("${spring.mail.properties.mail.smtp.starttls.enable:true}") boolean starttlsEnable
-    ) {
-        this.javaMailSender = new JavaMailSenderImpl();
-        this.javaMailSender.setHost(host);
-        this.javaMailSender.setPort(port);
-        this.javaMailSender.setUsername(username);
-        this.javaMailSender.setPassword(password);
-
-        Properties properties = this.javaMailSender.getJavaMailProperties();
-        properties.put("mail.smtp.auth", Boolean.toString(auth));
-        properties.put("mail.smtp.starttls.enable", Boolean.toString(starttlsEnable));
+    public JavaMailPasswordResetMailSender(ObjectProvider<JavaMailSender> javaMailSenderProvider) {
+        this.javaMailSenderProvider = javaMailSenderProvider;
     }
 
     @Override
     public void send(String email, String name, String temporaryPassword) {
-        if (!StringUtils.hasText(javaMailSender.getHost())) {
+        JavaMailSender javaMailSender = javaMailSenderProvider.getIfAvailable();
+        if (javaMailSender == null) {
             throw new MailSendException("spring.mail.host is required to send password reset email");
         }
 

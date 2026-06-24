@@ -81,6 +81,25 @@ class MemberControllerTest {
     }
 
     @Test
+    @DisplayName("전화번호에 숫자와 하이픈 외 문자가 있으면 400을 반환한다")
+    void createMemberReturns400WhenPhoneInvalid() throws Exception {
+        // given
+        MemberCreateRequest request = new MemberCreateRequest(
+                "user@example.com",
+                "password123",
+                "홍길동",
+                "010-ABCD-5678"
+        );
+
+        // when / then
+        mockMvc.perform(post("/api/members")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.code").value("COMMON_INVALID_INPUT"));
+    }
+
+    @Test
     @DisplayName("비밀번호 재설정 요청이 유효하면 204를 반환한다")
     void resetPasswordReturns204() throws Exception {
         // given

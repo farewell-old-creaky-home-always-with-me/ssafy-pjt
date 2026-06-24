@@ -15,10 +15,14 @@ import com.ssafy.home.member.mapper.dto.MemberDetailResult;
 import com.ssafy.home.member.mapper.dto.MemberUpdateParam;
 import com.ssafy.home.member.service.mail.PasswordResetMailSender;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -38,7 +42,7 @@ public class MemberService {
         param.setEmail(request.email().trim());
         param.setPassword(passwordEncoder.encode(request.password()));
         param.setName(request.name().trim());
-        param.setPhone(request.phone().trim());
+        param.setPhone(PhoneNumberNormalizer.normalize(request.phone()));
         param.setAdmin(false);
 
         memberMapper.insert(param);
@@ -59,7 +63,7 @@ public class MemberService {
         param.setId(memberId);
         param.setName(request.name().trim());
         param.setPassword(passwordEncoder.encode(request.password()));
-        param.setPhone(request.phone().trim());
+        param.setPhone(PhoneNumberNormalizer.normalize(request.phone()));
         memberMapper.updateById(param);
 
         return MemberUpdateResponse.of(memberId, param.getName());
@@ -70,14 +74,25 @@ public class MemberService {
         MemberDetailResult member = memberMapper.findByNameAndEmailAndPhone(
                 request.name().trim(),
                 request.email().trim(),
-                request.phone().trim()
+                PhoneNumberNormalizer.normalize(request.phone())
         );
-        requireMember(member, null);
+        if (member == null) {
+            log.info(
+                    "Password reset requested for non-matching member identity: email={}",
+                    request.email().trim()
+            );
+            return;
+        }
 
         String temporaryPassword = temporaryPasswordGenerator.generate();
         String encodedPassword = passwordEncoder.encode(temporaryPassword);
-        memberMapper.updatePasswordById(member.getId(), encodedPassword);
-        passwordResetMailSender.send(member.getEmail(), member.getName(), temporaryPassword);
+        int updatedRows = memberMapper.updatePasswordById(member.getId(), encodedPassword);
+        if (updatedRows != 1) {
+            log.warn("Password reset skipped because password update affected {} rows: memberId={}", updatedRows, member.getId());
+            return;
+        }
+
+        sendPasswordResetMailAfterCommit(member.getEmail(), member.getName(), temporaryPassword);
     }
 
     @Transactional
@@ -96,5 +111,19 @@ public class MemberService {
             throw new CustomException(MEMBER_NOT_FOUND);
         }
         return member;
+    }
+
+    private void sendPasswordResetMailAfterCommit(String email, String name, String temporaryPassword) {
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            passwordResetMailSender.send(email, name, temporaryPassword);
+            return;
+        }
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                passwordResetMailSender.send(email, name, temporaryPassword);
+            }
+        });
     }
 }

@@ -28,7 +28,7 @@ public class AuthController implements AuthApiDocs {
     public AuthController(
             AuthService authService,
             JwtProperties jwtProperties,
-            @Value("${app.auth.cookie-secure:false}") boolean cookieSecure
+            @Value("${app.auth.cookie-secure:true}") boolean cookieSecure
     ) {
         this.authService = authService;
         this.jwtProperties = jwtProperties;

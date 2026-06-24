@@ -36,6 +36,9 @@ class BatchJobServiceTest {
     @Mock
     private Job regionCodeCollectJob;
 
+    @Mock
+    private Job batchReportGenerateJob;
+
     private BatchJobService service;
 
     @BeforeEach
@@ -45,6 +48,7 @@ class BatchJobServiceTest {
                 jobLauncher,
                 houseDealCollectJob,
                 regionCodeCollectJob,
+                batchReportGenerateJob,
                 clock
         );
     }

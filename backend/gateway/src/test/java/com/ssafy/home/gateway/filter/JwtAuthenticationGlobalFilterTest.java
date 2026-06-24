@@ -123,6 +123,25 @@ class JwtAuthenticationGlobalFilterTest {
     }
 
     @Test
+    @DisplayName("Authorization 헤더가 빈 Bearer이면 유효한 쿠키 토큰으로 다음 필터를 호출한다")
+    void filterFallsBackToCookieWhenBearerTokenIsBlank() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/admin/batch/region-codes")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer ")
+                        .cookie(new org.springframework.http.HttpCookie("access_token", validToken()))
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
     @DisplayName("OPTIONS 요청은 토큰 없이 다음 필터를 호출한다")
     void filterCallsChainForOptionsRequest() {
         // given

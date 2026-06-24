@@ -15,10 +15,14 @@ app.use(pinia)
 const authStore = useAuthStore()
 const favoritesStore = useFavoritesStore()
 
-authStore.fetchMe().then(() => {
-  if (authStore.isLoggedIn()) {
-    favoritesStore.fetchFavorites()
-  }
-  app.use(router)
-  app.mount('#app')
-})
+authStore
+  .fetchMe()
+  .then(() => {
+    if (authStore.isLoggedIn()) {
+      favoritesStore.fetchFavorites().catch(() => {})
+    }
+  })
+  .finally(() => {
+    app.use(router)
+    app.mount('#app')
+  })

@@ -24,3 +24,10 @@ batch:
 jwt:
   secret: test-jwt-secret-key-for-ssafy-home-project-2026
   access-token-expiration-millis: 3600000
+
+app:
+  admin:
+    csrf:
+      allowed-origins:
+        - "http://localhost:5174"
+        - "http://127.0.0.1:5174"

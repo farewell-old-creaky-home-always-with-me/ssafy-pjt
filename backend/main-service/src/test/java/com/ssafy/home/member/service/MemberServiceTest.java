@@ -3,12 +3,13 @@ package com.ssafy.home.member.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import static com.ssafy.home.global.exception.ErrorCode.MEMBER_DUPLICATE_EMAIL;
-import static com.ssafy.home.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.member.dto.MemberCreateRequest;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @ExtendWith(MockitoExtension.class)
 class MemberServiceTest {
@@ -86,6 +89,9 @@ class MemberServiceTest {
         assertThat(response.memberId()).isEqualTo(10L);
         assertThat(response.email()).isEqualTo("user@example.com");
         verify(passwordEncoder).encode("password1234");
+        verify(memberMapper).insert(argThat(param ->
+                "01012345678".equals(param.getPhone())
+        ));
     }
 
     @Test
@@ -101,11 +107,13 @@ class MemberServiceTest {
         // then
         assertThat(response.memberId()).isEqualTo(1L);
         assertThat(response.name()).isEqualTo("새 이름");
-        verify(memberMapper).updateById(any(MemberUpdateParam.class));
+        verify(memberMapper).updateById(argThat(param ->
+                "01011112222".equals(param.getPhone())
+        ));
     }
 
     @Test
-    @DisplayName("이름·이메일·전화번호가 일치하면 임시 비밀번호를 저장하고 메일을 발송한다")
+    @DisplayName("이름·이메일·전화번호가 일치하면 임시 비밀번호를 저장하고 커밋 후 메일을 발송한다")
     void resetPasswordUpdatesPasswordAndSendsEmail() {
         // given
         MemberPasswordResetRequest request = new MemberPasswordResetRequest(
@@ -114,36 +122,72 @@ class MemberServiceTest {
                 "010-1234-5678"
         );
         MemberDetailResult member = memberDetailResult(1L, "user@example.com", "홍길동");
-        given(memberMapper.findByNameAndEmailAndPhone("홍길동", "user@example.com", "010-1234-5678"))
+        given(memberMapper.findByNameAndEmailAndPhone("홍길동", "user@example.com", "01012345678"))
                 .willReturn(member);
         given(temporaryPasswordGenerator.generate()).willReturn("Temp1234!");
         given(passwordEncoder.encode("Temp1234!")).willReturn("encoded-temp-password");
+        given(memberMapper.updatePasswordById(1L, "encoded-temp-password")).willReturn(1);
+
+        TransactionSynchronizationManager.initSynchronization();
+        try {
+            // when
+            memberService.resetPassword(request);
+
+            // then
+            verify(memberMapper).updatePasswordById(1L, "encoded-temp-password");
+            verify(passwordResetMailSender, never()).send(any(), any(), any());
+
+            TransactionSynchronization synchronization = TransactionSynchronizationManager.getSynchronizations().get(0);
+            synchronization.afterCommit();
+            verify(passwordResetMailSender).send("user@example.com", "홍길동", "Temp1234!");
+        } finally {
+            TransactionSynchronizationManager.clearSynchronization();
+        }
+    }
+
+    @Test
+    @DisplayName("비밀번호 업데이트가 반영되지 않으면 메일을 발송하지 않는다")
+    void resetPasswordDoesNotSendEmailWhenPasswordUpdateAffectsNoRows() {
+        // given
+        MemberPasswordResetRequest request = new MemberPasswordResetRequest(
+                "홍길동",
+                "user@example.com",
+                "010-1234-5678"
+        );
+        MemberDetailResult member = memberDetailResult(1L, "user@example.com", "홍길동");
+        given(memberMapper.findByNameAndEmailAndPhone("홍길동", "user@example.com", "01012345678"))
+                .willReturn(member);
+        given(temporaryPasswordGenerator.generate()).willReturn("Temp1234!");
+        given(passwordEncoder.encode("Temp1234!")).willReturn("encoded-temp-password");
+        given(memberMapper.updatePasswordById(1L, "encoded-temp-password")).willReturn(0);
 
         // when
         memberService.resetPassword(request);
 
         // then
-        verify(memberMapper).updatePasswordById(1L, "encoded-temp-password");
-        verify(passwordResetMailSender).send("user@example.com", "홍길동", "Temp1234!");
+        verify(passwordResetMailSender, never()).send(any(), any(), any());
     }
 
     @Test
-    @DisplayName("비밀번호 재설정 대상 회원이 없으면 예외가 발생한다")
-    void resetPasswordThrowsWhenMemberNotFound() {
+    @DisplayName("비밀번호 재설정 대상 회원이 없어도 외부 응답을 구분하지 않는다")
+    void resetPasswordDoesNothingWhenMemberNotFound() {
         // given
         MemberPasswordResetRequest request = new MemberPasswordResetRequest(
                 "홍길동",
                 "missing@example.com",
                 "010-1234-5678"
         );
-        given(memberMapper.findByNameAndEmailAndPhone("홍길동", "missing@example.com", "010-1234-5678"))
+        given(memberMapper.findByNameAndEmailAndPhone("홍길동", "missing@example.com", "01012345678"))
                 .willReturn(null);
 
-        // when / then
-        assertThatThrownBy(() -> memberService.resetPassword(request))
-                .isInstanceOf(CustomException.class)
-                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
-                        .isEqualTo(MEMBER_NOT_FOUND));
+        // when
+        memberService.resetPassword(request);
+
+        // then
+        verify(temporaryPasswordGenerator, never()).generate();
+        verify(passwordEncoder, never()).encode(any());
+        verify(memberMapper, never()).updatePasswordById(any(), any());
+        verify(passwordResetMailSender, never()).send(any(), any(), any());
     }
 
     private MemberDetailResult memberDetailResult(Long id, String email, String name) {

@@ -69,6 +69,7 @@ class AuthControllerTest {
                 .andExpect(jsonPath("$.name").value("tester"))
                 .andExpect(jsonPath("$.accessToken").doesNotExist())
                 .andExpect(cookie().httpOnly("access_token", true))
+                .andExpect(cookie().secure("access_token", true))
                 .andExpect(cookie().value("access_token", "access-token"));
     }
 
@@ -92,6 +93,7 @@ class AuthControllerTest {
         // when / then
         mockMvc.perform(post("/api/auth/logout"))
                 .andExpect(status().isOk())
+                .andExpect(cookie().secure("access_token", true))
                 .andExpect(cookie().maxAge("access_token", 0));
     }
 }

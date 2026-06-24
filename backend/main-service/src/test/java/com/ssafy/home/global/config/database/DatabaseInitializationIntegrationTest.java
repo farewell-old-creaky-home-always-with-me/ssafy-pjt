@@ -122,13 +122,21 @@ class DatabaseInitializationIntegrationTest {
                 FROM BATCH_JOB_SEQ
                 WHERE ID = 0 AND UNIQUE_KEY = '0'
                 """, Integer.class);
+        String memberPhoneNullable = jdbcTemplate.queryForObject("""
+                SELECT IS_NULLABLE
+                FROM information_schema.columns
+                WHERE table_schema = DATABASE()
+                  AND table_name = 'member'
+                  AND column_name = 'phone'
+                """, String.class);
 
         // Then
         assertThat(managedTableCount).isEqualTo(24);
-        assertThat(successfulMigrationCount).isEqualTo(4);
+        assertThat(successfulMigrationCount).isEqualTo(5);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);
+        assertThat(memberPhoneNullable).isEqualTo("NO");
     }
 
     @Test

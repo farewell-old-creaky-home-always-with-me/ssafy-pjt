@@ -13,6 +13,7 @@ const regionKeyword = ref('')
 const regionResults = ref([])
 const selectedRegion = ref(null)
 const searchingRegions = ref(false)
+const searchAbortController = ref(null)
 const adding = ref(false)
 const searchQuery = ref('')
 const pendingDelete = ref(null)
@@ -40,10 +41,15 @@ async function searchRegions() {
     return
   }
 
+  searchAbortController.value?.abort()
+  const controller = new AbortController()
+  searchAbortController.value = controller
+
   searchingRegions.value = true
   try {
-    regionResults.value = await regionsApi.getRegions(keyword)
+    regionResults.value = await regionsApi.getRegions(keyword, controller.signal)
   } catch (err) {
+    if (controller.signal.aborted) return
     alert(err.data?.message ?? '지역 검색에 실패했습니다')
   } finally {
     searchingRegions.value = false
