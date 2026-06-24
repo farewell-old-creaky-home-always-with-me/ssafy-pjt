@@ -133,16 +133,24 @@ class DatabaseInitializationIntegrationTest {
                   AND table_name = 'member'
                   AND column_name = 'phone'
                 """, String.class);
+        String bizIdNullable = jdbcTemplate.queryForObject("""
+                SELECT IS_NULLABLE
+                FROM information_schema.columns
+                WHERE table_schema = DATABASE()
+                  AND table_name = 'commercial_area'
+                  AND column_name = 'biz_id'
+                """, String.class);
 
         // Then
         assertThat(missingTables)
                 .as("Flyway migration did not create these expected tables")
                 .isEmpty();
-        assertThat(successfulMigrationCount).isEqualTo(6);
+        assertThat(successfulMigrationCount).isEqualTo(7);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);
         assertThat(memberPhoneNullable).isEqualTo("NO");
+        assertThat(bizIdNullable).isEqualTo("YES");
     }
 
     @Test
