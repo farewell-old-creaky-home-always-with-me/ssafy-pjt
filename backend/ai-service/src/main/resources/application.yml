@@ -10,9 +10,10 @@ spring:
       - optional:file:../secret/application-secret.yml
   ai:
     openai:
+      base-url: https://gms.ssafy.io/gmsapi/api.openai.com
       chat:
         options:
-          model: gpt-4o-mini
+          model: gpt-5.4-mini
       embedding:
         options:
           model: text-embedding-ada-002
