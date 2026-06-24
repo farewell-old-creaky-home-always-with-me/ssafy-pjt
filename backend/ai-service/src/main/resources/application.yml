@@ -24,6 +24,8 @@ spring:
           port: 8000
         collection-name: ssafy-home-docs
         initialize-schema: true
+        tenant: SpringAiTenant
+        database: SpringAiDatabase
   servlet:
     multipart:
       max-file-size: 10MB
