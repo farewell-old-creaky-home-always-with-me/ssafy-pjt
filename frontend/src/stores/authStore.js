@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { authApi } from '../api/index.js'
-import { clearAccessToken, setAccessToken } from '../api/authToken.js'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null) // { memberId, name, isAdmin }
@@ -12,18 +11,13 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = data.isAuthenticated
         ? { memberId: data.memberId, name: data.name, isAdmin: data.isAdmin }
         : null
-      if (!data.isAuthenticated) {
-        clearAccessToken()
-      }
     } catch {
-      clearAccessToken()
       user.value = null
     }
   }
 
   async function login(email, password) {
     const data = await authApi.login({ email, password })
-    setAccessToken(data.accessToken)
     user.value = { memberId: data.memberId, name: data.name, isAdmin: data.isAdmin }
     return data
   }
@@ -44,7 +38,6 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function clearUser() {
-    clearAccessToken()
     user.value = null
   }
 

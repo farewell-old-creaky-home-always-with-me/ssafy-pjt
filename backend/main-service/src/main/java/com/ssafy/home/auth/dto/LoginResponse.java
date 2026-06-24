@@ -1,9 +1,12 @@
 package com.ssafy.home.auth.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public record LoginResponse(
         Long memberId,
         String name,
         boolean isAdmin,
+        @JsonIgnore
         String accessToken
 ) {
 

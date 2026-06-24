@@ -18,6 +18,7 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 
     private static final String API_PATH_PREFIX = "/api/";
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String ACCESS_TOKEN_COOKIE = "access_token";
     private static final PublicEndpoint[] PUBLIC_ENDPOINTS = {
             PublicEndpoint.exact(HttpMethod.POST, "/api/auth/login"),
             PublicEndpoint.exact(HttpMethod.POST, "/api/auth/logout"),
@@ -84,10 +85,12 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
 
     private String resolveToken(ServerWebExchange exchange) {
         String authorization = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-        if (!StringUtils.hasText(authorization) || !authorization.startsWith(BEARER_PREFIX)) {
-            return null;
+        if (StringUtils.hasText(authorization) && authorization.startsWith(BEARER_PREFIX)) {
+            return authorization.substring(BEARER_PREFIX.length());
         }
-        return authorization.substring(BEARER_PREFIX.length());
+        return exchange.getRequest().getCookies().getFirst(ACCESS_TOKEN_COOKIE) == null
+                ? null
+                : exchange.getRequest().getCookies().getFirst(ACCESS_TOKEN_COOKIE).getValue();
     }
 
     private record PublicEndpoint(HttpMethod method, String path, boolean prefix) {

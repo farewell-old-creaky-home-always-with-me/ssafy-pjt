@@ -86,6 +86,24 @@ class JwtAuthenticationGlobalFilterTest {
     }
 
     @Test
+    @DisplayName("API 요청의 쿠키 토큰이 유효하면 다음 필터를 호출한다")
+    void filterCallsChainWhenCookieTokenValid() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.get("/api/members/me")
+                        .cookie(new org.springframework.http.HttpCookie("access_token", validToken()))
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
     @DisplayName("OPTIONS 요청은 토큰 없이 다음 필터를 호출한다")
     void filterCallsChainForOptionsRequest() {
         // given
