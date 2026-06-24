@@ -14,6 +14,7 @@ import com.ssafy.home.external.sdsc.SdscStoreClient;
 import java.util.List;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -65,6 +66,7 @@ public class CommercialAreaCollectJobConfig {
     }
 
     @Bean
+    @StepScope
     public SdscStoreReader sdscStoreReader(
             SdscStoreClient client,
             CommercialAreaBatchMapper mapper,

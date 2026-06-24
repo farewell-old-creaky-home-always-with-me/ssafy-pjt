@@ -70,4 +70,62 @@ class SdscStoreClientTest {
                 .isInstanceOf(SdscApiException.class)
                 .satisfies(e -> assertThat(((SdscApiException) e).retryable()).isTrue());
     }
+
+    @Test
+    @DisplayName("totalCount가 없으면 SdscApiException을 던진다")
+    void fetchThrowsExceptionWhenTotalCountIsMissing() {
+        server.expect(method(HttpMethod.GET))
+                .andRespond(withSuccess("""
+                        {"currentCount":1,"matchCount":1,"page":1,"perPage":10,
+                         "data":[]}
+                        """, MediaType.APPLICATION_JSON));
+
+        assertThatThrownBy(() -> client.fetch("11110", 1))
+                .isInstanceOf(SdscApiException.class)
+                .hasMessageContaining("totalCount");
+    }
+
+    @Test
+    @DisplayName("totalCount 형식이 올바르지 않으면 SdscApiException을 던진다")
+    void fetchThrowsExceptionWhenTotalCountIsInvalid() {
+        server.expect(method(HttpMethod.GET))
+                .andRespond(withSuccess("""
+                        {"currentCount":1,"matchCount":1,"page":1,"perPage":10,
+                         "totalCount": "invalid_number",
+                         "data":[]}
+                        """, MediaType.APPLICATION_JSON));
+
+        assertThatThrownBy(() -> client.fetch("11110", 1))
+                .isInstanceOf(SdscApiException.class)
+                .hasMessageContaining("totalCount");
+    }
+
+    @Test
+    @DisplayName("data가 없으면 SdscApiException을 던진다")
+    void fetchThrowsExceptionWhenDataIsMissing() {
+        server.expect(method(HttpMethod.GET))
+                .andRespond(withSuccess("""
+                        {"currentCount":1,"matchCount":1,"page":1,"perPage":10,
+                         "totalCount":1}
+                        """, MediaType.APPLICATION_JSON));
+
+        assertThatThrownBy(() -> client.fetch("11110", 1))
+                .isInstanceOf(SdscApiException.class)
+                .hasMessageContaining("data");
+    }
+
+    @Test
+    @DisplayName("data가 배열이 아니면 SdscApiException을 던진다")
+    void fetchThrowsExceptionWhenDataIsNotArray() {
+        server.expect(method(HttpMethod.GET))
+                .andRespond(withSuccess("""
+                        {"currentCount":1,"matchCount":1,"page":1,"perPage":10,
+                         "totalCount":1,
+                         "data": "not_an_array"}
+                        """, MediaType.APPLICATION_JSON));
+
+        assertThatThrownBy(() -> client.fetch("11110", 1))
+                .isInstanceOf(SdscApiException.class)
+                .hasMessageContaining("data");
+    }
 }

@@ -58,12 +58,29 @@ public class SdscStoreClient {
         }
         try {
             JsonNode root = objectMapper.readTree(source);
-            int totalCount = root.path("totalCount").asInt(0);
-            JsonNode dataNode = root.path("data");
-            List<SdscRawStore> stores = new ArrayList<>();
-            if (dataNode.isArray()) {
-                dataNode.forEach(node -> stores.add(toRaw(node)));
+
+            JsonNode totalCountNode = root.path("totalCount");
+            if (totalCountNode.isMissingNode() || totalCountNode.isNull()) {
+                throw new SdscApiException("Missing totalCount in SDSC response");
             }
+            String totalCountText = totalCountNode.asText().trim();
+            if (totalCountText.isEmpty()) {
+                throw new SdscApiException("Empty totalCount in SDSC response");
+            }
+            int totalCount;
+            try {
+                totalCount = Integer.parseInt(totalCountText);
+            } catch (NumberFormatException e) {
+                throw new SdscApiException("Invalid totalCount format in SDSC response: '" + totalCountText + "'", e, false);
+            }
+
+            JsonNode dataNode = root.path("data");
+            if (dataNode.isMissingNode() || dataNode.isNull() || !dataNode.isArray()) {
+                throw new SdscApiException("Missing or invalid data array in SDSC response");
+            }
+
+            List<SdscRawStore> stores = new ArrayList<>();
+            dataNode.forEach(node -> stores.add(toRaw(node)));
             return new SdscStorePage(stores, totalCount);
         } catch (JsonProcessingException exception) {
             throw new SdscApiException("Failed to parse SDSC response", exception, true);
