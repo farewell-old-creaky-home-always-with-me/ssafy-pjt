@@ -11,6 +11,6 @@ RUN apt-get update -q && apt-get install -y --no-install-recommends wget && rm -
     addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 WORKDIR /app
 COPY --from=builder /app/main-service/build/libs/main-service-0.0.1-SNAPSHOT.jar app.jar
-RUN chown appuser:appgroup app.jar
+RUN mkdir -p logs && chown -R appuser:appgroup app.jar logs
 USER appuser
 ENTRYPOINT ["java", "-jar", "app.jar"]

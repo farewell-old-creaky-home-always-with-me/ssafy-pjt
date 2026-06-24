@@ -6,12 +6,14 @@ import static com.ssafy.home.global.exception.ErrorCode.MEMBER_NOT_FOUND;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.member.dto.MemberCreateRequest;
 import com.ssafy.home.member.dto.MemberDetailResponse;
+import com.ssafy.home.member.dto.MemberPasswordResetRequest;
 import com.ssafy.home.member.dto.MemberUpdateRequest;
 import com.ssafy.home.member.dto.MemberUpdateResponse;
 import com.ssafy.home.member.mapper.MemberMapper;
 import com.ssafy.home.member.mapper.dto.MemberCreateParam;
 import com.ssafy.home.member.mapper.dto.MemberDetailResult;
 import com.ssafy.home.member.mapper.dto.MemberUpdateParam;
+import com.ssafy.home.member.service.mail.PasswordResetMailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,8 @@ public class MemberService {
 
     private final MemberMapper memberMapper;
     private final PasswordEncoder passwordEncoder;
+    private final TemporaryPasswordGenerator temporaryPasswordGenerator;
+    private final PasswordResetMailSender passwordResetMailSender;
 
     @Transactional
     public MemberDetailResponse createMember(MemberCreateRequest request) {
@@ -34,6 +38,7 @@ public class MemberService {
         param.setEmail(request.email().trim());
         param.setPassword(passwordEncoder.encode(request.password()));
         param.setName(request.name().trim());
+        param.setPhone(request.phone().trim());
         param.setAdmin(false);
 
         memberMapper.insert(param);
@@ -54,9 +59,25 @@ public class MemberService {
         param.setId(memberId);
         param.setName(request.name().trim());
         param.setPassword(passwordEncoder.encode(request.password()));
+        param.setPhone(request.phone().trim());
         memberMapper.updateById(param);
 
         return MemberUpdateResponse.of(memberId, param.getName());
+    }
+
+    @Transactional
+    public void resetPassword(MemberPasswordResetRequest request) {
+        MemberDetailResult member = memberMapper.findByNameAndEmailAndPhone(
+                request.name().trim(),
+                request.email().trim(),
+                request.phone().trim()
+        );
+        requireMember(member, null);
+
+        String temporaryPassword = temporaryPasswordGenerator.generate();
+        String encodedPassword = passwordEncoder.encode(temporaryPassword);
+        memberMapper.updatePasswordById(member.getId(), encodedPassword);
+        passwordResetMailSender.send(member.getEmail(), member.getName(), temporaryPassword);
     }
 
     @Transactional

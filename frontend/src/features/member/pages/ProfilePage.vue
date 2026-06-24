@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2 } from 'lucide-vue-next'
+import { User, UserCircle, Mail, Lock, Pencil, Trash2, X, AlertTriangle, AlertCircle, Loader2, Phone } from 'lucide-vue-next'
 import { membersApi } from '@/api/index.js'
 import { useAuthStore } from '@/stores/authStore.js'
 import BaseButton from '@/components/base/BaseButton.vue'
@@ -13,6 +13,7 @@ const profile = ref(null)
 const profileError = ref(null)
 const editMode = ref(false)
 const editName = ref('')
+const editPhone = ref('')
 const editPassword = ref('')
 const saving = ref(false)
 const showDeleteModal = ref(false)
@@ -28,15 +29,20 @@ onMounted(async () => {
 
 function startEdit() {
   editName.value = profile.value.name
+  editPhone.value = profile.value.phone ?? ''
   editPassword.value = ''
   editMode.value = true
 }
 
 async function handleUpdate() {
-  if (!editName.value.trim() || editPassword.value.length < 8) return
+  if (!editName.value.trim() || !editPhone.value.trim() || editPassword.value.length < 8) return
   saving.value = true
   try {
-    await membersApi.updateMyMember({ name: editName.value.trim(), password: editPassword.value })
+    await membersApi.updateMyMember({
+      name: editName.value.trim(),
+      password: editPassword.value,
+      phone: editPhone.value.trim()
+    })
     profile.value = await membersApi.getMyMember()
     authStore.patchUser({ name: profile.value.name })
     editMode.value = false
@@ -111,6 +117,15 @@ async function handleDelete() {
                 <p class="text-navy text-sm font-semibold">{{ profile.email }}</p>
               </div>
             </div>
+            <div class="flex items-center gap-3 bg-bg-page rounded-xl px-4 py-[0.875rem]">
+              <div class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 shadow-[0_1px_3px_rgba(0,0,0,0.06)]">
+                <Phone :size="18" class="text-blue" />
+              </div>
+              <div>
+                <p class="text-gray-400 text-[0.6875rem] font-medium">전화번호</p>
+                <p class="text-navy text-sm font-semibold">{{ profile.phone }}</p>
+              </div>
+            </div>
             <div class="flex gap-3 mt-2">
               <BaseButton :full="true" @click="startEdit"><Pencil :size="16" /> 정보 수정</BaseButton>
               <BaseButton variant="outline-danger" :full="true" @click="showDeleteModal = true"><Trash2 :size="16" /> 회원 탈퇴</BaseButton>
@@ -133,6 +148,14 @@ async function handleDelete() {
               <div class="relative">
                 <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><UserCircle :size="16" /></span>
                 <input id="edit-name" v-model="editName" type="text"
+                  class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]" />
+              </div>
+            </div>
+            <div>
+              <label class="block text-navy text-[0.8125rem] font-semibold mb-2" for="edit-phone">전화번호</label>
+              <div class="relative">
+                <span class="absolute left-[0.875rem] top-1/2 -translate-y-1/2 pointer-events-none text-gray-400"><Phone :size="16" /></span>
+                <input id="edit-phone" v-model="editPhone" type="tel"
                   class="w-full pl-11 pr-4 py-3 rounded-xl bg-bg-page border border-[#e5e7eb] text-navy text-sm outline-none transition-all focus:border-blue focus:shadow-[0_0_0_3px_rgba(45,156,219,0.15)]" />
               </div>
             </div>

@@ -17,7 +17,15 @@ public interface MemberMapper {
 
     MemberDetailResult findByEmail(@Param("email") String email);
 
+    MemberDetailResult findByNameAndEmailAndPhone(
+            @Param("name") String name,
+            @Param("email") String email,
+            @Param("phone") String phone
+    );
+
     int updateById(MemberUpdateParam member);
+
+    int updatePasswordById(@Param("memberId") Long memberId, @Param("password") String password);
 
     int deleteById(@Param("memberId") Long memberId);
 }

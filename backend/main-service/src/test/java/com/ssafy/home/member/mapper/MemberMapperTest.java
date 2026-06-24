@@ -30,6 +30,20 @@ class MemberMapperTest {
     }
 
     @Test
+    @DisplayName("이름·이메일·전화번호로 회원을 조회한다")
+    void findByNameAndEmailAndPhone() {
+        // when
+        MemberDetailResult found = memberMapper.findByNameAndEmailAndPhone(
+                "홍길동",
+                "user@example.com",
+                "010-1234-5678"
+        );
+
+        // then
+        assertThat(found.getId()).isEqualTo(1L);
+    }
+
+    @Test
     @DisplayName("이메일로 회원 존재 여부를 확인한다")
     void existsByEmail() {
         // when / then
@@ -45,6 +59,7 @@ class MemberMapperTest {
         createParam.setEmail("new@example.com");
         createParam.setPassword("encoded-password");
         createParam.setName("신규회원");
+        createParam.setPhone("010-1111-2222");
 
         // when
         memberMapper.insert(createParam);
@@ -58,6 +73,7 @@ class MemberMapperTest {
         updateParam.setId(createParam.getId());
         updateParam.setName("수정회원");
         updateParam.setPassword("new-encoded-password");
+        updateParam.setPhone("010-9999-8888");
 
         // when
         int updated = memberMapper.updateById(updateParam);
@@ -65,6 +81,13 @@ class MemberMapperTest {
         // then
         assertThat(updated).isEqualTo(1);
         assertThat(memberMapper.findById(createParam.getId()).getName()).isEqualTo("수정회원");
+
+        // when
+        int passwordUpdated = memberMapper.updatePasswordById(createParam.getId(), "reset-encoded-password");
+
+        // then
+        assertThat(passwordUpdated).isEqualTo(1);
+        assertThat(memberMapper.findById(createParam.getId()).getPassword()).isEqualTo("reset-encoded-password");
 
         // when
         int deleted = memberMapper.deleteById(createParam.getId());

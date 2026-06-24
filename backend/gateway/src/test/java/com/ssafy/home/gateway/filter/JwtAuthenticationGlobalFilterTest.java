@@ -137,6 +137,23 @@ class JwtAuthenticationGlobalFilterTest {
     }
 
     @Test
+    @DisplayName("비밀번호 재설정 요청은 토큰 없이 다음 필터를 호출한다")
+    void filterCallsChainForPasswordResetRequest() {
+        // given
+        MockServerWebExchange exchange = MockServerWebExchange.from(
+                MockServerHttpRequest.post("/api/members/password-reset")
+        );
+        AtomicBoolean chainCalled = new AtomicBoolean(false);
+
+        // when
+        filter.filter(exchange, chain(chainCalled)).block();
+
+        // then
+        assertThat(exchange.getResponse().getStatusCode()).isNull();
+        assertThat(chainCalled).isTrue();
+    }
+
+    @Test
     @DisplayName("공지사항 조회 요청은 토큰 없이 다음 필터를 호출한다")
     void filterCallsChainForNoticeReadRequest() {
         // given

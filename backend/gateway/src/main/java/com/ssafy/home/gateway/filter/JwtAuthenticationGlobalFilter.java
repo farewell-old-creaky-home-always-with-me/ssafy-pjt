@@ -23,6 +23,7 @@ public class JwtAuthenticationGlobalFilter implements GlobalFilter, Ordered {
             PublicEndpoint.exact(HttpMethod.POST, "/api/auth/logout"),
             PublicEndpoint.exact(HttpMethod.GET, "/api/auth/me"),
             PublicEndpoint.exact(HttpMethod.POST, "/api/members"),
+            PublicEndpoint.exact(HttpMethod.POST, "/api/members/password-reset"),
             PublicEndpoint.exact(HttpMethod.GET, "/api/notices"),
             PublicEndpoint.prefix(HttpMethod.GET, "/api/notices/"),
             PublicEndpoint.exact(HttpMethod.GET, "/api/houses"),

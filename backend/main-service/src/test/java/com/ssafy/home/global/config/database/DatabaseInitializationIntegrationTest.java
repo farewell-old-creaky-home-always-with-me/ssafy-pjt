@@ -124,7 +124,7 @@ class DatabaseInitializationIntegrationTest {
 
         // Then
         assertThat(managedTableCount).isEqualTo(23);
-        assertThat(successfulMigrationCount).isEqualTo(3);
+        assertThat(successfulMigrationCount).isEqualTo(4);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);
