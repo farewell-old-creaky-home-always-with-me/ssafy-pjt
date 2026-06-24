@@ -1,5 +1,6 @@
 SET REFERENTIAL_INTEGRITY FALSE;
 
+DROP TABLE IF EXISTS commercial_area;
 DROP TABLE IF EXISTS qna;
 DROP TABLE IF EXISTS batch_report;
 DROP TABLE IF EXISTS batch_collection_log;
@@ -107,6 +108,20 @@ CREATE TABLE batch_report (
     error_message VARCHAR(1000),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE commercial_area (
+    id              BIGINT          NOT NULL AUTO_INCREMENT,
+    biz_id          VARCHAR(20)     UNIQUE,
+    biz_name        VARCHAR(100)    NOT NULL,
+    category_large  VARCHAR(50),
+    category_medium VARCHAR(50),
+    category_small  VARCHAR(50),
+    latitude        DECIMAL(10, 7)  NOT NULL,
+    longitude       DECIMAL(10, 7)  NOT NULL,
+    address         VARCHAR(150),
+    created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
 );
 

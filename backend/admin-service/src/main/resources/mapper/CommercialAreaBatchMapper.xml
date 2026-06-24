@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.batch.mapper.CommercialAreaBatchMapper">
+
+    <insert id="upsert">
+        INSERT INTO commercial_area (
+            biz_id, biz_name, category_large, category_medium, category_small,
+            latitude, longitude, address
+        ) VALUES (
+            #{bizId}, #{bizName}, #{categoryLarge}, #{categoryMedium}, #{categorySmall},
+            #{latitude}, #{longitude}, #{address}
+        )
+        ON DUPLICATE KEY UPDATE
+            biz_name        = #{bizName},
+            category_large  = #{categoryLarge},
+            category_medium = #{categoryMedium},
+            category_small  = #{categorySmall},
+            latitude        = #{latitude},
+            longitude       = #{longitude},
+            address         = #{address}
+    </insert>
+
+    <select id="findAllSigunguCodes" resultType="string">
+        SELECT DISTINCT LEFT(region_code, 5)
+        FROM region_code
+        ORDER BY 1
+    </select>
+
+</mapper>
