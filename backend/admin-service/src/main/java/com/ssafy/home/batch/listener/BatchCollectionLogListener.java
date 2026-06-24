@@ -42,6 +42,10 @@ public class BatchCollectionLogListener implements JobExecutionListener {
         return new BatchCollectionLogListener(mapper, "COMMERCIAL_AREA", false, false);
     }
 
+    public static BatchCollectionLogListener forEnvironment(BatchCollectionLogMapper mapper) {
+        return new BatchCollectionLogListener(mapper, "ENVIRONMENT", false, false);
+    }
+
     @Override
     public void afterJob(JobExecution jobExecution) {
         JobParameters parameters = jobExecution.getJobParameters();

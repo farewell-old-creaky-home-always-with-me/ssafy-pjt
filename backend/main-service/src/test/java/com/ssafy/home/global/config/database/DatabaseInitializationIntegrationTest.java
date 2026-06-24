@@ -145,7 +145,7 @@ class DatabaseInitializationIntegrationTest {
         assertThat(missingTables)
                 .as("Flyway migration did not create these expected tables")
                 .isEmpty();
-        assertThat(successfulMigrationCount).isEqualTo(7);
+        assertThat(successfulMigrationCount).isEqualTo(8);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);
