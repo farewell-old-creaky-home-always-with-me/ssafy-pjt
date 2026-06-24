@@ -1,6 +1,8 @@
 package com.ssafy.home.batch.report;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
 import com.ssafy.home.batch.report.dto.PdfReportRequest;
 import java.nio.file.Files;
@@ -18,25 +20,73 @@ class PdfReportServiceTest {
     @Test
     @DisplayName("PDF report is generated under configured output directory")
     void generate() {
+        Path fontPath = findUnicodeFontPath();
+        assumeTrue(fontPath != null);
         PdfReportService pdfReportService = new PdfReportService(
-                new BatchReportProperties(tempDir, "", 5)
+                new BatchReportProperties(tempDir, fontPath.toString(), 5)
         );
 
-        var result = pdfReportService.generate(new PdfReportRequest(
-                1L,
-                BatchReportType.REFLECTION.name(),
-                "11680",
-                "202606",
-                10L,
-                1L,
-                0,
-                "fake summary",
-                "fake translated summary",
-                List.of()
-        ));
+        var result = pdfReportService.generate(request("11680", "202606"));
 
         assertThat(result.fileName()).endsWith(".pdf");
         assertThat(result.filePath()).startsWith(tempDir.toAbsolutePath().toString());
         assertThat(Files.exists(Path.of(result.filePath()))).isTrue();
+    }
+
+    @Test
+    @DisplayName("PDF file name sanitizes request values")
+    void generateWithUnsafeFileNameInputs() {
+        Path fontPath = findUnicodeFontPath();
+        assumeTrue(fontPath != null);
+        PdfReportService pdfReportService = new PdfReportService(
+                new BatchReportProperties(tempDir, fontPath.toString(), 5)
+        );
+
+        var result = pdfReportService.generate(request("../outside", "2026/06"));
+
+        Path filePath = Path.of(result.filePath());
+        assertThat(result.fileName()).doesNotContain("/", "\\");
+        assertThat(filePath.normalize()).startsWith(tempDir.toAbsolutePath().normalize());
+        assertThat(Files.exists(filePath)).isTrue();
+    }
+
+    @Test
+    @DisplayName("PDF generation fails when font is not configured")
+    void missingFont() {
+        PdfReportService pdfReportService = new PdfReportService(
+                new BatchReportProperties(tempDir, "", 5)
+        );
+
+        assertThatThrownBy(() -> pdfReportService.generate(request("11680", "202606")))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("font must be configured");
+    }
+
+    private PdfReportRequest request(String regionCode, String yearMonth) {
+        return new PdfReportRequest(
+                1L,
+                BatchReportType.REFLECTION.name(),
+                regionCode,
+                yearMonth,
+                10L,
+                1L,
+                0,
+                "한글 요약",
+                "fake translated summary",
+                List.of()
+        );
+    }
+
+    private Path findUnicodeFontPath() {
+        List<Path> candidates = List.of(
+                Path.of("C:/Windows/Fonts/malgun.ttf"),
+                Path.of("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"),
+                Path.of("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+                Path.of("/System/Library/Fonts/AppleSDGothicNeo.ttc")
+        );
+        return candidates.stream()
+                .filter(Files::isRegularFile)
+                .findFirst()
+                .orElse(null);
     }
 }

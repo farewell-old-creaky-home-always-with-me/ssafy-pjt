@@ -6,6 +6,7 @@ import static com.ssafy.home.global.exception.ErrorCode.BATCH_REPORT_PDF_NOT_FOU
 import com.ssafy.home.batch.report.dto.BatchReportPdfFile;
 import com.ssafy.home.batch.report.dto.BatchReportResult;
 import com.ssafy.home.global.exception.CustomException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import org.springframework.stereotype.Service;
@@ -30,9 +31,15 @@ public class BatchReportFileService {
         if (!StringUtils.hasText(report.getPdfFilePath())) {
             throw new CustomException(BATCH_REPORT_PDF_NOT_FOUND);
         }
-        Path baseDir = properties.outputDir().toAbsolutePath().normalize();
-        Path filePath = Path.of(report.getPdfFilePath()).toAbsolutePath().normalize();
-        if (!filePath.startsWith(baseDir) || !Files.exists(filePath)) {
+        Path baseDir;
+        Path filePath;
+        try {
+            baseDir = properties.outputDir().toRealPath();
+            filePath = Path.of(report.getPdfFilePath()).toRealPath();
+        } catch (IOException exception) {
+            throw new CustomException(BATCH_REPORT_PDF_NOT_FOUND);
+        }
+        if (!filePath.startsWith(baseDir) || !Files.isRegularFile(filePath)) {
             throw new CustomException(BATCH_REPORT_PDF_NOT_FOUND);
         }
         return new BatchReportPdfFile(report.getPdfFileName(), filePath);

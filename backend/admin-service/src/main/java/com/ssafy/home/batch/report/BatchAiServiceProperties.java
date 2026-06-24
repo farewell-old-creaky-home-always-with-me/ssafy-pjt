@@ -2,6 +2,7 @@ package com.ssafy.home.batch.report;
 
 import java.net.URI;
 import java.time.Duration;
+import java.util.Objects;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "batch.ai-service")
@@ -10,9 +11,7 @@ public record BatchAiServiceProperties(
         Duration timeout
 ) {
     public BatchAiServiceProperties {
-        if (baseUrl == null) {
-            baseUrl = URI.create("http://localhost:8083");
-        }
+        Objects.requireNonNull(baseUrl, "batch.ai-service.base-url must be configured");
         if (timeout == null || timeout.isZero() || timeout.isNegative()) {
             timeout = Duration.ofSeconds(30);
         }

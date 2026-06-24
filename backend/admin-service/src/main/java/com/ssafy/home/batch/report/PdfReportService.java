@@ -16,8 +16,6 @@ import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.font.PDFont;
 import org.apache.pdfbox.pdmodel.font.PDType0Font;
-import org.apache.pdfbox.pdmodel.font.PDType1Font;
-import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -37,14 +35,17 @@ public class PdfReportService {
 
     public PdfReportResult generate(PdfReportRequest request) {
         try {
-            Files.createDirectories(properties.outputDir());
+            Path outputDir = properties.outputDir().toAbsolutePath().normalize();
+            Files.createDirectories(outputDir);
             String fileName = buildFileName(request);
-            Path filePath = properties.outputDir().resolve(fileName).toAbsolutePath().normalize();
+            Path filePath = outputDir.resolve(fileName).normalize();
+            if (!filePath.startsWith(outputDir)) {
+                throw new IllegalStateException("Batch report PDF path is outside output directory");
+            }
 
             try (PDDocument document = new PDDocument()) {
                 PDFont font = loadFont(document);
-                boolean externalFont = hasExternalFont();
-                writeLines(document, font, buildLines(request, externalFont));
+                writeLines(document, font, buildLines(request, true));
                 document.save(filePath.toFile());
             }
             return new PdfReportResult(fileName, filePath.toString());
@@ -55,21 +56,26 @@ public class PdfReportService {
 
     private String buildFileName(PdfReportRequest request) {
         return "batch-report-" + request.reportId()
-                + "-" + valueOrDefault(request.regionCode(), "ALL")
-                + "-" + valueOrDefault(request.yearMonth(), "UNKNOWN")
+                + "-" + sanitizeFileNamePart(valueOrDefault(request.regionCode(), "ALL"))
+                + "-" + sanitizeFileNamePart(valueOrDefault(request.yearMonth(), "UNKNOWN"))
                 + "-" + LocalDateTime.now().format(FILE_TIME)
                 + ".pdf";
     }
 
+    private String sanitizeFileNamePart(String value) {
+        String sanitized = value.replaceAll("[^A-Za-z0-9._-]", "_");
+        return sanitized.isBlank() ? "UNKNOWN" : sanitized;
+    }
+
     private PDFont loadFont(PDDocument document) throws IOException {
-        if (hasExternalFont()) {
-            return PDType0Font.load(document, Path.of(properties.fontPath()).toFile());
+        if (!hasExternalFont()) {
+            throw new IllegalStateException("Batch report PDF font must be configured with a readable font file");
         }
-        return new PDType1Font(Standard14Fonts.FontName.HELVETICA);
+        return PDType0Font.load(document, Path.of(properties.fontPath()).toFile());
     }
 
     private boolean hasExternalFont() {
-        return StringUtils.hasText(properties.fontPath()) && Files.exists(Path.of(properties.fontPath()));
+        return StringUtils.hasText(properties.fontPath()) && Files.isRegularFile(Path.of(properties.fontPath()));
     }
 
     private List<String> buildLines(PdfReportRequest request, boolean externalFont) {
