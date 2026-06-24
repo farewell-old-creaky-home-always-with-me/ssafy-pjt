@@ -16,6 +16,8 @@ public class HouseSummaryResult {
     private String houseType;
     private String regionCode;
     private String dongName;
+    private BigDecimal latitude;
+    private BigDecimal longitude;
     private String latestDealType;
     private Integer latestDealAmount;
     private Integer latestDepositAmount;

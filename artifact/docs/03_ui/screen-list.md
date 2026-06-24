@@ -13,8 +13,8 @@
 | 화면 ID | 화면명 | 목적 | 관련 요구사항 | 주요 입력 | 주요 출력 | 관련 API |
 |---------|--------|------|--------------|-----------|-----------|----------|
 | SCR-MAIN | 메인 페이지 | 서비스 진입점. 검색 기능으로 이동 유도 | REQ-HOUSE-002 | 지역 검색 입력 | 주요 서비스 소개, 검색 폼 | 없음 |
-| SCR-SEARCH | 주택 검색 페이지 | 시도·시군구·읍면동 조건으로 주택 거래 검색 | REQ-HOUSE-002, REQ-HOUSE-004, REQ-HOUSE-005 | 시도, 시군구, 읍면동, 거래 유형, 금액 범위 | 검색 조건 입력 폼 | GET /api/houses |
-| SCR-RESULT | 주택 검색 결과 페이지 | 검색 조건에 맞는 주택 거래 목록 표시 | REQ-HOUSE-002, REQ-HOUSE-004, REQ-HOUSE-005 | 정렬 기준 선택 | 거래 목록 (주택명, 면적, 거래금액, 거래일) | GET /api/houses |
+| SCR-SEARCH | 주택 검색 페이지 | 시도·시군구·읍면동 및 아파트명 조건으로 주택 거래 검색 | REQ-HOUSE-002, REQ-HOUSE-004, REQ-HOUSE-005 | 시도, 시군구, 읍면동, 아파트명, 거래 유형, 금액 범위 | 검색 조건 입력 폼 | GET /api/houses |
+| SCR-RESULT | 주택 검색 결과 페이지 | 검색 조건에 맞는 주택 거래 목록과 지도 마커 표시 | REQ-HOUSE-002, REQ-HOUSE-004, REQ-HOUSE-005 | 정렬 기준 선택 | 거래 목록 (주택명, 면적, 거래금액, 거래일), 지도 마커 | GET /api/houses |
 | SCR-DETAIL | 매물 상세 페이지 | 특정 주택 상세 정보 및 주변 정보 표시 | REQ-HOUSE-003, REQ-COMMERCIAL-001, REQ-ENV-001, REQ-ROUTE-001 | 없음 (URL 파라미터로 houseId) | 주택 정보, 거래 이력, 지도 위치, 상권/환경/경로 탭 | GET /api/houses/{houseId}, GET /api/commercial, GET /api/environment, GET /api/routes |
 | SCR-LOGIN | 로그인 페이지 | 이메일·비밀번호로 로그인 | REQ-AUTH-001 | 이메일, 비밀번호 | 로그인 결과 (성공 시 메인 이동) | POST /api/auth/login |
 | SCR-SIGNUP | 회원 가입 페이지 | 새 회원 등록 | REQ-MEMBER-001 | 이메일, 비밀번호, 이름 | 가입 완료 메시지 | POST /api/members |

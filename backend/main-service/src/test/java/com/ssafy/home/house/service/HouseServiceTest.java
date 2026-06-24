@@ -37,7 +37,7 @@ class HouseServiceTest {
         given(houseMapper.existsByRegionCode("1100000000")).willReturn(false);
 
         // when / then
-        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20, "date", "desc"))
+        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, null, 1, 20, "date", "desc"))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
                         .isEqualTo(HOUSE_INVALID_REGION))
@@ -51,7 +51,7 @@ class HouseServiceTest {
         given(houseMapper.existsByRegionCode("1100000000")).willReturn(true);
 
         // when / then
-        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20, "INVALID", "desc"))
+        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, null, 1, 20, "INVALID", "desc"))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
                         .isEqualTo(COMMON_INVALID_INPUT));
@@ -64,7 +64,7 @@ class HouseServiceTest {
         given(houseMapper.existsByRegionCode("1100000000")).willReturn(true);
 
         // when / then
-        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, 1, 20, "date", "INVALID"))
+        assertThatThrownBy(() -> houseService.searchHouses("1100000000", null, null, null, null, null, 1, 20, "date", "INVALID"))
                 .isInstanceOf(CustomException.class)
                 .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
                         .isEqualTo(COMMON_INVALID_INPUT));

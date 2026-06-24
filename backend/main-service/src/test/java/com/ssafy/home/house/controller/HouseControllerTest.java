@@ -42,19 +42,22 @@ class HouseControllerTest {
     @DisplayName("지역 코드로 주택 목록을 조회한다")
     void searchHousesReturns200() throws Exception {
         // given
-        given(houseService.searchHouses("1168010100", null, null, null, null, 1, 20, "date", "desc"))
+        given(houseService.searchHouses("1168010100", "래미안", null, null, null, null, 1, 20, "date", "desc"))
                 .willReturn(PageResponse.of(List.of(houseSummaryResponse()), 1L, 1, 20));
 
         // when / then
         mockMvc.perform(get("/api/houses")
                         .param("regionCode", "1168010100")
+                        .param("houseName", "래미안")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.total").value(1))
                 .andExpect(jsonPath("$.items[0].houseId").value(1L))
                 .andExpect(jsonPath("$.items[0].aptName").value("역삼래미안"))
                 .andExpect(jsonPath("$.items[0].regionCode").value("1168010100"))
-                .andExpect(jsonPath("$.items[0].dongName").value("역삼동"));
+                .andExpect(jsonPath("$.items[0].dongName").value("역삼동"))
+                .andExpect(jsonPath("$.items[0].latitude").value(37.5006130))
+                .andExpect(jsonPath("$.items[0].longitude").value(127.0364310));
     }
 
     @Test
@@ -89,6 +92,8 @@ class HouseControllerTest {
                 "아파트",
                 "1168010100",
                 "역삼동",
+                new BigDecimal("37.5006130"),
+                new BigDecimal("127.0364310"),
                 new HouseSummaryResponse.LatestDealResponse(
                         "매매",
                         178000,

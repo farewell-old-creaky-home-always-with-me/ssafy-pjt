@@ -15,12 +15,11 @@ import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
 import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.global.response.PageResponse;
 import com.ssafy.home.house.dto.HouseDetailResponse;
+import com.ssafy.home.house.dto.HouseSummaryResponse;
 import com.ssafy.home.house.mapper.HouseMapper;
 import com.ssafy.home.house.mapper.dto.HouseDealResult;
 import com.ssafy.home.house.mapper.dto.HouseDetailResult;
 import com.ssafy.home.house.mapper.dto.HouseSearchParam;
-import com.ssafy.home.house.dto.HouseSummaryResponse;
-import com.ssafy.home.house.mapper.dto.HouseSummaryResult;
 import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +40,7 @@ public class HouseService {
     @Transactional(readOnly = true)
     public PageResponse<HouseSummaryResponse> searchHouses(
             String regionCode,
+            String houseName,
             String houseType,
             String dealType,
             Integer minAmount,
@@ -64,6 +64,7 @@ public class HouseService {
 
         HouseSearchParam condition = new HouseSearchParam();
         condition.setRegionCode(normalizedRegionCode);
+        condition.setHouseName(normalizeNullable(houseName));
         condition.setHouseType(normalizeNullable(houseType));
         condition.setDealType(normalizeNullable(dealType));
         condition.setMinAmount(minAmount);
