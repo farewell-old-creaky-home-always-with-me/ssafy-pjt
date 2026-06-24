@@ -11,30 +11,35 @@ import org.springframework.batch.item.ItemReader;
 public class MolitHouseDealReader implements ItemReader<MolitRawHouseDeal> {
 
     private final MolitHouseDealClient client;
-    private final String regionCode;
+    private final List<String> regionCodes;
     private final String yearMonth;
     private Iterator<MolitRawHouseDeal> items = List.<MolitRawHouseDeal>of().iterator();
+    private int regionIndex;
     private int pageNumber = 1;
     private int emittedCount;
     private Integer totalCount;
 
     public MolitHouseDealReader(
             MolitHouseDealClient client,
-            String regionCode,
+            List<String> regionCodes,
             String yearMonth
     ) {
         this.client = client;
-        this.regionCode = regionCode;
+        this.regionCodes = List.copyOf(regionCodes);
         this.yearMonth = yearMonth;
     }
 
     @Override
     public MolitRawHouseDeal read() {
         while (!items.hasNext()) {
-            if (totalCount != null && emittedCount >= totalCount) {
+            if (regionIndex >= regionCodes.size()) {
                 return null;
             }
-            MolitHouseDealPage page = client.fetch(regionCode, yearMonth, pageNumber);
+            if (totalCount != null && emittedCount >= totalCount) {
+                moveToNextRegion();
+                continue;
+            }
+            MolitHouseDealPage page = client.fetch(currentRegionCode(), yearMonth, pageNumber);
             if (totalCount == null) {
                 totalCount = page.totalCount();
             }
@@ -47,12 +52,23 @@ public class MolitHouseDealReader implements ItemReader<MolitRawHouseDeal> {
                             true
                     );
                 }
-                pageNumber++;
-                return null;
+                moveToNextRegion();
+                continue;
             }
             pageNumber++;
         }
         emittedCount++;
         return items.next();
+    }
+
+    private String currentRegionCode() {
+        return regionCodes.get(regionIndex);
+    }
+
+    private void moveToNextRegion() {
+        regionIndex++;
+        pageNumber = 1;
+        emittedCount = 0;
+        totalCount = null;
     }
 }

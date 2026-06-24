@@ -12,6 +12,12 @@
         )
     </select>
 
+    <select id="findAllLawdCodes" resultType="string">
+        SELECT DISTINCT SUBSTRING(region_code, 1, 5)
+        FROM region_code
+        ORDER BY SUBSTRING(region_code, 1, 5)
+    </select>
+
     <select id="findHouseId" resultType="long">
         SELECT id
         FROM house

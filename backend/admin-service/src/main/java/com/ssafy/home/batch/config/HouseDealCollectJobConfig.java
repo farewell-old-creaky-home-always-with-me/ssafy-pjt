@@ -1,5 +1,7 @@
 package com.ssafy.home.batch.config;
 
+import static com.ssafy.home.admin.service.BatchJobService.ALL_REGION_CODE;
+
 import com.ssafy.home.batch.domain.HouseType;
 import com.ssafy.home.batch.domain.NormalizedHouseDeal;
 import com.ssafy.home.batch.listener.BatchCollectionLogListener;
@@ -88,6 +90,7 @@ public class HouseDealCollectJobConfig {
     @StepScope
     public MolitHouseDealReader houseDealReader(
             List<MolitHouseDealClient> clients,
+            HouseDealBatchMapper mapper,
             @Value("#{jobParameters['regionCode']}") String regionCode,
             @Value("#{jobParameters['yearMonth']}") String yearMonth,
             @Value("#{jobParameters['houseType']}") String houseType
@@ -99,7 +102,13 @@ public class HouseDealCollectJobConfig {
                 .orElseThrow(() -> new IllegalStateException(
                         "No MOLIT client supports " + type
                 ));
-        return new MolitHouseDealReader(client, regionCode, yearMonth);
+        List<String> regionCodes = ALL_REGION_CODE.equals(regionCode)
+                ? mapper.findAllLawdCodes()
+                : List.of(regionCode);
+        if (regionCodes.isEmpty()) {
+            throw new IllegalStateException("No region codes available for house deal collection");
+        }
+        return new MolitHouseDealReader(client, regionCodes, yearMonth);
     }
 
     @Bean

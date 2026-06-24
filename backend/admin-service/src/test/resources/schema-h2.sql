@@ -2,6 +2,15 @@ SET REFERENTIAL_INTEGRITY FALSE;
 
 DROP TABLE IF EXISTS qna;
 DROP TABLE IF EXISTS member;
+DROP TABLE IF EXISTS region_code;
+
+CREATE TABLE region_code (
+    region_code  VARCHAR(10)  NOT NULL,
+    sido_name    VARCHAR(50)  NOT NULL,
+    sigungu_name VARCHAR(50)  NOT NULL,
+    dong_name    VARCHAR(80)  NOT NULL,
+    PRIMARY KEY (region_code)
+);
 
 CREATE TABLE member (
     id         BIGINT       NOT NULL AUTO_INCREMENT,

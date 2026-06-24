@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { Shield, MapPin, Building2, Play, Loader2, AlertCircle } from 'lucide-vue-next'
+import { Shield, MapPin, Building2, Play, Loader2, AlertCircle, Search } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/authStore.js'
 import { adminApi } from '@/api/index.js'
 import '@css/pages/batch.css'
@@ -16,13 +16,72 @@ const regionError = ref('')
 const houseLoading = ref(false)
 const houseResult = ref(null)
 const houseError = ref('')
+const collectAllRegions = ref(true)
+const regionKeyword = ref('')
+const regionResults = ref([])
+const selectedRegion = ref(null)
+const searchingRegions = ref(false)
 
 const houseForm = reactive({
   regionCode: '',
   yearMonth: '',
-  houseType: 'APT',
+  houseType: 'APARTMENT',
   dealType: 'SALE',
 })
+
+function formatRegion(region) {
+  return [region.sidoName, region.sigunguName, region.dongName]
+    .filter(Boolean)
+    .join(' ')
+}
+
+async function searchRegions() {
+  const keyword = regionKeyword.value.trim()
+  selectedRegion.value = null
+  regionResults.value = []
+  houseForm.regionCode = ''
+
+  if (collectAllRegions.value || keyword.length < 2) {
+    return
+  }
+
+  searchingRegions.value = true
+  try {
+    regionResults.value = await adminApi.searchRegions(keyword)
+  } catch (err) {
+    houseError.value = err.data?.message ?? err.message ?? '지역 검색에 실패했습니다.'
+  } finally {
+    searchingRegions.value = false
+  }
+}
+
+function selectRegion(region) {
+  selectedRegion.value = region
+  houseForm.regionCode = region.regionCode
+  regionKeyword.value = formatRegion(region)
+  regionResults.value = []
+}
+
+function handleCollectAllChange() {
+  if (!collectAllRegions.value) return
+  selectedRegion.value = null
+  regionKeyword.value = ''
+  regionResults.value = []
+  houseForm.regionCode = ''
+}
+
+function houseDealPayload() {
+  return {
+    ...houseForm,
+    regionCode: collectAllRegions.value ? '' : houseForm.regionCode,
+  }
+}
+
+function collectedRegionLabel() {
+  const regionCode = houseResult.value?.parameters?.regionCode
+  if (regionCode === 'ALL') return '전체 행정구역'
+  return selectedRegion.value ? formatRegion(selectedRegion.value) : regionCode
+}
 
 async function handleCollectRegionCodes() {
   regionLoading.value = true
@@ -40,8 +99,8 @@ async function handleCollectRegionCodes() {
 async function handleCollectHouseDeals() {
   houseResult.value = null
   houseError.value = ''
-  if (!/^\d{5}$/.test(houseForm.regionCode)) {
-    houseError.value = '행정구역 코드는 숫자 5자리로 입력해 주세요.'
+  if (!collectAllRegions.value && !selectedRegion.value) {
+    houseError.value = '지역을 검색해서 선택하거나 전체 수집을 선택해 주세요.'
     return
   }
   if (!/^\d{6}$/.test(houseForm.yearMonth)) {
@@ -50,7 +109,7 @@ async function handleCollectHouseDeals() {
   }
   houseLoading.value = true
   try {
-    houseResult.value = await adminApi.collectHouseDeals({ ...houseForm })
+    houseResult.value = await adminApi.collectHouseDeals(houseDealPayload())
   } catch (err) {
     houseError.value = err.data?.message ?? err.message ?? '실행에 실패했습니다.'
   } finally {
@@ -112,14 +171,48 @@ async function handleLogout() {
         <p class="batch-section-desc">지역·연월·주택 유형별 실거래가 데이터를 수집합니다.</p>
 
         <div class="batch-form-grid">
-          <div>
-            <label class="form-label" style="margin-bottom:0.5rem;display:block">행정구역 코드 (5자리)</label>
-            <input
-              v-model="houseForm.regionCode"
-              class="batch-input"
-              placeholder="예: 11110"
-              maxlength="5"
-            />
+          <div class="batch-region-field">
+            <div class="batch-field-head">
+              <label class="form-label">수집 지역</label>
+              <label class="batch-check">
+                <input
+                  v-model="collectAllRegions"
+                  type="checkbox"
+                  @change="handleCollectAllChange"
+                />
+                <span>전체</span>
+              </label>
+            </div>
+            <div class="batch-search">
+              <Search :size="16" />
+              <input
+                v-model="regionKeyword"
+                class="batch-input batch-search-input"
+                placeholder="예: 역삼동"
+                :disabled="collectAllRegions"
+                @input="searchRegions"
+              />
+            </div>
+            <div v-if="searchingRegions" class="batch-search-state">
+              <Loader2 :size="14" class="animate-spin" />
+              <span>검색 중</span>
+            </div>
+            <div v-else-if="regionResults.length > 0" class="batch-region-results">
+              <button
+                v-for="region in regionResults"
+                :key="region.regionCode"
+                type="button"
+                class="batch-region-option"
+                @click="selectRegion(region)"
+              >
+                <span>{{ region.dongName || region.sigunguName }}</span>
+                <small>{{ formatRegion(region) }}</small>
+              </button>
+            </div>
+            <div v-if="selectedRegion" class="batch-selected-region">
+              <MapPin :size="14" />
+              <span>{{ formatRegion(selectedRegion) }}</span>
+            </div>
           </div>
           <div>
             <label class="form-label" style="margin-bottom:0.5rem;display:block">기준 연월 (6자리)</label>
@@ -133,9 +226,7 @@ async function handleLogout() {
           <div>
             <label class="form-label" style="margin-bottom:0.5rem;display:block">주택 유형</label>
             <select v-model="houseForm.houseType" class="batch-input">
-              <option value="APT">아파트</option>
-              <option value="OFFICETEL">오피스텔</option>
-              <option value="HOUSE">단독·다가구</option>
+              <option value="APARTMENT">아파트</option>
               <option value="MULTI_FAMILY">연립·다세대</option>
             </select>
           </div>
@@ -160,7 +251,7 @@ async function handleLogout() {
           <span class="batch-result-label">실행 완료</span>
           <span>Job ID: {{ houseResult.jobExecutionId }}</span>
           <span>상태: {{ houseResult.status }}</span>
-          <span>지역: {{ houseResult.parameters?.regionCode }} / {{ houseResult.parameters?.yearMonth }}</span>
+          <span>지역: {{ collectedRegionLabel() }} / {{ houseResult.parameters?.yearMonth }}</span>
         </div>
         <div v-if="houseError" class="general-error" style="margin-top:0.75rem;margin-bottom:0">
           <AlertCircle :size="16" /><span>{{ houseError }}</span>
