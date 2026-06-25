@@ -19,6 +19,7 @@ jobs:
       - uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: "1.10.0"
+          terraform_wrapper: true
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -54,6 +55,7 @@ jobs:
         continue-on-error: true
 
       - name: Comment Plan on PR
+        if: always()
         uses: actions/github-script@v7
         with:
           script: |
