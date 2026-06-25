@@ -41,6 +41,9 @@
         <RouterLink to="/reports/batch" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white/70 text-[0.8125rem] transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold">
           <BarChart3 :size="16" /> AI 리포트
         </RouterLink>
+        <RouterLink to="/chat" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white/70 text-[0.8125rem] transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold">
+          <Bot :size="16" /> AI 채팅
+        </RouterLink>
       </div>
 
       <div class="hidden lg:flex items-center gap-1">
@@ -105,6 +108,9 @@
       <RouterLink to="/reports/batch" class="flex items-center gap-2 px-6 py-3 text-white/70 text-sm transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold" @click="mobileOpen = false">
         <BarChart3 :size="16" /> AI 리포트
       </RouterLink>
+      <RouterLink to="/chat" class="flex items-center gap-2 px-6 py-3 text-white/70 text-sm transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold" @click="mobileOpen = false">
+        <Bot :size="16" /> AI 채팅
+      </RouterLink>
       <template v-if="authStore.user">
         <RouterLink to="/profile" class="flex items-center gap-2 px-6 py-3 text-white/70 text-sm transition-colors hover:text-white hover:bg-white/10" @click="mobileOpen = false">
           <UserCircle :size="16" /> {{ authStore.user.name }}님
@@ -128,7 +134,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
-import { Home, BarChart3, Heart, Store, TreePine, FileText, LogIn, LogOut, UserCircle, Menu, X } from 'lucide-vue-next'
+import { Home, BarChart3, Heart, Store, TreePine, FileText, LogIn, LogOut, UserCircle, Menu, X, Bot } from 'lucide-vue-next'
 import { useAuthStore } from '../../stores/authStore.js'
 import { useFavoritesStore } from '../../stores/favoritesStore.js'
 
