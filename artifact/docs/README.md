@@ -30,6 +30,7 @@
 12. `11_frontend-roadmap/frontend-api-contract.md` — 프론트엔드 API 계약
 13. `08_schedule/wbs.md` → `gantt-chart.md` — 일정 관리
 14. `09_submission/submission-checklist.md` — 최종 제출 점검
+15. `09_submission/ai-usage-report.md` — AI 사용 보고서
 
 ---
 
@@ -59,6 +60,7 @@
 | 08-1 | [wbs.md](08_schedule/wbs.md) | WBS | 초안 |
 | 08-2 | [gantt-chart.md](08_schedule/gantt-chart.md) | 간트 차트 | 초안 |
 | 09-1 | [submission-checklist.md](09_submission/submission-checklist.md) | 제출 체크리스트 | 초안 |
+| 09-2 | [ai-usage-report.md](09_submission/ai-usage-report.md) | AI 사용 보고서 | 초안 |
 | 10-1 | [batch-overview.md](10_batch/batch-overview.md) | 배치 개요 | 초안 |
 | 10-2 | [house-deal-collect-job.md](10_batch/house-deal-collect-job.md) | 주택 거래 수집 Job | 초안 |
 | 10-3 | [batch-operation.md](10_batch/batch-operation.md) | 배치 운영 | 초안 |
