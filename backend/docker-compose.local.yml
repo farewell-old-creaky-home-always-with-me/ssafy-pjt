@@ -6,8 +6,7 @@ services:
     container_name: ssafy-home-gateway
     ports:
       - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+    command: ["--spring.profiles.active=local"]
     restart: unless-stopped
     depends_on:
       admin-service:
@@ -24,11 +23,7 @@ services:
     container_name: ssafy-home-admin-service
     ports:
       - "8081:8081"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: ssafy
-      SPRING_DATASOURCE_PASSWORD: ssafy
+    command: ["--spring.profiles.active=local"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8081/actuator/health"]
@@ -47,11 +42,7 @@ services:
     container_name: ssafy-home-main-service
     ports:
       - "8082:8082"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      SPRING_DATASOURCE_USERNAME: ssafy
-      SPRING_DATASOURCE_PASSWORD: ssafy
+    command: ["--spring.profiles.active=local"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8082/actuator/health"]
@@ -102,8 +93,7 @@ services:
       context: .
       dockerfile: ai-service/Dockerfile
     container_name: ssafy-home-ai-service
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
+    command: ["--spring.profiles.active=local"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8083/actuator/health"]

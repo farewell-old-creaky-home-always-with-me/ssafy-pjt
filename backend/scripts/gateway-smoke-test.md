@@ -4,7 +4,7 @@ This guide verifies the local MSA path through the Gateway on port `8080`.
 
 ## Prerequisites
 
-Build the jars that `docker-compose.yml` mounts into each app container.
+Build the jars used by the local Docker Compose stack.
 
 ```powershell
 .\gradlew.bat :gateway:bootJar :admin-service:bootJar :main-service:bootJar
@@ -13,7 +13,7 @@ Build the jars that `docker-compose.yml` mounts into each app container.
 Start the MSA services with the shared MySQL database.
 
 ```powershell
-docker compose up -d mysql main-service admin-service gateway
+docker compose -f docker-compose.local.yml up -d mysql main-service admin-service gateway
 ```
 
 The smoke script generates HS256 JWTs locally with the same default secret used by docker compose:

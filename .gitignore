@@ -35,6 +35,13 @@ pnpm-debug.log*
 js/config.js
 backend/admin-service/src/main/resources/secret/application-secret.yml
 
+# Terraform
+infra/terraform.tfvars
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/.terraform.lock.hcl
+
 # Backend
 backend/HELP.md
 backend/.gradle/

@@ -1,0 +1,11 @@
+# 이 파일을 복사해 terraform.tfvars를 만든다.
+# terraform.tfvars는 .gitignore에 추가할 것.
+
+aws_region   = "ap-northeast-2"
+project_name = "ssafy-home"
+admin_cidr   = "X.X.X.X/32"   # 관리자 IP/32
+
+# db_password와 ssh_public_key는 GitHub Secrets로 주입.
+# 로컬 실행 시에만 아래 주석을 해제해서 기입.
+# db_password    = "CHANGE_ME"
+# ssh_public_key = "ssh-rsa AAAA..."

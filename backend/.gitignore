@@ -43,3 +43,5 @@ uploads/
 
 # Docker override (local only)
 docker-compose.override.yml
+!docker-compose.local.yml
+!docker-compose.prod.yml
