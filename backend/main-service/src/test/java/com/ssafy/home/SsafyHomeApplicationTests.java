@@ -3,6 +3,7 @@ package com.ssafy.home;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.ssafy.home.commercial.mapper.CommercialMapper;
+import com.ssafy.home.demographics.mapper.DemographicsMapper;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
 import com.ssafy.home.global.config.database.InitialDataLoader;
@@ -78,6 +79,9 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     HousingInfoMapper housingInfoMapper;
+
+    @MockitoBean
+    DemographicsMapper demographicsMapper;
 
     @Test
     void contextLoads() {

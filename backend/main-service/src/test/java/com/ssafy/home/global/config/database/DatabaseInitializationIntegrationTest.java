@@ -100,7 +100,8 @@ class DatabaseInitializationIntegrationTest {
                     SELECT 'BATCH_JOB_EXECUTION_CONTEXT'   UNION ALL
                     SELECT 'BATCH_STEP_EXECUTION_SEQ'      UNION ALL
                     SELECT 'BATCH_JOB_EXECUTION_SEQ'       UNION ALL
-                    SELECT 'BATCH_JOB_SEQ'
+                    SELECT 'BATCH_JOB_SEQ'                 UNION ALL
+                    SELECT 'neighborhood_demographics'
                 ) AS expected
                 WHERE t NOT IN (
                     SELECT table_name
@@ -147,7 +148,7 @@ class DatabaseInitializationIntegrationTest {
         assertThat(missingTables)
                 .as("Flyway migration did not create these expected tables")
                 .isEmpty();
-        assertThat(successfulMigrationCount).isEqualTo(9);
+        assertThat(successfulMigrationCount).isEqualTo(10);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);
