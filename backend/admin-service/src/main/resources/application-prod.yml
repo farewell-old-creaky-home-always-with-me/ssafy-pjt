@@ -1,0 +1,3 @@
+batch:
+  ai-service:
+    base-url: http://ai-service:8083

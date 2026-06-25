@@ -6,8 +6,7 @@ services:
     container_name: ssafy-home-gateway
     ports:
       - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
+    command: ["--spring.profiles.active=prod"]
     restart: unless-stopped
     depends_on:
       admin-service:
@@ -22,12 +21,7 @@ services:
       context: .
       dockerfile: admin-service/Dockerfile
     container_name: ssafy-home-admin-service
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:?SPRING_DATASOURCE_URL is required}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:?SPRING_DATASOURCE_USERNAME is required}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:?SPRING_DATASOURCE_PASSWORD is required}
-      AI_SERVICE_BASE_URL: http://ai-service:8083
+    command: ["--spring.profiles.active=prod"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8081/actuator/health"]
@@ -41,12 +35,7 @@ services:
       context: .
       dockerfile: main-service/Dockerfile
     container_name: ssafy-home-main-service
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:?SPRING_DATASOURCE_URL is required}
-      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:?SPRING_DATASOURCE_USERNAME is required}
-      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:?SPRING_DATASOURCE_PASSWORD is required}
-      BATCH_REPORT_OUTPUT_DIR: ${BATCH_REPORT_OUTPUT_DIR:-./reports/batch}
+    command: ["--spring.profiles.active=prod"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8082/actuator/health"]
@@ -92,8 +81,7 @@ services:
       context: .
       dockerfile: ai-service/Dockerfile
     container_name: ssafy-home-ai-service
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
+    command: ["--spring.profiles.active=prod"]
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8083/actuator/health"]
@@ -128,9 +116,6 @@ services:
   grafana:
     image: grafana/grafana:12.0.1
     container_name: ssafy-home-grafana
-    environment:
-      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
-      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?GRAFANA_ADMIN_PASSWORD is required}
     volumes:
       - grafana_data:/var/lib/grafana
       - ./observability/grafana/provisioning:/etc/grafana/provisioning

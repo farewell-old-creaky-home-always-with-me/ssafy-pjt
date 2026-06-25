@@ -124,7 +124,7 @@ housing:
 
 batch:
   ai-service:
-    base-url: ${AI_SERVICE_BASE_URL}
+    base-url: http://localhost:8083
     timeout: ${AI_SERVICE_TIMEOUT:30s}
   report:
     output-dir: ${BATCH_REPORT_OUTPUT_DIR:./reports/batch}

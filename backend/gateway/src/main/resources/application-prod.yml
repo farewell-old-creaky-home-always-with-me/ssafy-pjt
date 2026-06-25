@@ -21,7 +21,7 @@ spring:
             - id: ai-service
               uri: http://ai-service:8083
               predicates:
-                - Path=/api/chat/**
+                - Path=/api/chat,/api/chat/**
             - id: main-service
               uri: http://main-service:8082
               predicates:
