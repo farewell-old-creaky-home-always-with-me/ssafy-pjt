@@ -87,6 +87,8 @@ class DatabaseInitializationIntegrationTest {
                     SELECT 'batch_report'                  UNION ALL
                     SELECT 'commercial_area'               UNION ALL
                     SELECT 'environment_info'              UNION ALL
+                    SELECT 'housing_news'                  UNION ALL
+                    SELECT 'housing_info'                  UNION ALL
                     SELECT 'facility'                      UNION ALL
                     SELECT 'route_request'                 UNION ALL
                     SELECT 'route_path'                    UNION ALL
@@ -145,7 +147,7 @@ class DatabaseInitializationIntegrationTest {
         assertThat(missingTables)
                 .as("Flyway migration did not create these expected tables")
                 .isEmpty();
-        assertThat(successfulMigrationCount).isEqualTo(8);
+        assertThat(successfulMigrationCount).isEqualTo(9);
         assertThat(stepExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobExecutionSequenceSeedCount).isEqualTo(1);
         assertThat(jobSequenceSeedCount).isEqualTo(1);

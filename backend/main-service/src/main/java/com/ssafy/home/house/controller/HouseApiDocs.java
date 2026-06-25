@@ -34,7 +34,7 @@ public interface HouseApiDocs {
             @RequestParam(defaultValue = "1") int page,
             @Parameter(description = "페이지 크기", example = "20")
             @RequestParam(defaultValue = "20") int size,
-            @Parameter(description = "정렬 기준 (name, area, floor, price, date)", example = "date")
+            @Parameter(description = "정렬 기준 (name, area, floor, price, date, recommend)", example = "date")
             @RequestParam(defaultValue = "date") String sortBy,
             @Parameter(description = "정렬 방향 (asc, desc)", example = "desc")
             @RequestParam(defaultValue = "desc") String sortDir

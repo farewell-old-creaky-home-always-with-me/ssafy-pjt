@@ -53,6 +53,24 @@ class HouseServiceTest {
     }
 
     @Test
+    @DisplayName("추천순 정렬 조건을 전달한다")
+    void searchHousesPassesRecommendSortCondition() {
+        // given
+        given(houseMapper.existsByRegionCode("1168010100")).willReturn(true);
+        given(houseMapper.countBySearch(any(HouseSearchParam.class))).willReturn(0L);
+        given(houseMapper.search(any(HouseSearchParam.class))).willReturn(List.of());
+
+        // when
+        houseService.searchHouses("1168010100", null, null, null, 100000, 200000, 1, 20, "recommend", "desc");
+
+        // then
+        ArgumentCaptor<HouseSearchParam> captor = ArgumentCaptor.forClass(HouseSearchParam.class);
+        then(houseMapper).should().countBySearch(captor.capture());
+        assertThat(captor.getValue().getSortBy()).isEqualTo("recommend");
+        assertThat(captor.getValue().getSortDir()).isEqualTo("desc");
+    }
+
+    @Test
     @DisplayName("유효하지 않은 행정구역 코드로 검색하면 예외가 발생한다")
     void searchHousesThrowsWhenRegionCodeIsInvalid() {
         // given

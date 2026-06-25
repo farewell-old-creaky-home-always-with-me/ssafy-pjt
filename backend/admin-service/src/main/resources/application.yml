@@ -116,6 +116,12 @@ seoul:
       foreign-count-field: FRNR_CNT
       reference-date-field: STDR_DE_ID
 
+housing:
+  content:
+    timeout: 10s
+    skip-limit: 100
+    sources: []
+
 batch:
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL}
