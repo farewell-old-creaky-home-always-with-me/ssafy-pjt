@@ -3,6 +3,7 @@ package com.ssafy.home.batchreport.controller;
 import com.ssafy.home.batchreport.dto.BatchReportSummaryRequest;
 import com.ssafy.home.batchreport.dto.BatchReportSummaryResponse;
 import com.ssafy.home.batchreport.service.BatchReportSummaryService;
+import com.ssafy.home.global.interceptor.LoginRequired;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@LoginRequired
 @RestController
 @RequestMapping("/api/ai/batch/reports")
 @RequiredArgsConstructor
