@@ -107,6 +107,7 @@ public class DemographicsCollectJobConfig {
     }
 
     @Bean
+    @StepScope
     public PopulationWriter populationWriter(DemographicsBatchMapper mapper) {
         return new PopulationWriter(mapper);
     }
@@ -125,6 +126,7 @@ public class DemographicsCollectJobConfig {
     }
 
     @Bean
+    @StepScope
     public ForeignResidentWriter foreignResidentWriter(DemographicsBatchMapper mapper) {
         return new ForeignResidentWriter(mapper);
     }
