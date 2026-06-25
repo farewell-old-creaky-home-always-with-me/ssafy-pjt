@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 
+import com.ssafy.home.toolcalling.prompt.ToolCallingPromptProvider;
 import com.ssafy.home.toolcalling.support.FakeRealEstateToolDataProvider;
 import com.ssafy.home.toolcalling.tool.HouseSearchTool;
 import com.ssafy.home.toolcalling.tool.StatsTool;
@@ -36,6 +37,7 @@ class ToolCallingServiceTest {
         FakeRealEstateToolDataProvider dataProvider = new FakeRealEstateToolDataProvider();
         toolCallingService = new ToolCallingService(
             chatClient,
+            new ToolCallingPromptProvider(),
             new StatsTool(dataProvider),
             new HouseSearchTool(dataProvider)
         );
@@ -51,6 +53,22 @@ class ToolCallingServiceTest {
 
         assertThat(response.toolCallingEnabled()).isTrue();
         assertThat(response.answer()).isEqualTo("AI 응답입니다.");
+    }
+
+    @Test
+    void tool_chat은_분리된_prompt_provider의_system_prompt를_사용한다() {
+        given(chatModel.call(any(Prompt.class))).willReturn(
+            new org.springframework.ai.chat.model.ChatResponse(
+                List.of(new Generation(new AssistantMessage("AI 응답입니다.")))));
+
+        toolCallingService.chat("강남구 평균 거래가는?");
+
+        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
+        then(chatModel).should().call(promptCaptor.capture());
+        assertThat(promptCaptor.getValue().getInstructions())
+            .anySatisfy(message -> assertThat(message.getText()).contains("getRegionRealEstateStats"));
+        assertThat(promptCaptor.getValue().getInstructions())
+            .noneSatisfy(message -> assertThat(message.getText()).contains("단일 도구만 사용"));
     }
 
     @Test

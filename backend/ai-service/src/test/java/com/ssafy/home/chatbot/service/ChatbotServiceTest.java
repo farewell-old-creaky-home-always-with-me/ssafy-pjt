@@ -1,10 +1,19 @@
 package com.ssafy.home.chatbot.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.ssafy.home.chatbot.dto.ChatResponse;
 import com.ssafy.home.chatbot.dto.SearchResponse;
+import com.ssafy.home.chatbot.prompt.ChatbotPromptProvider;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
@@ -15,13 +24,6 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.vectorstore.SearchRequest;
 import org.springframework.ai.vectorstore.VectorStore;
-
-import java.util.List;
-import java.util.Map;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ChatbotServiceTest {
@@ -36,7 +38,7 @@ class ChatbotServiceTest {
     @BeforeEach
     void setUp() {
         ChatClient chatClient = ChatClient.builder(chatModel).build();
-        chatbotService = new ChatbotService(chatClient, vectorStore);
+        chatbotService = new ChatbotService(chatClient, vectorStore, new ChatbotPromptProvider());
     }
 
     @Test
@@ -52,6 +54,25 @@ class ChatbotServiceTest {
 
         assertThat(response.ragUsed()).isTrue();
         assertThat(response.answer()).isEqualTo("AI 응답");
+    }
+
+    @Test
+    void 관련_문서가_있으면_분리된_prompt_provider의_system_prompt를_사용한다() {
+        Document doc = new Document("서울 아파트 평균 가격은 10억입니다.", Map.of("source", "test.txt"));
+        when(vectorStore.similaritySearch(any(SearchRequest.class)))
+            .thenReturn(List.of(doc));
+        when(chatModel.call(any(Prompt.class))).thenReturn(
+            new org.springframework.ai.chat.model.ChatResponse(
+                List.of(new Generation(new AssistantMessage("AI 응답")))));
+
+        chatbotService.chat("서울 아파트 가격");
+
+        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
+        verify(chatModel).call(promptCaptor.capture());
+        assertThat(promptCaptor.getValue().getInstructions())
+            .anySatisfy(message -> assertThat(message.getText()).contains("참고 문서"));
+        assertThat(promptCaptor.getValue().getInstructions())
+            .anySatisfy(message -> assertThat(message.getText()).contains("서울 아파트 평균 가격은 10억입니다."));
     }
 
     @Test
