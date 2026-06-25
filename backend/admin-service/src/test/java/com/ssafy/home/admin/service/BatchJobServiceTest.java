@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
+import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
 import com.ssafy.home.global.exception.CustomException;
@@ -42,6 +43,9 @@ class BatchJobServiceTest {
     @Mock
     private Job commercialAreaCollectJob;
 
+    @Mock
+    private Job environmentCollectJob;
+
     private BatchJobService service;
 
     @BeforeEach
@@ -53,6 +57,7 @@ class BatchJobServiceTest {
                 regionCodeCollectJob,
                 batchReportGenerateJob,
                 commercialAreaCollectJob,
+                environmentCollectJob,
                 clock
         );
     }
@@ -117,5 +122,23 @@ class BatchJobServiceTest {
                 .isInstanceOf(CustomException.class)
                 .extracting("errorCode")
                 .isEqualTo(BATCH_INVALID_PARAMETER);
+    }
+
+    @Test
+    @DisplayName("환경 정보 수집 배치를 실행한다")
+    void collectEnvironmentRunsEnvironmentJob() throws Exception {
+        // Given
+        ArgumentCaptor<JobParameters> parametersCaptor = ArgumentCaptor.forClass(JobParameters.class);
+        given(jobLauncher.run(eq(environmentCollectJob), parametersCaptor.capture()))
+                .willReturn(new JobExecution(9L));
+
+        // When
+        EnvironmentCollectResponse response = service.collectEnvironment(1L);
+
+        // Then
+        assertThat(parametersCaptor.getValue().getLong("requestedMemberId")).isEqualTo(1L);
+        assertThat(response.executionId()).isEqualTo(9L);
+        assertThat(response.jobName()).isEqualTo("environmentCollectJob");
+        assertThat(response.status()).isEqualTo("STARTING");
     }
 }

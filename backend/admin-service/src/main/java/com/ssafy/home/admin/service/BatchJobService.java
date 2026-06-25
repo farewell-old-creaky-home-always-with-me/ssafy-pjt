@@ -6,6 +6,7 @@ import static com.ssafy.home.global.exception.ErrorCode.BATCH_LAUNCH_FAILED;
 
 import com.ssafy.home.admin.dto.BatchReportGenerateResponse;
 import com.ssafy.home.admin.dto.CommercialAreaCollectResponse;
+import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
 import com.ssafy.home.admin.dto.RegionCodeCollectResponse;
@@ -37,6 +38,7 @@ public class BatchJobService {
     public static final String ALL_REGION_CODE = "ALL";
     public static final String BATCH_REPORT_JOB_NAME = "batchReportGenerateJob";
     public static final String COMMERCIAL_AREA_JOB_NAME = "commercialAreaCollectJob";
+    public static final String ENVIRONMENT_JOB_NAME = "environmentCollectJob";
     private static final String REGION_SYNC_SCOPE = "FULL";
     private static final int LAWD_CODE_LENGTH = 5;
     private static final int LEGAL_DONG_CODE_LENGTH = 10;
@@ -48,6 +50,7 @@ public class BatchJobService {
     private final Job regionCodeCollectJob;
     private final Job batchReportGenerateJob;
     private final Job commercialAreaCollectJob;
+    private final Job environmentCollectJob;
     private final Clock clock;
 
     public BatchJobService(
@@ -56,6 +59,7 @@ public class BatchJobService {
             @Qualifier(REGION_CODE_JOB_NAME) Job regionCodeCollectJob,
             @Qualifier(BATCH_REPORT_JOB_NAME) Job batchReportGenerateJob,
             @Qualifier(COMMERCIAL_AREA_JOB_NAME) Job commercialAreaCollectJob,
+            @Qualifier(ENVIRONMENT_JOB_NAME) Job environmentCollectJob,
             Clock clock
     ) {
         this.jobLauncher = jobLauncher;
@@ -63,6 +67,7 @@ public class BatchJobService {
         this.regionCodeCollectJob = regionCodeCollectJob;
         this.batchReportGenerateJob = batchReportGenerateJob;
         this.commercialAreaCollectJob = commercialAreaCollectJob;
+        this.environmentCollectJob = environmentCollectJob;
         this.clock = clock;
     }
 
@@ -152,6 +157,18 @@ public class BatchJobService {
         return launch(commercialAreaCollectJob, parameters, execution -> new CommercialAreaCollectResponse(
                 execution.getId(),
                 COMMERCIAL_AREA_JOB_NAME,
+                execution.getStatus().name()
+        ));
+    }
+
+    public EnvironmentCollectResponse collectEnvironment(Long memberId) {
+        JobParameters parameters = new JobParametersBuilder()
+                .addLong("requestedMemberId", memberId, false)
+                .addLong("requestedAt", clock.millis())
+                .toJobParameters();
+        return launch(environmentCollectJob, parameters, execution -> new EnvironmentCollectResponse(
+                execution.getId(),
+                ENVIRONMENT_JOB_NAME,
                 execution.getStatus().name()
         ));
     }

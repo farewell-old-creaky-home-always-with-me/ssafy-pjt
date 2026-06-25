@@ -49,6 +49,51 @@ sdsc:
   retry-count: 2
   skip-limit: 500
 
+seoul:
+  environment:
+    base-url: https://openapi.seoul.go.kr:8088
+    page-size: 1000
+    timeout: 15s
+    retry-count: 2
+    skip-limit: 500
+    datasets:
+      - key: inspection
+        category: 환경지도점검
+        service-name: ${SEOUL_ENV_INSPECTION_SERVICE_NAME:EnvGuideInspection}
+        item-name-field: ${SEOUL_ENV_INSPECTION_ITEM_NAME_FIELD:ITEM_NAME}
+        value-field: ${SEOUL_ENV_INSPECTION_VALUE_FIELD:VALUE}
+        unit-field: ${SEOUL_ENV_INSPECTION_UNIT_FIELD:UNIT}
+        measured-date-field: ${SEOUL_ENV_INSPECTION_MEASURED_DATE_FIELD:MEASURED_DATE}
+        latitude-field: ${SEOUL_ENV_INSPECTION_LATITUDE_FIELD:LAT}
+        longitude-field: ${SEOUL_ENV_INSPECTION_LONGITUDE_FIELD:LNG}
+      - key: green
+        category: 녹지
+        service-name: ${SEOUL_ENV_GREEN_SERVICE_NAME:GreenInfo}
+        item-name-field: ${SEOUL_ENV_GREEN_ITEM_NAME_FIELD:ITEM_NAME}
+        value-field: ${SEOUL_ENV_GREEN_VALUE_FIELD:VALUE}
+        unit-field: ${SEOUL_ENV_GREEN_UNIT_FIELD:UNIT}
+        measured-date-field: ${SEOUL_ENV_GREEN_MEASURED_DATE_FIELD:MEASURED_DATE}
+        latitude-field: ${SEOUL_ENV_GREEN_LATITUDE_FIELD:LAT}
+        longitude-field: ${SEOUL_ENV_GREEN_LONGITUDE_FIELD:LNG}
+      - key: wastewater
+        category: 폐수 배출
+        service-name: ${SEOUL_ENV_WASTEWATER_SERVICE_NAME:WastewaterEmission}
+        item-name-field: ${SEOUL_ENV_WASTEWATER_ITEM_NAME_FIELD:ITEM_NAME}
+        value-field: ${SEOUL_ENV_WASTEWATER_VALUE_FIELD:VALUE}
+        unit-field: ${SEOUL_ENV_WASTEWATER_UNIT_FIELD:UNIT}
+        measured-date-field: ${SEOUL_ENV_WASTEWATER_MEASURED_DATE_FIELD:MEASURED_DATE}
+        latitude-field: ${SEOUL_ENV_WASTEWATER_LATITUDE_FIELD:LAT}
+        longitude-field: ${SEOUL_ENV_WASTEWATER_LONGITUDE_FIELD:LNG}
+      - key: air
+        category: 대기 배출
+        service-name: ${SEOUL_ENV_AIR_SERVICE_NAME:AirEmission}
+        item-name-field: ${SEOUL_ENV_AIR_ITEM_NAME_FIELD:ITEM_NAME}
+        value-field: ${SEOUL_ENV_AIR_VALUE_FIELD:VALUE}
+        unit-field: ${SEOUL_ENV_AIR_UNIT_FIELD:UNIT}
+        measured-date-field: ${SEOUL_ENV_AIR_MEASURED_DATE_FIELD:MEASURED_DATE}
+        latitude-field: ${SEOUL_ENV_AIR_LATITUDE_FIELD:LAT}
+        longitude-field: ${SEOUL_ENV_AIR_LONGITUDE_FIELD:LNG}
+
 batch:
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL}

@@ -2,6 +2,7 @@ package com.ssafy.home.admin.controller;
 
 import com.ssafy.home.admin.dto.BatchReportGenerateResponse;
 import com.ssafy.home.admin.dto.CommercialAreaCollectResponse;
+import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
 import com.ssafy.home.admin.dto.RegionCodeCollectResponse;
@@ -60,6 +61,13 @@ public class AdminBatchController {
             @LoginMemberId Long memberId
     ) {
         return ResponseEntity.ok(batchJobService.collectCommercialAreas(memberId));
+    }
+
+    @PostMapping("/environment")
+    public ResponseEntity<EnvironmentCollectResponse> collectEnvironment(
+            @LoginMemberId Long memberId
+    ) {
+        return ResponseEntity.ok(batchJobService.collectEnvironment(memberId));
     }
 
     @GetMapping("/reports/{reportId}/pdf")

@@ -1,6 +1,7 @@
 SET REFERENTIAL_INTEGRITY FALSE;
 
 DROP TABLE IF EXISTS commercial_area;
+DROP TABLE IF EXISTS environment_info;
 DROP TABLE IF EXISTS qna;
 DROP TABLE IF EXISTS batch_report;
 DROP TABLE IF EXISTS batch_collection_log;
@@ -123,6 +124,20 @@ CREATE TABLE commercial_area (
     address         VARCHAR(150),
     created_at      TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id)
+);
+
+CREATE TABLE environment_info (
+    id            BIGINT          NOT NULL AUTO_INCREMENT,
+    item_name     VARCHAR(100)    NOT NULL,
+    `value`       DECIMAL(10, 4),
+    unit          VARCHAR(20),
+    measured_date DATE,
+    identity_measured_date DATE GENERATED ALWAYS AS (COALESCE(measured_date, DATE '1000-01-01')),
+    latitude      DECIMAL(10, 7)  NOT NULL,
+    longitude     DECIMAL(10, 7)  NOT NULL,
+    created_at    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE (item_name, identity_measured_date, latitude, longitude)
 );
 
 SET REFERENTIAL_INTEGRITY TRUE;
