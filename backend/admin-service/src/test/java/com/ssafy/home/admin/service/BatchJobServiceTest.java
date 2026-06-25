@@ -50,6 +50,9 @@ class BatchJobServiceTest {
     @Mock
     private Job housingNewsCollectJob;
 
+    @Mock
+    private Job cctvCollectJob;
+
     private BatchJobService service;
 
     @BeforeEach
@@ -63,6 +66,7 @@ class BatchJobServiceTest {
                 commercialAreaCollectJob,
                 environmentCollectJob,
                 housingNewsCollectJob,
+                cctvCollectJob,
                 clock
         );
     }

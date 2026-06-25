@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.cctv.mapper.CctvMapper">
+
+    <select id="findAllByLocation" resultType="com.ssafy.home.cctv.mapper.dto.CctvResult">
+        SELECT
+            id,
+            purpose,
+            camera_count,
+            address,
+            latitude,
+            longitude,
+            SQRT(
+                POW((latitude - #{lat}) * 111320, 2)
+                + POW((longitude - #{lng}) * 111320 * COS(RADIANS(#{lat})), 2)
+            ) AS distance
+        FROM cctv_info
+        HAVING distance &lt;= #{radius}
+        ORDER BY distance ASC, id ASC
+    </select>
+
+</mapper>
