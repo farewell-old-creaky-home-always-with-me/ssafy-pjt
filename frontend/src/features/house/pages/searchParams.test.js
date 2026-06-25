@@ -62,3 +62,23 @@ test('buildHouseSearchParams omits blank optional detailed filters', () => {
     size: 10,
   })
 })
+
+test('buildHouseSearchParams passes recommendation sort key', () => {
+  const params = buildHouseSearchParams({
+    filters: {
+      regionCode: '1168010100',
+      houseName: '',
+      buildingType: '아파트',
+      transactionType: '매매',
+      minAmount: '160000',
+      maxAmount: '196000',
+    },
+    sortKey: 'recommend',
+    sortDir: 'desc',
+    page: 1,
+    size: 10,
+  })
+
+  assert.equal(params.sortBy, 'recommend')
+  assert.equal(params.sortDir, 'desc')
+})
