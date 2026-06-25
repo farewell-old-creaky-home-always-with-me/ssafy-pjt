@@ -77,7 +77,6 @@ async function handleCalculate() {
         <RouteIcon :size="16" class="text-blue" />
         경로 탐색
       </h3>
-      <span v-if="routeResult" class="text-xs font-semibold text-blue">{{ distanceText }}</span>
     </div>
 
     <p v-if="!authStore.isLoggedIn()" class="rounded-xl bg-bg-page px-4 py-3 text-sm text-gray-500">
@@ -109,20 +108,33 @@ async function handleCalculate() {
       </p>
       <p v-if="errorMessage" class="text-sm font-medium text-red">{{ errorMessage }}</p>
 
-      <div v-if="routeResult" class="grid grid-cols-2 gap-3 rounded-xl bg-bg-page px-4 py-3">
-        <div class="flex items-center gap-2">
-          <Navigation :size="15" class="text-blue" />
-          <div>
-            <p class="text-[0.6875rem] font-medium text-gray-400">총 거리</p>
-            <p class="text-sm font-bold text-navy">{{ distanceText }}</p>
-          </div>
+      <div v-if="routeResult" class="rounded-xl bg-bg-page px-4 py-3 flex flex-col gap-2">
+        <div class="flex items-center justify-between mb-1">
+          <p class="text-[0.6875rem] font-medium text-gray-400">경로 요약</p>
+          <span class="text-[0.6875rem] font-semibold text-blue">{{ distanceText }}</span>
         </div>
-        <div class="flex items-center gap-2">
-          <MapPin :size="15" class="text-blue" />
-          <div>
-            <p class="text-[0.6875rem] font-medium text-gray-400">경로 지점</p>
-            <p class="text-sm font-bold text-navy">{{ routeResult.path.length }}개</p>
+        <div
+          v-for="(point, i) in routeResult.path"
+          :key="point.seq"
+          class="flex items-center gap-2"
+        >
+          <div class="flex flex-col items-center shrink-0">
+            <div
+              :class="[
+                'w-2 h-2 rounded-full shrink-0',
+                i === 0 ? 'bg-blue' : i === routeResult.path.length - 1 ? 'bg-navy' : 'bg-gray-300'
+              ]"
+            />
+            <div v-if="i < routeResult.path.length - 1" class="w-px h-4 bg-gray-200 mt-0.5" />
           </div>
+          <p
+            :class="[
+              'text-[0.8125rem] leading-none',
+              i === 0 || i === routeResult.path.length - 1 ? 'font-semibold text-navy' : 'text-gray-500'
+            ]"
+          >
+            {{ point.name }}
+          </p>
         </div>
       </div>
     </div>

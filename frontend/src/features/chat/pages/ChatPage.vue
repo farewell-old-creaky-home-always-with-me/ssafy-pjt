@@ -35,6 +35,12 @@ async function scrollToLatest() {
   }
 }
 
+function handleEnter(e) {
+  if (e.isComposing || e.keyCode === 229) return
+  e.preventDefault()
+  handleSubmit()
+}
+
 async function handleSubmit() {
   if (!canSubmit.value) return
 
@@ -123,7 +129,7 @@ async function handleSubmit() {
             class="flex-1 resize-none rounded-xl bg-bg-page border border-gray-200 px-4 py-3 text-sm text-navy outline-none transition-colors placeholder:text-gray-400 focus:border-blue focus:bg-white"
             placeholder="예: 강남구 최근 아파트 거래 흐름을 알려줘"
             :disabled="loading"
-            @keydown.enter.exact.prevent="handleSubmit"
+            @keydown.enter.exact="handleEnter"
           ></textarea>
           <button
             type="submit"

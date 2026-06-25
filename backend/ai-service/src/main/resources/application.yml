@@ -16,7 +16,7 @@ spring:
           model: gpt-5.4-mini
       embedding:
         options:
-          model: text-embedding-ada-002
+          model: text-embedding-3-small
     vectorstore:
       chroma:
         client:
