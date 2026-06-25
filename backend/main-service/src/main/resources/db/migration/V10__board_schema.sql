@@ -7,7 +7,7 @@ CREATE TABLE board (
     title      VARCHAR(200) NOT NULL COMMENT 'Title',
     content    TEXT         NOT NULL COMMENT 'Content',
     created_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Created at',
-    updated_at DATETIME              COMMENT 'Updated at',
+    updated_at DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Updated at',
 
     PRIMARY KEY (id),
     FOREIGN KEY (member_id) REFERENCES member(id),

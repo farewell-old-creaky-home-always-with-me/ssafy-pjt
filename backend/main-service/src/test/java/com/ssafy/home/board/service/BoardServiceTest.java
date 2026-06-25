@@ -51,6 +51,16 @@ class BoardServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 목록 offset이 int 범위를 넘으면 예외가 발생한다")
+    void getBoardsThrowsWhenOffsetOverflows() {
+        // when / then
+        assertThatThrownBy(() -> boardService.getBoards(Integer.MAX_VALUE, 100))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(COMMON_INVALID_PAGE));
+    }
+
+    @Test
     @DisplayName("게시글 목록을 조회한다")
     void getBoardsReturnsPage() {
         // given
@@ -107,6 +117,20 @@ class BoardServiceTest {
     }
 
     @Test
+    @DisplayName("게시글 수정 중 대상이 사라지면 예외가 발생한다")
+    void updateBoardThrowsWhenUpdatedCountZero() {
+        // given
+        given(boardMapper.findById(1L)).willReturn(boardResult(1L, 1L));
+        given(boardMapper.updateById(org.mockito.ArgumentMatchers.any())).willReturn(0);
+
+        // when / then
+        assertThatThrownBy(() -> boardService.updateBoard(1L, 1L, new BoardUpdateRequest("title", "content")))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(BOARD_NOT_FOUND));
+    }
+
+    @Test
     @DisplayName("작성자가 아니고 관리자도 아니면 게시글을 삭제할 수 없다")
     void deleteBoardThrowsWhenOwnerDiffersAndNotAdmin() {
         // given
@@ -126,12 +150,27 @@ class BoardServiceTest {
         // given
         given(boardMapper.findById(1L)).willReturn(boardResult(1L, 2L));
         given(memberMapper.findById(1L)).willReturn(memberResult(1L, true));
+        given(boardMapper.deleteById(1L)).willReturn(1);
 
         // when
         boardService.deleteBoard(1L, 1L);
 
         // then
         then(boardMapper).should().deleteById(1L);
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 중 대상이 사라지면 예외가 발생한다")
+    void deleteBoardThrowsWhenDeletedCountZero() {
+        // given
+        given(boardMapper.findById(1L)).willReturn(boardResult(1L, 1L));
+        given(boardMapper.deleteById(1L)).willReturn(0);
+
+        // when / then
+        assertThatThrownBy(() -> boardService.deleteBoard(1L, 1L))
+                .isInstanceOf(CustomException.class)
+                .satisfies(exception -> assertThat(((CustomException) exception).getErrorCode())
+                        .isEqualTo(BOARD_NOT_FOUND));
     }
 
     private BoardResult boardResult(Long boardId, Long memberId) {

@@ -33,12 +33,21 @@ public class BoardService {
     @Transactional(readOnly = true)
     public PageResponse<BoardListItemResponse> getBoards(int page, int size) {
         validatePage(page, size);
+        int offset = calculateOffset(page, size);
         long total = boardMapper.countAll();
-        List<BoardListItemResponse> items = boardMapper.findAll((page - 1) * size, size)
+        List<BoardListItemResponse> items = boardMapper.findAll(offset, size)
                 .stream()
                 .map(BoardListItemResponse::from)
                 .toList();
         return PageResponse.of(items, total, page, size);
+    }
+
+    private int calculateOffset(int page, int size) {
+        long offset = ((long) page - 1) * size;
+        if (offset > Integer.MAX_VALUE) {
+            throw new CustomException(COMMON_INVALID_PAGE);
+        }
+        return (int) offset;
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +72,10 @@ public class BoardService {
         board.setId(existing.getId());
         board.setTitle(request.title().trim());
         board.setContent(request.content().trim());
-        boardMapper.updateById(board);
+        int updatedCount = boardMapper.updateById(board);
+        if (updatedCount == 0) {
+            throw new CustomException(BOARD_NOT_FOUND);
+        }
         return BoardIdResponse.of(boardId);
     }
 
@@ -73,7 +85,10 @@ public class BoardService {
         if (!memberId.equals(board.getMemberId()) && !isAdmin(memberId)) {
             throw new CustomException(BOARD_FORBIDDEN);
         }
-        boardMapper.deleteById(boardId);
+        int deletedCount = boardMapper.deleteById(boardId);
+        if (deletedCount == 0) {
+            throw new CustomException(BOARD_NOT_FOUND);
+        }
     }
 
     private boolean isAdmin(Long memberId) {
