@@ -1,5 +1,6 @@
 SET REFERENTIAL_INTEGRITY FALSE;
 
+DROP TABLE IF EXISTS neighborhood_demographics;
 DROP TABLE IF EXISTS commercial_area;
 DROP TABLE IF EXISTS environment_info;
 DROP TABLE IF EXISTS qna;
@@ -142,6 +143,22 @@ CREATE TABLE environment_info (
     UNIQUE (item_name, identity_measured_date, latitude, longitude)
 );
 
+CREATE TABLE neighborhood_demographics (
+    id               BIGINT      NOT NULL AUTO_INCREMENT,
+    sido_name        VARCHAR(20) NOT NULL,
+    sigungu_name     VARCHAR(30) NOT NULL,
+    dong_name        VARCHAR(30) NOT NULL,
+    total_population INT,
+    household_count  INT,
+    senior_count     INT,
+    foreign_count    INT,
+    reference_date   VARCHAR(6)  NOT NULL,
+    created_at       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE (sido_name, sigungu_name, dong_name, reference_date)
+);
+
 CREATE TABLE housing_news (
     id           BIGINT       NOT NULL AUTO_INCREMENT,
     title        VARCHAR(200) NOT NULL,
@@ -179,5 +196,6 @@ CREATE INDEX idx_housing_info_published
     ON housing_info (published_at, id);
 CREATE INDEX idx_housing_info_type
     ON housing_info (info_type);
+
 
 SET REFERENTIAL_INTEGRITY TRUE;

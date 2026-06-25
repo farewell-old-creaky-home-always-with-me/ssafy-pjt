@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.batch.mapper.DemographicsBatchMapper">
+
+    <insert id="upsertPopulation">
+        INSERT INTO neighborhood_demographics
+            (sido_name, sigungu_name, dong_name,
+             total_population, household_count, senior_count, reference_date)
+        VALUES
+            (#{sidoName}, #{sigunguName}, #{dongName},
+             #{totalPopulation}, #{householdCount}, #{seniorCount}, #{referenceDate})
+        ON DUPLICATE KEY UPDATE
+            total_population = VALUES(total_population),
+            household_count  = VALUES(household_count),
+            senior_count     = VALUES(senior_count),
+            updated_at       = NOW()
+    </insert>
+
+    <insert id="upsertForeignResident">
+        INSERT INTO neighborhood_demographics
+            (sido_name, sigungu_name, dong_name, foreign_count, reference_date)
+        VALUES
+            (#{sidoName}, #{sigunguName}, #{dongName}, #{foreignCount}, #{referenceDate})
+        ON DUPLICATE KEY UPDATE
+            foreign_count = VALUES(foreign_count),
+            updated_at    = NOW()
+    </insert>
+
+</mapper>
