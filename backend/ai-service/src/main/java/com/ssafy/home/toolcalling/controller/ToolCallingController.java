@@ -3,6 +3,8 @@ package com.ssafy.home.toolcalling.controller;
 import com.ssafy.home.global.interceptor.LoginRequired;
 import com.ssafy.home.toolcalling.dto.ToolChatRequest;
 import com.ssafy.home.toolcalling.dto.ToolChatResponse;
+import com.ssafy.home.toolcalling.dto.ToolMultiChatRequest;
+import com.ssafy.home.toolcalling.dto.ToolMultiChatResponse;
 import com.ssafy.home.toolcalling.dto.ToolTestResponse;
 import com.ssafy.home.toolcalling.service.ToolCallingService;
 import jakarta.validation.Valid;
@@ -25,6 +27,11 @@ public class ToolCallingController {
     @PostMapping("/chat")
     public ResponseEntity<ToolChatResponse> chat(@Valid @RequestBody ToolChatRequest request) {
         return ResponseEntity.ok(toolCallingService.chat(request.message()));
+    }
+
+    @PostMapping("/multi")
+    public ResponseEntity<ToolMultiChatResponse> multiChat(@Valid @RequestBody ToolMultiChatRequest request) {
+        return ResponseEntity.ok(toolCallingService.multiChat(request.message()));
     }
 
     @GetMapping("/test")

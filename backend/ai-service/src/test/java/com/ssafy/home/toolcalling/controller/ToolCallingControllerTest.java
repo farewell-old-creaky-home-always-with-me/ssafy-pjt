@@ -1,6 +1,6 @@
 package com.ssafy.home.toolcalling.controller;
 
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -13,6 +13,8 @@ import com.ssafy.home.global.exception.GlobalExceptionHandler;
 import com.ssafy.home.global.interceptor.AuthInterceptor;
 import com.ssafy.home.toolcalling.dto.ToolChatRequest;
 import com.ssafy.home.toolcalling.dto.ToolChatResponse;
+import com.ssafy.home.toolcalling.dto.ToolMultiChatRequest;
+import com.ssafy.home.toolcalling.dto.ToolMultiChatResponse;
 import com.ssafy.home.toolcalling.dto.ToolTestResponse;
 import com.ssafy.home.toolcalling.service.ToolCallingService;
 import io.jsonwebtoken.Jwts;
@@ -56,8 +58,8 @@ class ToolCallingControllerTest {
 
     @Test
     void POST_api_ai_tools_chat_정상_응답을_반환한다() throws Exception {
-        when(toolCallingService.chat("강남구 평균 거래가는?"))
-            .thenReturn(new ToolChatResponse("AI 응답입니다.", true));
+        given(toolCallingService.chat("강남구 평균 거래가는?"))
+            .willReturn(new ToolChatResponse("AI 응답입니다.", true));
 
         mockMvc.perform(post("/api/ai/tools/chat")
                 .header("Authorization", generateTestToken())
@@ -70,14 +72,35 @@ class ToolCallingControllerTest {
 
     @Test
     void GET_api_ai_tools_test_정상_응답을_반환한다() throws Exception {
-        when(toolCallingService.testTools())
-            .thenReturn(new ToolTestResponse("StatsTool 결과", "HouseSearchTool 결과"));
+        given(toolCallingService.testTools())
+            .willReturn(new ToolTestResponse("StatsTool 결과", "HouseSearchTool 결과"));
 
         mockMvc.perform(get("/api/ai/tools/test")
                 .header("Authorization", generateTestToken()))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.statsResult").value("StatsTool 결과"))
             .andExpect(jsonPath("$.houseSearchResult").value("HouseSearchTool 결과"));
+    }
+
+    @Test
+    void POST_api_ai_tools_multi는_연쇄_tool_calling_응답을_반환한다() throws Exception {
+        given(toolCallingService.multiChat("강남구 평균 거래가를 보고 예산에 맞는 아파트 추천해줘"))
+            .willReturn(new ToolMultiChatResponse(
+                "통계 기반 추천입니다.",
+                "평균 거래가 요약",
+                "추천 매물 목록",
+                true));
+
+        mockMvc.perform(post("/api/ai/tools/multi")
+                .header("Authorization", generateTestToken())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(
+                    new ToolMultiChatRequest("강남구 평균 거래가를 보고 예산에 맞는 아파트 추천해줘"))))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.answer").value("통계 기반 추천입니다."))
+            .andExpect(jsonPath("$.statsResult").value("평균 거래가 요약"))
+            .andExpect(jsonPath("$.houseSearchResult").value("추천 매물 목록"))
+            .andExpect(jsonPath("$.toolChainEnabled").value(true));
     }
 
     @Test
