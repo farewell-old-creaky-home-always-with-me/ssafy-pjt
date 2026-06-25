@@ -2,6 +2,7 @@ package com.ssafy.home.batch.mapper;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ssafy.home.batch.domain.NormalizedForeignResident;
 import com.ssafy.home.batch.domain.NormalizedPopulation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,5 +46,33 @@ class DemographicsBatchMapperTest {
     private NormalizedPopulation population(String referenceDate) {
         return new NormalizedPopulation(
                 "서울특별시", "강남구", "역삼1동", 12345, 5678, 1234, referenceDate);
+    }
+
+    @Test
+    @DisplayName("외국인통계를 INSERT한다")
+    void upsertForeignResidentInsertsNewRow() {
+        // When
+        int affected = mapper.upsertForeignResident(foreignResident("202505"));
+
+        // Then
+        assertThat(affected).isGreaterThanOrEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("인구통계 행이 있는 상태에서 외국인통계 UPSERT는 foreign_count만 갱신한다")
+    void upsertForeignResidentOnExistingPopulationRow() {
+        // Given
+        mapper.upsertPopulation(new NormalizedPopulation(
+                "서울특별시", "강남구", "역삼1동", 12345, 5678, 1234, "202505"));
+
+        // When
+        int affected = mapper.upsertForeignResident(foreignResident("202505"));
+
+        // Then
+        assertThat(affected).isGreaterThanOrEqualTo(1);
+    }
+
+    private NormalizedForeignResident foreignResident(String referenceDate) {
+        return new NormalizedForeignResident("서울특별시", "강남구", "역삼1동", 345, referenceDate);
     }
 }
