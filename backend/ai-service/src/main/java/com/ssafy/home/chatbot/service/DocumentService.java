@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class DocumentService {
 
     private static final Set<String> SUPPORTED_EXTENSIONS = Set.of("txt", "md", "pdf");
     private static final TokenTextSplitter TEXT_SPLITTER = new TokenTextSplitter();
+    private static final int UPSERT_BATCH_SIZE = 10;
 
     private final VectorStore vectorStore;
 
@@ -40,7 +42,10 @@ public class DocumentService {
 
         List<Document> chunks = TEXT_SPLITTER.apply(docs);
 
-        vectorStore.add(chunks);
+        IntStream.range(0, (chunks.size() + UPSERT_BATCH_SIZE - 1) / UPSERT_BATCH_SIZE)
+            .mapToObj(i -> chunks.subList(i * UPSERT_BATCH_SIZE,
+                Math.min((i + 1) * UPSERT_BATCH_SIZE, chunks.size())))
+            .forEach(vectorStore::add);
     }
 
     private void validateExtension(String filename) {
