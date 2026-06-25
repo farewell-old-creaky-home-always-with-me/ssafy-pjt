@@ -3,7 +3,6 @@ package com.ssafy.home.batchreport.controller;
 import com.ssafy.home.batchreport.dto.BatchReportSummaryRequest;
 import com.ssafy.home.batchreport.dto.BatchReportSummaryResponse;
 import com.ssafy.home.batchreport.service.BatchReportSummaryService;
-import com.ssafy.home.global.interceptor.LoginRequired;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +18,6 @@ public class BatchReportSummaryController {
 
     private final BatchReportSummaryService batchReportSummaryService;
 
-    @LoginRequired
     @PostMapping("/summary")
     public ResponseEntity<BatchReportSummaryResponse> summarize(
             @Valid @RequestBody BatchReportSummaryRequest request

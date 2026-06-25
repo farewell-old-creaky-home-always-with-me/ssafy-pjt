@@ -24,6 +24,8 @@ services:
     ports:
       - "8081:8081"
     command: ["--spring.profiles.active=local"]
+    environment:
+      - BATCH_REPORT_FONT_PATH=/usr/share/fonts/truetype/nanum/NanumGothic.ttf
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8081/actuator/health"]
