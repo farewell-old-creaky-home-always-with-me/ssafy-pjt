@@ -1,0 +1,201 @@
+services:
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    container_name: ssafy-home-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    restart: unless-stopped
+    depends_on:
+      admin-service:
+        condition: service_healthy
+      main-service:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
+
+  admin-service:
+    build:
+      context: .
+      dockerfile: admin-service/Dockerfile
+    container_name: ssafy-home-admin-service
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: ssafy
+      SPRING_DATASOURCE_PASSWORD: ssafy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8081/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  main-service:
+    build:
+      context: .
+      dockerfile: main-service/Dockerfile
+    container_name: ssafy-home-main-service
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/ssafy_home?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      SPRING_DATASOURCE_USERNAME: ssafy
+      SPRING_DATASOURCE_PASSWORD: ssafy
+      BATCH_REPORT_OUTPUT_DIR: ./reports/batch
+      AI_SERVICE_BASE_URL: http://ai-service:8083
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8082/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  chroma:
+    image: chromadb/chroma:0.6.3
+    container_name: ssafy-home-chroma
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    volumes:
+      - chroma_data:/chroma/chroma
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  chroma-init:
+    image: curlimages/curl:latest
+    container_name: ssafy-home-chroma-init
+    depends_on:
+      chroma:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        curl -sf -X POST http://chroma:8000/api/v2/tenants \
+          -H "Content-Type: application/json" \
+          -d '{"name":"SpringAiTenant"}' || true
+        curl -sf -X POST http://chroma:8000/api/v2/tenants/SpringAiTenant/databases \
+          -H "Content-Type: application/json" \
+          -d '{"name":"SpringAiDatabase"}' || true
+        curl -sf -X POST http://chroma:8000/api/v2/tenants/SpringAiTenant/databases/SpringAiDatabase/collections \
+          -H "Content-Type: application/json" \
+          -d '{"name":"ssafy-home-docs","metadata":{"hnsw:space":"cosine"},"get_or_create":true}'
+    restart: on-failure
+
+  ai-service:
+    build:
+      context: .
+      dockerfile: ai-service/Dockerfile
+    container_name: ssafy-home-ai-service
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8083/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      chroma:
+        condition: service_healthy
+      chroma-init:
+        condition: service_completed_successfully
+
+  mysql:
+    image: mysql:8.0
+    container_name: ssafy-home-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ssafy_home
+      MYSQL_USER: ssafy
+      MYSQL_PASSWORD: ssafy
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "ssafy", "-pssafy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  loki:
+    image: grafana/loki:3.5.0
+    container_name: ssafy-home-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./observability/loki-config.yml:/etc/loki/config.yml
+      - loki_data:/loki
+    command: -config.file=/etc/loki/config.yml
+
+  alloy:
+    image: grafana/alloy:v1.8.3
+    container_name: ssafy-home-alloy
+    volumes:
+      - ./observability/alloy-config.alloy:/etc/alloy/config.alloy
+      - ./logs:/logs
+    command: run --server.http.listen-addr=0.0.0.0:12345 /etc/alloy/config.alloy
+    ports:
+      - "12345:12345"
+    depends_on:
+      - loki
+
+  grafana:
+    image: grafana/grafana:12.0.1
+    container_name: ssafy-home-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - loki
+      - prometheus
+
+  prometheus:
+    image: prom/prometheus:v3.4.0
+    container_name: ssafy-home-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+volumes:
+  mysql_data:
+  chroma_data:
+  loki_data:
+  grafana_data:
+  prometheus_data:
