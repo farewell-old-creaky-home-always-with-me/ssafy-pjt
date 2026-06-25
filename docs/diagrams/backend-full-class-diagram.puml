@@ -1,0 +1,718 @@
+@startuml
+title SSAFY HOME Backend - Full Class Diagram
+top to bottom direction
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam nodesep 20
+skinparam ranksep 30
+hide members
+hide circle
+
+legend right
+  <|-- extends
+  <|.. implements
+  ..> field/constructor dependency
+endlegend
+
+package "admin-service" {
+  package "admin" {
+    class "AdminBatchController" as C_admin_service_com_ssafy_home_admin_controller_AdminBatchController <<admin.controller>>
+    class "BatchReportGenerateResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_BatchReportGenerateResponse <<admin.dto>>
+    class "CctvCollectResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_CctvCollectResponse <<admin.dto>>
+    class "CommercialAreaCollectResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_CommercialAreaCollectResponse <<admin.dto>>
+    class "DemographicsCollectResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_DemographicsCollectResponse <<admin.dto>>
+    class "EnvironmentCollectResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_EnvironmentCollectResponse <<admin.dto>>
+    class "HouseDealCollectRequest <<record>>" as C_admin_service_com_ssafy_home_admin_dto_HouseDealCollectRequest <<admin.dto>>
+    class "HouseDealCollectResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_HouseDealCollectResponse <<admin.dto>>
+    class "HousingNewsCollectResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_HousingNewsCollectResponse <<admin.dto>>
+    class "RegionCodeCollectResponse <<record>>" as C_admin_service_com_ssafy_home_admin_dto_RegionCodeCollectResponse <<admin.dto>>
+    class "BatchJobService" as C_admin_service_com_ssafy_home_admin_service_BatchJobService <<admin.service>>
+  }
+  package "batch" {
+    class "BatchExecutionConfig" as C_admin_service_com_ssafy_home_batch_config_BatchExecutionConfig <<batch.config>>
+    class "BatchReportConfig" as C_admin_service_com_ssafy_home_batch_config_BatchReportConfig <<batch.config>>
+    class "BatchReportGenerateJobConfig" as C_admin_service_com_ssafy_home_batch_config_BatchReportGenerateJobConfig <<batch.config>>
+    class "CctvCollectJobConfig" as C_admin_service_com_ssafy_home_batch_config_CctvCollectJobConfig <<batch.config>>
+    class "CommercialAreaCollectJobConfig" as C_admin_service_com_ssafy_home_batch_config_CommercialAreaCollectJobConfig <<batch.config>>
+    class "DemographicsCollectJobConfig" as C_admin_service_com_ssafy_home_batch_config_DemographicsCollectJobConfig <<batch.config>>
+    class "EnvironmentCollectJobConfig" as C_admin_service_com_ssafy_home_batch_config_EnvironmentCollectJobConfig <<batch.config>>
+    class "HouseDealCollectJobConfig" as C_admin_service_com_ssafy_home_batch_config_HouseDealCollectJobConfig <<batch.config>>
+    class "HousingNewsCollectJobConfig" as C_admin_service_com_ssafy_home_batch_config_HousingNewsCollectJobConfig <<batch.config>>
+    class "RegionCodeCollectJobConfig" as C_admin_service_com_ssafy_home_batch_config_RegionCodeCollectJobConfig <<batch.config>>
+    class "BatchCollectionLog <<record>>" as C_admin_service_com_ssafy_home_batch_domain_BatchCollectionLog <<batch.domain>>
+    enum "HouseType" as C_admin_service_com_ssafy_home_batch_domain_HouseType <<batch.domain>>
+    enum "HousingInfoType" as C_admin_service_com_ssafy_home_batch_domain_HousingInfoType <<batch.domain>>
+    enum "HousingNewsCategory" as C_admin_service_com_ssafy_home_batch_domain_HousingNewsCategory <<batch.domain>>
+    class "NormalizedCctv <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedCctv <<batch.domain>>
+    class "NormalizedCommercialArea <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedCommercialArea <<batch.domain>>
+    class "NormalizedEnvironment <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedEnvironment <<batch.domain>>
+    class "NormalizedForeignResident <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedForeignResident <<batch.domain>>
+    class "NormalizedHouseDeal <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedHouseDeal <<batch.domain>>
+    interface "NormalizedHousingContent" as C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingContent <<batch.domain>>
+    class "NormalizedHousingInfo <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingInfo <<batch.domain>>
+    class "NormalizedHousingNews <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingNews <<batch.domain>>
+    class "NormalizedPopulation <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedPopulation <<batch.domain>>
+    class "NormalizedRegionCode <<record>>" as C_admin_service_com_ssafy_home_batch_domain_NormalizedRegionCode <<batch.domain>>
+    class "BatchCollectionLogListener" as C_admin_service_com_ssafy_home_batch_listener_BatchCollectionLogListener <<batch.listener>>
+    class "HouseDealSkipLogListener" as C_admin_service_com_ssafy_home_batch_listener_HouseDealSkipLogListener <<batch.listener>>
+    interface "BatchCollectionLogMapper" as C_admin_service_com_ssafy_home_batch_mapper_BatchCollectionLogMapper <<batch.mapper>>
+    interface "CctvBatchMapper" as C_admin_service_com_ssafy_home_batch_mapper_CctvBatchMapper <<batch.mapper>>
+    interface "CommercialAreaBatchMapper" as C_admin_service_com_ssafy_home_batch_mapper_CommercialAreaBatchMapper <<batch.mapper>>
+    interface "DemographicsBatchMapper" as C_admin_service_com_ssafy_home_batch_mapper_DemographicsBatchMapper <<batch.mapper>>
+    interface "EnvironmentBatchMapper" as C_admin_service_com_ssafy_home_batch_mapper_EnvironmentBatchMapper <<batch.mapper>>
+    interface "HouseDealBatchMapper" as C_admin_service_com_ssafy_home_batch_mapper_HouseDealBatchMapper <<batch.mapper>>
+    interface "HousingNewsBatchMapper" as C_admin_service_com_ssafy_home_batch_mapper_HousingNewsBatchMapper <<batch.mapper>>
+    interface "RegionBatchMapper" as C_admin_service_com_ssafy_home_batch_mapper_RegionBatchMapper <<batch.mapper>>
+    class "CctvProcessor" as C_admin_service_com_ssafy_home_batch_processor_CctvProcessor <<batch.processor>>
+    class "CommercialAreaProcessor" as C_admin_service_com_ssafy_home_batch_processor_CommercialAreaProcessor <<batch.processor>>
+    class "EnvironmentProcessor" as C_admin_service_com_ssafy_home_batch_processor_EnvironmentProcessor <<batch.processor>>
+    class "ForeignResidentProcessor" as C_admin_service_com_ssafy_home_batch_processor_ForeignResidentProcessor <<batch.processor>>
+    class "HouseDealProcessor" as C_admin_service_com_ssafy_home_batch_processor_HouseDealProcessor <<batch.processor>>
+    class "HousingContentProcessor" as C_admin_service_com_ssafy_home_batch_processor_HousingContentProcessor <<batch.processor>>
+    class "InvalidCctvException" as C_admin_service_com_ssafy_home_batch_processor_InvalidCctvException <<batch.processor>>
+    class "InvalidCommercialAreaException" as C_admin_service_com_ssafy_home_batch_processor_InvalidCommercialAreaException <<batch.processor>>
+    class "InvalidEnvironmentException" as C_admin_service_com_ssafy_home_batch_processor_InvalidEnvironmentException <<batch.processor>>
+    class "InvalidForeignResidentException" as C_admin_service_com_ssafy_home_batch_processor_InvalidForeignResidentException <<batch.processor>>
+    class "InvalidHouseDealException" as C_admin_service_com_ssafy_home_batch_processor_InvalidHouseDealException <<batch.processor>>
+    class "InvalidHousingContentException" as C_admin_service_com_ssafy_home_batch_processor_InvalidHousingContentException <<batch.processor>>
+    class "InvalidPopulationException" as C_admin_service_com_ssafy_home_batch_processor_InvalidPopulationException <<batch.processor>>
+    class "InvalidRegionCodeException" as C_admin_service_com_ssafy_home_batch_processor_InvalidRegionCodeException <<batch.processor>>
+    class "PopulationProcessor" as C_admin_service_com_ssafy_home_batch_processor_PopulationProcessor <<batch.processor>>
+    class "RegionCodeProcessor" as C_admin_service_com_ssafy_home_batch_processor_RegionCodeProcessor <<batch.processor>>
+    class "HousingContentReader" as C_admin_service_com_ssafy_home_batch_reader_HousingContentReader <<batch.reader>>
+    class "MolitHouseDealReader" as C_admin_service_com_ssafy_home_batch_reader_MolitHouseDealReader <<batch.reader>>
+    class "SdscStoreReader" as C_admin_service_com_ssafy_home_batch_reader_SdscStoreReader <<batch.reader>>
+    class "SeoulCctvReader" as C_admin_service_com_ssafy_home_batch_reader_SeoulCctvReader <<batch.reader>>
+    class "SeoulEnvironmentReader" as C_admin_service_com_ssafy_home_batch_reader_SeoulEnvironmentReader <<batch.reader>>
+    class "SeoulForeignResidentReader" as C_admin_service_com_ssafy_home_batch_reader_SeoulForeignResidentReader <<batch.reader>>
+    class "SeoulPopulationReader" as C_admin_service_com_ssafy_home_batch_reader_SeoulPopulationReader <<batch.reader>>
+    class "VworldRegionReader" as C_admin_service_com_ssafy_home_batch_reader_VworldRegionReader <<batch.reader>>
+    class "AiServiceBatchAiClient" as C_admin_service_com_ssafy_home_batch_report_AiServiceBatchAiClient <<batch.report>>
+    interface "BatchAiClient" as C_admin_service_com_ssafy_home_batch_report_BatchAiClient <<batch.report>>
+    class "BatchAiServiceProperties <<record>>" as C_admin_service_com_ssafy_home_batch_report_BatchAiServiceProperties <<batch.report>>
+    class "BatchReportFileService" as C_admin_service_com_ssafy_home_batch_report_BatchReportFileService <<batch.report>>
+    interface "BatchReportMapper" as C_admin_service_com_ssafy_home_batch_report_BatchReportMapper <<batch.report>>
+    class "BatchReportProperties <<record>>" as C_admin_service_com_ssafy_home_batch_report_BatchReportProperties <<batch.report>>
+    class "BatchReportScheduler" as C_admin_service_com_ssafy_home_batch_report_BatchReportScheduler <<batch.report>>
+    class "BatchReportService" as C_admin_service_com_ssafy_home_batch_report_BatchReportService <<batch.report>>
+    enum "BatchReportSourceType" as C_admin_service_com_ssafy_home_batch_report_BatchReportSourceType <<batch.report>>
+    enum "BatchReportStatus" as C_admin_service_com_ssafy_home_batch_report_BatchReportStatus <<batch.report>>
+    class "BatchReportTasklet" as C_admin_service_com_ssafy_home_batch_report_BatchReportTasklet <<batch.report>>
+    enum "BatchReportType" as C_admin_service_com_ssafy_home_batch_report_BatchReportType <<batch.report>>
+    class "BatchSchedulerProperties <<record>>" as C_admin_service_com_ssafy_home_batch_report_BatchSchedulerProperties <<batch.report>>
+    class "PdfReportService" as C_admin_service_com_ssafy_home_batch_report_PdfReportService <<batch.report>>
+    class "BatchAiReportRequest <<record>>" as C_admin_service_com_ssafy_home_batch_report_dto_BatchAiReportRequest <<batch.report.dto>>
+    class "BatchAiReportResult <<record>>" as C_admin_service_com_ssafy_home_batch_report_dto_BatchAiReportResult <<batch.report.dto>>
+    class "BatchCollectionLogResult" as C_admin_service_com_ssafy_home_batch_report_dto_BatchCollectionLogResult <<batch.report.dto>>
+    class "BatchReportAiUpdateParam" as C_admin_service_com_ssafy_home_batch_report_dto_BatchReportAiUpdateParam <<batch.report.dto>>
+    class "BatchReportCreateParam" as C_admin_service_com_ssafy_home_batch_report_dto_BatchReportCreateParam <<batch.report.dto>>
+    class "BatchReportFailureUpdateParam" as C_admin_service_com_ssafy_home_batch_report_dto_BatchReportFailureUpdateParam <<batch.report.dto>>
+    class "BatchReportPdfFile <<record>>" as C_admin_service_com_ssafy_home_batch_report_dto_BatchReportPdfFile <<batch.report.dto>>
+    class "BatchReportPdfUpdateParam" as C_admin_service_com_ssafy_home_batch_report_dto_BatchReportPdfUpdateParam <<batch.report.dto>>
+    class "BatchReportResult" as C_admin_service_com_ssafy_home_batch_report_dto_BatchReportResult <<batch.report.dto>>
+    class "HouseDealReportRow" as C_admin_service_com_ssafy_home_batch_report_dto_HouseDealReportRow <<batch.report.dto>>
+    class "PdfReportRequest <<record>>" as C_admin_service_com_ssafy_home_batch_report_dto_PdfReportRequest <<batch.report.dto>>
+    class "PdfReportResult <<record>>" as C_admin_service_com_ssafy_home_batch_report_dto_PdfReportResult <<batch.report.dto>>
+    class "HouseDealSkipPolicy" as C_admin_service_com_ssafy_home_batch_skip_HouseDealSkipPolicy <<batch.skip>>
+    class "CctvWriter" as C_admin_service_com_ssafy_home_batch_writer_CctvWriter <<batch.writer>>
+    class "CommercialAreaWriter" as C_admin_service_com_ssafy_home_batch_writer_CommercialAreaWriter <<batch.writer>>
+    class "EnvironmentWriter" as C_admin_service_com_ssafy_home_batch_writer_EnvironmentWriter <<batch.writer>>
+    class "ForeignResidentWriter" as C_admin_service_com_ssafy_home_batch_writer_ForeignResidentWriter <<batch.writer>>
+    class "HouseDealWriter" as C_admin_service_com_ssafy_home_batch_writer_HouseDealWriter <<batch.writer>>
+    class "HousingContentWriter" as C_admin_service_com_ssafy_home_batch_writer_HousingContentWriter <<batch.writer>>
+    class "PopulationWriter" as C_admin_service_com_ssafy_home_batch_writer_PopulationWriter <<batch.writer>>
+    class "RegionCodeWriter" as C_admin_service_com_ssafy_home_batch_writer_RegionCodeWriter <<batch.writer>>
+  }
+  package "com" {
+    class "AdminServiceApplication" as C_admin_service_com_ssafy_home_AdminServiceApplication <<com.ssafy.home>>
+  }
+  package "external" {
+    interface "HousingContentClient" as C_admin_service_com_ssafy_home_external_housing_HousingContentClient <<external.housing>>
+    class "HousingContentSourceProperties <<record>>" as C_admin_service_com_ssafy_home_external_housing_HousingContentSourceProperties <<external.housing>>
+    class "HousingRawContent <<record>>" as C_admin_service_com_ssafy_home_external_housing_HousingRawContent <<external.housing>>
+    class "OfficialHousingContentClient" as C_admin_service_com_ssafy_home_external_housing_OfficialHousingContentClient <<external.housing>>
+    class "AbstractMolitHouseDealClient" as C_admin_service_com_ssafy_home_external_molit_AbstractMolitHouseDealClient <<external.molit>>
+    class "ApartmentSaleClient" as C_admin_service_com_ssafy_home_external_molit_ApartmentSaleClient <<external.molit>>
+    class "MolitApiException" as C_admin_service_com_ssafy_home_external_molit_MolitApiException <<external.molit>>
+    class "MolitClientConfig" as C_admin_service_com_ssafy_home_external_molit_MolitClientConfig <<external.molit>>
+    interface "MolitHouseDealClient" as C_admin_service_com_ssafy_home_external_molit_MolitHouseDealClient <<external.molit>>
+    class "MolitHouseDealPage <<record>>" as C_admin_service_com_ssafy_home_external_molit_MolitHouseDealPage <<external.molit>>
+    class "MolitProperties <<record>>" as C_admin_service_com_ssafy_home_external_molit_MolitProperties <<external.molit>>
+    class "MolitRawHouseDeal <<record>>" as C_admin_service_com_ssafy_home_external_molit_MolitRawHouseDeal <<external.molit>>
+    class "MultiFamilySaleClient" as C_admin_service_com_ssafy_home_external_molit_MultiFamilySaleClient <<external.molit>>
+    class "SdscApiException" as C_admin_service_com_ssafy_home_external_sdsc_SdscApiException <<external.sdsc>>
+    class "SdscClientConfig" as C_admin_service_com_ssafy_home_external_sdsc_SdscClientConfig <<external.sdsc>>
+    class "SdscProperties <<record>>" as C_admin_service_com_ssafy_home_external_sdsc_SdscProperties <<external.sdsc>>
+    class "SdscRawStore <<record>>" as C_admin_service_com_ssafy_home_external_sdsc_SdscRawStore <<external.sdsc>>
+    class "SdscStoreClient" as C_admin_service_com_ssafy_home_external_sdsc_SdscStoreClient <<external.sdsc>>
+    class "SdscStorePage <<record>>" as C_admin_service_com_ssafy_home_external_sdsc_SdscStorePage <<external.sdsc>>
+    class "SeoulEnvironmentApiException" as C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentApiException <<external.seoul>>
+    class "SeoulEnvironmentClient" as C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentClient <<external.seoul>>
+    class "SeoulEnvironmentClientConfig" as C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentClientConfig <<external.seoul>>
+    class "SeoulEnvironmentPage <<record>>" as C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentPage <<external.seoul>>
+    class "SeoulEnvironmentProperties <<record>>" as C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentProperties <<external.seoul>>
+    class "SeoulRawEnvironment <<record>>" as C_admin_service_com_ssafy_home_external_seoul_SeoulRawEnvironment <<external.seoul>>
+    class "SeoulCctvApiException" as C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvApiException <<external.seoul.cctv>>
+    class "SeoulCctvClient" as C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvClient <<external.seoul.cctv>>
+    class "SeoulCctvClientConfig" as C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvClientConfig <<external.seoul.cctv>>
+    class "SeoulCctvPage <<record>>" as C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvPage <<external.seoul.cctv>>
+    class "SeoulCctvProperties <<record>>" as C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvProperties <<external.seoul.cctv>>
+    class "SeoulRawCctv <<record>>" as C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulRawCctv <<external.seoul.cctv>>
+    class "SeoulDemographicsApiException" as C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsApiException <<external.seoul.demographics>>
+    class "SeoulDemographicsClient" as C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsClient <<external.seoul.demographics>>
+    class "SeoulDemographicsClientConfig" as C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsClientConfig <<external.seoul.demographics>>
+    class "SeoulDemographicsPage <<record>>" as C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsPage <<external.seoul.demographics>>
+    class "SeoulDemographicsProperties <<record>>" as C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsProperties <<external.seoul.demographics>>
+    class "SeoulRawForeignResident <<record>>" as C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawForeignResident <<external.seoul.demographics>>
+    class "SeoulRawPopulation <<record>>" as C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawPopulation <<external.seoul.demographics>>
+    class "VworldApiException" as C_admin_service_com_ssafy_home_external_vworld_VworldApiException <<external.vworld>>
+    class "VworldClientConfig" as C_admin_service_com_ssafy_home_external_vworld_VworldClientConfig <<external.vworld>>
+    class "VworldLegalRegionClient" as C_admin_service_com_ssafy_home_external_vworld_VworldLegalRegionClient <<external.vworld>>
+    class "VworldProperties <<record>>" as C_admin_service_com_ssafy_home_external_vworld_VworldProperties <<external.vworld>>
+    class "VworldRawRegion <<record>>" as C_admin_service_com_ssafy_home_external_vworld_VworldRawRegion <<external.vworld>>
+    class "VworldRegionPage <<record>>" as C_admin_service_com_ssafy_home_external_vworld_VworldRegionPage <<external.vworld>>
+    class "VworldSidoCodes" as C_admin_service_com_ssafy_home_external_vworld_VworldSidoCodes <<external.vworld>>
+  }
+  package "global" {
+    class "AuthConst" as C_admin_service_com_ssafy_home_global_auth_AuthConst <<global.auth>>
+    class "JwtProperties <<record>>" as C_admin_service_com_ssafy_home_global_auth_JwtProperties <<global.auth>>
+    class "JwtTokenProvider" as C_admin_service_com_ssafy_home_global_auth_JwtTokenProvider <<global.auth>>
+    annotation "LoginMemberId" as C_admin_service_com_ssafy_home_global_auth_LoginMemberId <<global.auth>>
+    class "LoginMemberIdArgumentResolver" as C_admin_service_com_ssafy_home_global_auth_LoginMemberIdArgumentResolver <<global.auth>>
+    class "AdminCsrfProperties <<record>>" as C_admin_service_com_ssafy_home_global_config_AdminCsrfProperties <<global.config>>
+    class "SecurityConfig" as C_admin_service_com_ssafy_home_global_config_SecurityConfig <<global.config>>
+    class "TimeConfig" as C_admin_service_com_ssafy_home_global_config_TimeConfig <<global.config>>
+    class "WebMvcConfig" as C_admin_service_com_ssafy_home_global_config_WebMvcConfig <<global.config>>
+    class "QueryLogInterceptor" as C_admin_service_com_ssafy_home_global_config_mybatis_QueryLogInterceptor <<global.config.mybatis>>
+    class "CustomException" as C_admin_service_com_ssafy_home_global_exception_CustomException <<global.exception>>
+    enum "ErrorCode" as C_admin_service_com_ssafy_home_global_exception_ErrorCode <<global.exception>>
+    class "GlobalExceptionHandler" as C_admin_service_com_ssafy_home_global_exception_GlobalExceptionHandler <<global.exception>>
+    annotation "AdminOnly" as C_admin_service_com_ssafy_home_global_interceptor_AdminOnly <<global.interceptor>>
+    class "AuthInterceptor" as C_admin_service_com_ssafy_home_global_interceptor_AuthInterceptor <<global.interceptor>>
+    class "CookieCsrfInterceptor" as C_admin_service_com_ssafy_home_global_interceptor_CookieCsrfInterceptor <<global.interceptor>>
+    class "HttpLoggingInterceptor" as C_admin_service_com_ssafy_home_global_interceptor_HttpLoggingInterceptor <<global.interceptor>>
+    annotation "LoginRequired" as C_admin_service_com_ssafy_home_global_interceptor_LoginRequired <<global.interceptor>>
+    class "ErrorDetail" as C_admin_service_com_ssafy_home_global_response_ErrorDetail <<global.response>>
+    class "FieldErrorDetail" as C_admin_service_com_ssafy_home_global_response_FieldErrorDetail <<global.response>>
+    class "PageResponse <<record>>" as C_admin_service_com_ssafy_home_global_response_PageResponse <<global.response>>
+  }
+  package "notice" {
+    class "AdminNoticeController" as C_admin_service_com_ssafy_home_notice_controller_AdminNoticeController <<notice.controller>>
+    class "NoticeCreateRequest <<record>>" as C_admin_service_com_ssafy_home_notice_dto_NoticeCreateRequest <<notice.dto>>
+    class "NoticeDetailResponse <<record>>" as C_admin_service_com_ssafy_home_notice_dto_NoticeDetailResponse <<notice.dto>>
+    class "NoticeIdResponse <<record>>" as C_admin_service_com_ssafy_home_notice_dto_NoticeIdResponse <<notice.dto>>
+    class "NoticeListItemResponse <<record>>" as C_admin_service_com_ssafy_home_notice_dto_NoticeListItemResponse <<notice.dto>>
+    class "NoticeUpdateRequest <<record>>" as C_admin_service_com_ssafy_home_notice_dto_NoticeUpdateRequest <<notice.dto>>
+    interface "NoticeMapper" as C_admin_service_com_ssafy_home_notice_mapper_NoticeMapper <<notice.mapper>>
+    class "NoticeCreateParam" as C_admin_service_com_ssafy_home_notice_mapper_dto_NoticeCreateParam <<notice.mapper.dto>>
+    class "NoticeResult" as C_admin_service_com_ssafy_home_notice_mapper_dto_NoticeResult <<notice.mapper.dto>>
+    class "NoticeUpdateParam" as C_admin_service_com_ssafy_home_notice_mapper_dto_NoticeUpdateParam <<notice.mapper.dto>>
+    class "NoticeService" as C_admin_service_com_ssafy_home_notice_service_NoticeService <<notice.service>>
+  }
+  package "qna" {
+    class "AdminQnaController" as C_admin_service_com_ssafy_home_qna_controller_AdminQnaController <<qna.controller>>
+    class "QnaAnswerRequest <<record>>" as C_admin_service_com_ssafy_home_qna_dto_QnaAnswerRequest <<qna.dto>>
+    class "QnaIdResponse <<record>>" as C_admin_service_com_ssafy_home_qna_dto_QnaIdResponse <<qna.dto>>
+    interface "QnaMapper" as C_admin_service_com_ssafy_home_qna_mapper_QnaMapper <<qna.mapper>>
+    class "QnaAnswerUpdateParam" as C_admin_service_com_ssafy_home_qna_mapper_dto_QnaAnswerUpdateParam <<qna.mapper.dto>>
+    class "QnaResult" as C_admin_service_com_ssafy_home_qna_mapper_dto_QnaResult <<qna.mapper.dto>>
+    class "QnaService" as C_admin_service_com_ssafy_home_qna_service_QnaService <<qna.service>>
+  }
+}
+
+package "ai-service" {
+  package "batchreport" {
+    class "BatchReportSummaryController" as C_ai_service_com_ssafy_home_batchreport_controller_BatchReportSummaryController <<batchreport.controller>>
+    class "BatchReportSummaryRequest <<record>>" as C_ai_service_com_ssafy_home_batchreport_dto_BatchReportSummaryRequest <<batchreport.dto>>
+    class "BatchReportSummaryResponse <<record>>" as C_ai_service_com_ssafy_home_batchreport_dto_BatchReportSummaryResponse <<batchreport.dto>>
+    class "HouseDealSummaryItem <<record>>" as C_ai_service_com_ssafy_home_batchreport_dto_HouseDealSummaryItem <<batchreport.dto>>
+    class "BatchReportSummaryPromptProvider" as C_ai_service_com_ssafy_home_batchreport_prompt_BatchReportSummaryPromptProvider <<batchreport.prompt>>
+    class "BatchReportSummaryService" as C_ai_service_com_ssafy_home_batchreport_service_BatchReportSummaryService <<batchreport.service>>
+  }
+  package "chatbot" {
+    interface "ChatbotApiDocs" as C_ai_service_com_ssafy_home_chatbot_controller_ChatbotApiDocs <<chatbot.controller>>
+    class "ChatbotController" as C_ai_service_com_ssafy_home_chatbot_controller_ChatbotController <<chatbot.controller>>
+    class "ChatRequest <<record>>" as C_ai_service_com_ssafy_home_chatbot_dto_ChatRequest <<chatbot.dto>>
+    class "ChatResponse <<record>>" as C_ai_service_com_ssafy_home_chatbot_dto_ChatResponse <<chatbot.dto>>
+    class "SearchResponse <<record>>" as C_ai_service_com_ssafy_home_chatbot_dto_SearchResponse <<chatbot.dto>>
+    class "ChatbotPromptProvider" as C_ai_service_com_ssafy_home_chatbot_prompt_ChatbotPromptProvider <<chatbot.prompt>>
+    class "ChatbotService" as C_ai_service_com_ssafy_home_chatbot_service_ChatbotService <<chatbot.service>>
+    class "DocumentService" as C_ai_service_com_ssafy_home_chatbot_service_DocumentService <<chatbot.service>>
+  }
+  package "com" {
+    class "AiServiceApplication" as C_ai_service_com_ssafy_home_AiServiceApplication <<com.ssafy.home>>
+  }
+  package "global" {
+    class "JwtProperties <<record>>" as C_ai_service_com_ssafy_home_global_auth_JwtProperties <<global.auth>>
+    class "JwtTokenProvider" as C_ai_service_com_ssafy_home_global_auth_JwtTokenProvider <<global.auth>>
+    class "AiConfig" as C_ai_service_com_ssafy_home_global_config_AiConfig <<global.config>>
+    class "SecurityConfig" as C_ai_service_com_ssafy_home_global_config_SecurityConfig <<global.config>>
+    class "WebMvcConfig" as C_ai_service_com_ssafy_home_global_config_WebMvcConfig <<global.config>>
+    class "AuthException" as C_ai_service_com_ssafy_home_global_exception_AuthException <<global.exception>>
+    class "GlobalExceptionHandler" as C_ai_service_com_ssafy_home_global_exception_GlobalExceptionHandler <<global.exception>>
+    class "AuthInterceptor" as C_ai_service_com_ssafy_home_global_interceptor_AuthInterceptor <<global.interceptor>>
+    annotation "LoginRequired" as C_ai_service_com_ssafy_home_global_interceptor_LoginRequired <<global.interceptor>>
+    class "ErrorDetail" as C_ai_service_com_ssafy_home_global_response_ErrorDetail <<global.response>>
+  }
+  package "toolcalling" {
+    class "ToolCallingController" as C_ai_service_com_ssafy_home_toolcalling_controller_ToolCallingController <<toolcalling.controller>>
+    class "ToolChatRequest <<record>>" as C_ai_service_com_ssafy_home_toolcalling_dto_ToolChatRequest <<toolcalling.dto>>
+    class "ToolChatResponse <<record>>" as C_ai_service_com_ssafy_home_toolcalling_dto_ToolChatResponse <<toolcalling.dto>>
+    class "ToolMultiChatRequest <<record>>" as C_ai_service_com_ssafy_home_toolcalling_dto_ToolMultiChatRequest <<toolcalling.dto>>
+    class "ToolMultiChatResponse <<record>>" as C_ai_service_com_ssafy_home_toolcalling_dto_ToolMultiChatResponse <<toolcalling.dto>>
+    class "ToolMultiStepResponse <<record>>" as C_ai_service_com_ssafy_home_toolcalling_dto_ToolMultiStepResponse <<toolcalling.dto>>
+    class "ToolTestResponse <<record>>" as C_ai_service_com_ssafy_home_toolcalling_dto_ToolTestResponse <<toolcalling.dto>>
+    class "ToolCallPlan <<record>>" as C_ai_service_com_ssafy_home_toolcalling_planner_ToolCallPlan <<toolcalling.planner>>
+    class "ToolCallPlanner" as C_ai_service_com_ssafy_home_toolcalling_planner_ToolCallPlanner <<toolcalling.planner>>
+    enum "ToolCallStep" as C_ai_service_com_ssafy_home_toolcalling_planner_ToolCallStep <<toolcalling.planner>>
+    class "ToolCallingPromptProvider" as C_ai_service_com_ssafy_home_toolcalling_prompt_ToolCallingPromptProvider <<toolcalling.prompt>>
+    class "ToolCallingService" as C_ai_service_com_ssafy_home_toolcalling_service_ToolCallingService <<toolcalling.service>>
+    class "FakeRealEstateToolDataProvider" as C_ai_service_com_ssafy_home_toolcalling_support_FakeRealEstateToolDataProvider <<toolcalling.support>>
+    interface "RealEstateToolDataProvider" as C_ai_service_com_ssafy_home_toolcalling_support_RealEstateToolDataProvider <<toolcalling.support>>
+    class "HouseSearchTool" as C_ai_service_com_ssafy_home_toolcalling_tool_HouseSearchTool <<toolcalling.tool>>
+    class "StatsTool" as C_ai_service_com_ssafy_home_toolcalling_tool_StatsTool <<toolcalling.tool>>
+  }
+}
+
+package "gateway" {
+  package "gateway" {
+    class "GatewayApplication" as C_gateway_com_ssafy_home_gateway_GatewayApplication <<gateway>>
+    class "JwtProperties <<record>>" as C_gateway_com_ssafy_home_gateway_auth_JwtProperties <<gateway.auth>>
+    class "JwtTokenValidator" as C_gateway_com_ssafy_home_gateway_auth_JwtTokenValidator <<gateway.auth>>
+    class "JwtAuthenticationGlobalFilter" as C_gateway_com_ssafy_home_gateway_filter_JwtAuthenticationGlobalFilter <<gateway.filter>>
+  }
+}
+
+package "main-service" {
+  package "auth" {
+    interface "AuthApiDocs" as C_main_service_com_ssafy_home_auth_controller_AuthApiDocs <<auth.controller>>
+    class "AuthController" as C_main_service_com_ssafy_home_auth_controller_AuthController <<auth.controller>>
+    class "AuthCookie" as C_main_service_com_ssafy_home_auth_controller_AuthCookie <<auth.controller>>
+    class "AuthLoginRequest <<record>>" as C_main_service_com_ssafy_home_auth_dto_AuthLoginRequest <<auth.dto>>
+    class "AuthMeResponse <<record>>" as C_main_service_com_ssafy_home_auth_dto_AuthMeResponse <<auth.dto>>
+    class "LoginResponse <<record>>" as C_main_service_com_ssafy_home_auth_dto_LoginResponse <<auth.dto>>
+    class "AuthService" as C_main_service_com_ssafy_home_auth_service_AuthService <<auth.service>>
+  }
+  package "board" {
+    class "BoardController" as C_main_service_com_ssafy_home_board_controller_BoardController <<board.controller>>
+    class "BoardCreateRequest <<record>>" as C_main_service_com_ssafy_home_board_dto_BoardCreateRequest <<board.dto>>
+    class "BoardDetailResponse <<record>>" as C_main_service_com_ssafy_home_board_dto_BoardDetailResponse <<board.dto>>
+    class "BoardIdResponse <<record>>" as C_main_service_com_ssafy_home_board_dto_BoardIdResponse <<board.dto>>
+    class "BoardListItemResponse <<record>>" as C_main_service_com_ssafy_home_board_dto_BoardListItemResponse <<board.dto>>
+    class "BoardUpdateRequest <<record>>" as C_main_service_com_ssafy_home_board_dto_BoardUpdateRequest <<board.dto>>
+    interface "BoardMapper" as C_main_service_com_ssafy_home_board_mapper_BoardMapper <<board.mapper>>
+    class "BoardCreateParam" as C_main_service_com_ssafy_home_board_mapper_dto_BoardCreateParam <<board.mapper.dto>>
+    class "BoardResult" as C_main_service_com_ssafy_home_board_mapper_dto_BoardResult <<board.mapper.dto>>
+    class "BoardUpdateParam" as C_main_service_com_ssafy_home_board_mapper_dto_BoardUpdateParam <<board.mapper.dto>>
+    class "BoardService" as C_main_service_com_ssafy_home_board_service_BoardService <<board.service>>
+  }
+  package "cctv" {
+    interface "CctvApiDocs" as C_main_service_com_ssafy_home_cctv_controller_CctvApiDocs <<cctv.controller>>
+    class "CctvController" as C_main_service_com_ssafy_home_cctv_controller_CctvController <<cctv.controller>>
+    class "CctvResponse <<record>>" as C_main_service_com_ssafy_home_cctv_dto_CctvResponse <<cctv.dto>>
+    interface "CctvMapper" as C_main_service_com_ssafy_home_cctv_mapper_CctvMapper <<cctv.mapper>>
+    class "CctvResult" as C_main_service_com_ssafy_home_cctv_mapper_dto_CctvResult <<cctv.mapper.dto>>
+    class "CctvService" as C_main_service_com_ssafy_home_cctv_service_CctvService <<cctv.service>>
+  }
+  package "com" {
+    class "SsafyHomeApplication" as C_main_service_com_ssafy_home_SsafyHomeApplication <<com.ssafy.home>>
+  }
+  package "commercial" {
+    interface "CommercialApiDocs" as C_main_service_com_ssafy_home_commercial_controller_CommercialApiDocs <<commercial.controller>>
+    class "CommercialController" as C_main_service_com_ssafy_home_commercial_controller_CommercialController <<commercial.controller>>
+    class "CommercialResponse <<record>>" as C_main_service_com_ssafy_home_commercial_dto_CommercialResponse <<commercial.dto>>
+    interface "CommercialMapper" as C_main_service_com_ssafy_home_commercial_mapper_CommercialMapper <<commercial.mapper>>
+    class "CommercialResult" as C_main_service_com_ssafy_home_commercial_mapper_dto_CommercialResult <<commercial.mapper.dto>>
+    class "CommercialService" as C_main_service_com_ssafy_home_commercial_service_CommercialService <<commercial.service>>
+  }
+  package "demographics" {
+    interface "DemographicsApiDocs" as C_main_service_com_ssafy_home_demographics_controller_DemographicsApiDocs <<demographics.controller>>
+    class "DemographicsController" as C_main_service_com_ssafy_home_demographics_controller_DemographicsController <<demographics.controller>>
+    class "DemographicsResponse <<record>>" as C_main_service_com_ssafy_home_demographics_dto_DemographicsResponse <<demographics.dto>>
+    interface "DemographicsMapper" as C_main_service_com_ssafy_home_demographics_mapper_DemographicsMapper <<demographics.mapper>>
+    class "DemographicsResult" as C_main_service_com_ssafy_home_demographics_mapper_dto_DemographicsResult <<demographics.mapper.dto>>
+    class "DemographicsService" as C_main_service_com_ssafy_home_demographics_service_DemographicsService <<demographics.service>>
+  }
+  package "environment" {
+    interface "EnvironmentApiDocs" as C_main_service_com_ssafy_home_environment_controller_EnvironmentApiDocs <<environment.controller>>
+    class "EnvironmentController" as C_main_service_com_ssafy_home_environment_controller_EnvironmentController <<environment.controller>>
+    class "EnvironmentResponse <<record>>" as C_main_service_com_ssafy_home_environment_dto_EnvironmentResponse <<environment.dto>>
+    interface "EnvironmentMapper" as C_main_service_com_ssafy_home_environment_mapper_EnvironmentMapper <<environment.mapper>>
+    class "EnvironmentResult" as C_main_service_com_ssafy_home_environment_mapper_dto_EnvironmentResult <<environment.mapper.dto>>
+    class "EnvironmentService" as C_main_service_com_ssafy_home_environment_service_EnvironmentService <<environment.service>>
+  }
+  package "favorite" {
+    interface "FavoriteApiDocs" as C_main_service_com_ssafy_home_favorite_controller_FavoriteApiDocs <<favorite.controller>>
+    class "FavoriteController" as C_main_service_com_ssafy_home_favorite_controller_FavoriteController <<favorite.controller>>
+    class "FavoriteCreateRequest <<record>>" as C_main_service_com_ssafy_home_favorite_dto_FavoriteCreateRequest <<favorite.dto>>
+    class "FavoriteCreateResponse <<record>>" as C_main_service_com_ssafy_home_favorite_dto_FavoriteCreateResponse <<favorite.dto>>
+    class "FavoriteResponse <<record>>" as C_main_service_com_ssafy_home_favorite_dto_FavoriteResponse <<favorite.dto>>
+    interface "FavoriteMapper" as C_main_service_com_ssafy_home_favorite_mapper_FavoriteMapper <<favorite.mapper>>
+    class "FavoriteCreateParam" as C_main_service_com_ssafy_home_favorite_mapper_dto_FavoriteCreateParam <<favorite.mapper.dto>>
+    class "FavoriteDetailResult" as C_main_service_com_ssafy_home_favorite_mapper_dto_FavoriteDetailResult <<favorite.mapper.dto>>
+    class "FavoriteService" as C_main_service_com_ssafy_home_favorite_service_FavoriteService <<favorite.service>>
+  }
+  package "global" {
+    class "AuthConst" as C_main_service_com_ssafy_home_global_auth_AuthConst <<global.auth>>
+    class "JwtProperties <<record>>" as C_main_service_com_ssafy_home_global_auth_JwtProperties <<global.auth>>
+    class "JwtTokenProvider" as C_main_service_com_ssafy_home_global_auth_JwtTokenProvider <<global.auth>>
+    annotation "LoginMemberId" as C_main_service_com_ssafy_home_global_auth_LoginMemberId <<global.auth>>
+    class "LoginMemberIdArgumentResolver" as C_main_service_com_ssafy_home_global_auth_LoginMemberIdArgumentResolver <<global.auth>>
+    class "SessionConst" as C_main_service_com_ssafy_home_global_auth_SessionConst <<global.auth>>
+    class "SessionManager" as C_main_service_com_ssafy_home_global_auth_SessionManager <<global.auth>>
+    class "OpenApiConfig" as C_main_service_com_ssafy_home_global_config_OpenApiConfig <<global.config>>
+    class "PasswordConfig" as C_main_service_com_ssafy_home_global_config_PasswordConfig <<global.config>>
+    class "SecurityConfig" as C_main_service_com_ssafy_home_global_config_SecurityConfig <<global.config>>
+    class "TimeConfig" as C_main_service_com_ssafy_home_global_config_TimeConfig <<global.config>>
+    class "WebMvcConfig" as C_main_service_com_ssafy_home_global_config_WebMvcConfig <<global.config>>
+    class "InitialDataLoader" as C_main_service_com_ssafy_home_global_config_database_InitialDataLoader <<global.config.database>>
+    class "QueryLogInterceptor" as C_main_service_com_ssafy_home_global_config_mybatis_QueryLogInterceptor <<global.config.mybatis>>
+    class "CustomException" as C_main_service_com_ssafy_home_global_exception_CustomException <<global.exception>>
+    enum "ErrorCode" as C_main_service_com_ssafy_home_global_exception_ErrorCode <<global.exception>>
+    class "GlobalExceptionHandler" as C_main_service_com_ssafy_home_global_exception_GlobalExceptionHandler <<global.exception>>
+    class "AuthInterceptor" as C_main_service_com_ssafy_home_global_interceptor_AuthInterceptor <<global.interceptor>>
+    class "HttpLoggingInterceptor" as C_main_service_com_ssafy_home_global_interceptor_HttpLoggingInterceptor <<global.interceptor>>
+    annotation "LoginRequired" as C_main_service_com_ssafy_home_global_interceptor_LoginRequired <<global.interceptor>>
+    class "ErrorDetail" as C_main_service_com_ssafy_home_global_response_ErrorDetail <<global.response>>
+    class "FieldErrorDetail" as C_main_service_com_ssafy_home_global_response_FieldErrorDetail <<global.response>>
+    class "PageResponse <<record>>" as C_main_service_com_ssafy_home_global_response_PageResponse <<global.response>>
+  }
+  package "house" {
+    interface "HouseApiDocs" as C_main_service_com_ssafy_home_house_controller_HouseApiDocs <<house.controller>>
+    class "HouseController" as C_main_service_com_ssafy_home_house_controller_HouseController <<house.controller>>
+    class "HouseDetailResponse <<record>>" as C_main_service_com_ssafy_home_house_dto_HouseDetailResponse <<house.dto>>
+    class "HouseSummaryResponse <<record>>" as C_main_service_com_ssafy_home_house_dto_HouseSummaryResponse <<house.dto>>
+    interface "HouseMapper" as C_main_service_com_ssafy_home_house_mapper_HouseMapper <<house.mapper>>
+    class "HouseDealResult" as C_main_service_com_ssafy_home_house_mapper_dto_HouseDealResult <<house.mapper.dto>>
+    class "HouseDetailResult" as C_main_service_com_ssafy_home_house_mapper_dto_HouseDetailResult <<house.mapper.dto>>
+    class "HouseSearchParam" as C_main_service_com_ssafy_home_house_mapper_dto_HouseSearchParam <<house.mapper.dto>>
+    class "HouseSummaryResult" as C_main_service_com_ssafy_home_house_mapper_dto_HouseSummaryResult <<house.mapper.dto>>
+    class "HouseService" as C_main_service_com_ssafy_home_house_service_HouseService <<house.service>>
+  }
+  package "housinginfo" {
+    class "HousingInfoController" as C_main_service_com_ssafy_home_housinginfo_controller_HousingInfoController <<housinginfo.controller>>
+    class "HousingInfoResponse <<record>>" as C_main_service_com_ssafy_home_housinginfo_dto_HousingInfoResponse <<housinginfo.dto>>
+    interface "HousingInfoMapper" as C_main_service_com_ssafy_home_housinginfo_mapper_HousingInfoMapper <<housinginfo.mapper>>
+    class "HousingInfoResult" as C_main_service_com_ssafy_home_housinginfo_mapper_dto_HousingInfoResult <<housinginfo.mapper.dto>>
+    class "HousingInfoService" as C_main_service_com_ssafy_home_housinginfo_service_HousingInfoService <<housinginfo.service>>
+  }
+  package "member" {
+    interface "MemberApiDocs" as C_main_service_com_ssafy_home_member_controller_MemberApiDocs <<member.controller>>
+    class "MemberController" as C_main_service_com_ssafy_home_member_controller_MemberController <<member.controller>>
+    class "MemberCreateRequest <<record>>" as C_main_service_com_ssafy_home_member_dto_MemberCreateRequest <<member.dto>>
+    class "MemberDetailResponse <<record>>" as C_main_service_com_ssafy_home_member_dto_MemberDetailResponse <<member.dto>>
+    class "MemberPasswordResetRequest <<record>>" as C_main_service_com_ssafy_home_member_dto_MemberPasswordResetRequest <<member.dto>>
+    class "MemberUpdateRequest <<record>>" as C_main_service_com_ssafy_home_member_dto_MemberUpdateRequest <<member.dto>>
+    class "MemberUpdateResponse <<record>>" as C_main_service_com_ssafy_home_member_dto_MemberUpdateResponse <<member.dto>>
+    interface "MemberMapper" as C_main_service_com_ssafy_home_member_mapper_MemberMapper <<member.mapper>>
+    class "MemberCreateParam" as C_main_service_com_ssafy_home_member_mapper_dto_MemberCreateParam <<member.mapper.dto>>
+    class "MemberDetailResult" as C_main_service_com_ssafy_home_member_mapper_dto_MemberDetailResult <<member.mapper.dto>>
+    class "MemberUpdateParam" as C_main_service_com_ssafy_home_member_mapper_dto_MemberUpdateParam <<member.mapper.dto>>
+    class "MemberService" as C_main_service_com_ssafy_home_member_service_MemberService <<member.service>>
+    class "PhoneNumberNormalizer" as C_main_service_com_ssafy_home_member_service_PhoneNumberNormalizer <<member.service>>
+    class "TemporaryPasswordGenerator" as C_main_service_com_ssafy_home_member_service_TemporaryPasswordGenerator <<member.service>>
+    class "JavaMailPasswordResetMailSender" as C_main_service_com_ssafy_home_member_service_mail_JavaMailPasswordResetMailSender <<member.service.mail>>
+    interface "PasswordResetMailSender" as C_main_service_com_ssafy_home_member_service_mail_PasswordResetMailSender <<member.service.mail>>
+  }
+  package "news" {
+    class "NewsController" as C_main_service_com_ssafy_home_news_controller_NewsController <<news.controller>>
+    class "NewsResponse <<record>>" as C_main_service_com_ssafy_home_news_dto_NewsResponse <<news.dto>>
+    interface "NewsMapper" as C_main_service_com_ssafy_home_news_mapper_NewsMapper <<news.mapper>>
+    class "NewsResult" as C_main_service_com_ssafy_home_news_mapper_dto_NewsResult <<news.mapper.dto>>
+    class "NewsService" as C_main_service_com_ssafy_home_news_service_NewsService <<news.service>>
+  }
+  package "notice" {
+    interface "NoticeApiDocs" as C_main_service_com_ssafy_home_notice_controller_NoticeApiDocs <<notice.controller>>
+    class "NoticeController" as C_main_service_com_ssafy_home_notice_controller_NoticeController <<notice.controller>>
+    class "NoticeDetailResponse <<record>>" as C_main_service_com_ssafy_home_notice_dto_NoticeDetailResponse <<notice.dto>>
+    class "NoticeListItemResponse <<record>>" as C_main_service_com_ssafy_home_notice_dto_NoticeListItemResponse <<notice.dto>>
+    interface "NoticeMapper" as C_main_service_com_ssafy_home_notice_mapper_NoticeMapper <<notice.mapper>>
+    class "NoticeResult" as C_main_service_com_ssafy_home_notice_mapper_dto_NoticeResult <<notice.mapper.dto>>
+    class "NoticeService" as C_main_service_com_ssafy_home_notice_service_NoticeService <<notice.service>>
+  }
+  package "place" {
+    interface "PlaceApiDocs" as C_main_service_com_ssafy_home_place_controller_PlaceApiDocs <<place.controller>>
+    class "PlaceController" as C_main_service_com_ssafy_home_place_controller_PlaceController <<place.controller>>
+    class "PlaceCreateRequest <<record>>" as C_main_service_com_ssafy_home_place_dto_PlaceCreateRequest <<place.dto>>
+    class "PlaceResponse <<record>>" as C_main_service_com_ssafy_home_place_dto_PlaceResponse <<place.dto>>
+    enum "PlaceType" as C_main_service_com_ssafy_home_place_dto_PlaceType <<place.dto>>
+    class "PlaceUpdateRequest <<record>>" as C_main_service_com_ssafy_home_place_dto_PlaceUpdateRequest <<place.dto>>
+    interface "PlaceMapper" as C_main_service_com_ssafy_home_place_mapper_PlaceMapper <<place.mapper>>
+    class "PlaceCreateParam" as C_main_service_com_ssafy_home_place_mapper_dto_PlaceCreateParam <<place.mapper.dto>>
+    class "PlaceResult" as C_main_service_com_ssafy_home_place_mapper_dto_PlaceResult <<place.mapper.dto>>
+    class "PlaceUpdateParam" as C_main_service_com_ssafy_home_place_mapper_dto_PlaceUpdateParam <<place.mapper.dto>>
+    class "PlaceService" as C_main_service_com_ssafy_home_place_service_PlaceService <<place.service>>
+  }
+  package "qna" {
+    interface "QnaApiDocs" as C_main_service_com_ssafy_home_qna_controller_QnaApiDocs <<qna.controller>>
+    class "QnaController" as C_main_service_com_ssafy_home_qna_controller_QnaController <<qna.controller>>
+    class "QnaCreateRequest <<record>>" as C_main_service_com_ssafy_home_qna_dto_QnaCreateRequest <<qna.dto>>
+    class "QnaDetailResponse <<record>>" as C_main_service_com_ssafy_home_qna_dto_QnaDetailResponse <<qna.dto>>
+    class "QnaIdResponse <<record>>" as C_main_service_com_ssafy_home_qna_dto_QnaIdResponse <<qna.dto>>
+    class "QnaListItemResponse <<record>>" as C_main_service_com_ssafy_home_qna_dto_QnaListItemResponse <<qna.dto>>
+    enum "QnaStatus" as C_main_service_com_ssafy_home_qna_dto_QnaStatus <<qna.dto>>
+    class "QnaStatusResolver" as C_main_service_com_ssafy_home_qna_dto_QnaStatusResolver <<qna.dto>>
+    class "QnaUpdateRequest <<record>>" as C_main_service_com_ssafy_home_qna_dto_QnaUpdateRequest <<qna.dto>>
+    interface "QnaMapper" as C_main_service_com_ssafy_home_qna_mapper_QnaMapper <<qna.mapper>>
+    class "QnaCreateParam" as C_main_service_com_ssafy_home_qna_mapper_dto_QnaCreateParam <<qna.mapper.dto>>
+    class "QnaResult" as C_main_service_com_ssafy_home_qna_mapper_dto_QnaResult <<qna.mapper.dto>>
+    class "QnaUpdateParam" as C_main_service_com_ssafy_home_qna_mapper_dto_QnaUpdateParam <<qna.mapper.dto>>
+    class "QnaService" as C_main_service_com_ssafy_home_qna_service_QnaService <<qna.service>>
+  }
+  package "region" {
+    interface "RegionApiDocs" as C_main_service_com_ssafy_home_region_controller_RegionApiDocs <<region.controller>>
+    class "RegionController" as C_main_service_com_ssafy_home_region_controller_RegionController <<region.controller>>
+    class "RegionResponse <<record>>" as C_main_service_com_ssafy_home_region_dto_RegionResponse <<region.dto>>
+    interface "RegionMapper" as C_main_service_com_ssafy_home_region_mapper_RegionMapper <<region.mapper>>
+    class "RegionResult" as C_main_service_com_ssafy_home_region_mapper_dto_RegionResult <<region.mapper.dto>>
+    class "RegionService" as C_main_service_com_ssafy_home_region_service_RegionService <<region.service>>
+  }
+  package "report" {
+    class "BatchReportConfig" as C_main_service_com_ssafy_home_report_BatchReportConfig <<report>>
+    class "BatchReportProperties <<record>>" as C_main_service_com_ssafy_home_report_BatchReportProperties <<report>>
+    class "BatchReportController" as C_main_service_com_ssafy_home_report_controller_BatchReportController <<report.controller>>
+    class "BatchReportResponse <<record>>" as C_main_service_com_ssafy_home_report_dto_BatchReportResponse <<report.dto>>
+    interface "BatchReportMapper" as C_main_service_com_ssafy_home_report_mapper_BatchReportMapper <<report.mapper>>
+    class "BatchReportResult" as C_main_service_com_ssafy_home_report_mapper_dto_BatchReportResult <<report.mapper.dto>>
+    class "BatchReportQueryService" as C_main_service_com_ssafy_home_report_service_BatchReportQueryService <<report.service>>
+  }
+  package "route" {
+    class "AStarAlgorithm" as C_main_service_com_ssafy_home_route_algorithm_AStarAlgorithm <<route.algorithm>>
+    interface "AStarPathFinder" as C_main_service_com_ssafy_home_route_algorithm_AStarPathFinder <<route.algorithm>>
+    class "Haversine" as C_main_service_com_ssafy_home_route_algorithm_Haversine <<route.algorithm>>
+    interface "RouteApiDocs" as C_main_service_com_ssafy_home_route_controller_RouteApiDocs <<route.controller>>
+    class "RouteController" as C_main_service_com_ssafy_home_route_controller_RouteController <<route.controller>>
+    class "Edge" as C_main_service_com_ssafy_home_route_domain_Edge <<route.domain>>
+    class "FacilityGraph" as C_main_service_com_ssafy_home_route_domain_FacilityGraph <<route.domain>>
+    class "Node" as C_main_service_com_ssafy_home_route_domain_Node <<route.domain>>
+    class "RoutePathPoint <<record>>" as C_main_service_com_ssafy_home_route_dto_RoutePathPoint <<route.dto>>
+    class "RouteRequest <<record>>" as C_main_service_com_ssafy_home_route_dto_RouteRequest <<route.dto>>
+    class "RouteResponse <<record>>" as C_main_service_com_ssafy_home_route_dto_RouteResponse <<route.dto>>
+    interface "FacilityMapper" as C_main_service_com_ssafy_home_route_mapper_FacilityMapper <<route.mapper>>
+    interface "RouteMapper" as C_main_service_com_ssafy_home_route_mapper_RouteMapper <<route.mapper>>
+    class "FacilityResult" as C_main_service_com_ssafy_home_route_mapper_dto_FacilityResult <<route.mapper.dto>>
+    class "RoutePathParam" as C_main_service_com_ssafy_home_route_mapper_dto_RoutePathParam <<route.mapper.dto>>
+    class "RouteRequestParam" as C_main_service_com_ssafy_home_route_mapper_dto_RouteRequestParam <<route.mapper.dto>>
+    class "GraphCacheService" as C_main_service_com_ssafy_home_route_service_GraphCacheService <<route.service>>
+    class "RouteService" as C_main_service_com_ssafy_home_route_service_RouteService <<route.service>>
+  }
+  package "stats" {
+    interface "StatsApiDocs" as C_main_service_com_ssafy_home_stats_controller_StatsApiDocs <<stats.controller>>
+    class "StatsController" as C_main_service_com_ssafy_home_stats_controller_StatsController <<stats.controller>>
+    class "StatsResponse <<record>>" as C_main_service_com_ssafy_home_stats_dto_StatsResponse <<stats.dto>>
+    interface "StatsMapper" as C_main_service_com_ssafy_home_stats_mapper_StatsMapper <<stats.mapper>>
+    class "StatsResult" as C_main_service_com_ssafy_home_stats_mapper_dto_StatsResult <<stats.mapper.dto>>
+    class "StatsService" as C_main_service_com_ssafy_home_stats_service_StatsService <<stats.service>>
+  }
+}
+
+C_admin_service_com_ssafy_home_admin_controller_AdminBatchController ..> C_admin_service_com_ssafy_home_admin_service_BatchJobService
+C_admin_service_com_ssafy_home_admin_controller_AdminBatchController ..> C_admin_service_com_ssafy_home_batch_report_BatchReportFileService
+C_admin_service_com_ssafy_home_batch_domain_NormalizedCctv <|.. C_admin_service_com_ssafy_home_batch_processor_CctvProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedCctv <|.. C_admin_service_com_ssafy_home_batch_writer_CctvWriter
+C_admin_service_com_ssafy_home_batch_domain_NormalizedCommercialArea <|.. C_admin_service_com_ssafy_home_batch_processor_CommercialAreaProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedCommercialArea <|.. C_admin_service_com_ssafy_home_batch_writer_CommercialAreaWriter
+C_admin_service_com_ssafy_home_batch_domain_NormalizedEnvironment <|.. C_admin_service_com_ssafy_home_batch_processor_EnvironmentProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedEnvironment <|.. C_admin_service_com_ssafy_home_batch_writer_EnvironmentWriter
+C_admin_service_com_ssafy_home_batch_domain_NormalizedForeignResident <|.. C_admin_service_com_ssafy_home_batch_processor_ForeignResidentProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedForeignResident <|.. C_admin_service_com_ssafy_home_batch_writer_ForeignResidentWriter
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHouseDeal <|.. C_admin_service_com_ssafy_home_batch_listener_HouseDealSkipLogListener
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHouseDeal <|.. C_admin_service_com_ssafy_home_batch_processor_HouseDealProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHouseDeal <|.. C_admin_service_com_ssafy_home_batch_writer_HouseDealWriter
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingContent <|.. C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingInfo
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingContent <|.. C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingNews
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingContent <|.. C_admin_service_com_ssafy_home_batch_processor_HousingContentProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingContent <|.. C_admin_service_com_ssafy_home_batch_writer_HousingContentWriter
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingInfo ..> C_admin_service_com_ssafy_home_batch_domain_HousingInfoType
+C_admin_service_com_ssafy_home_batch_domain_NormalizedHousingNews ..> C_admin_service_com_ssafy_home_batch_domain_HousingNewsCategory
+C_admin_service_com_ssafy_home_batch_domain_NormalizedPopulation <|.. C_admin_service_com_ssafy_home_batch_processor_PopulationProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedPopulation <|.. C_admin_service_com_ssafy_home_batch_writer_PopulationWriter
+C_admin_service_com_ssafy_home_batch_domain_NormalizedRegionCode <|.. C_admin_service_com_ssafy_home_batch_processor_RegionCodeProcessor
+C_admin_service_com_ssafy_home_batch_domain_NormalizedRegionCode <|.. C_admin_service_com_ssafy_home_batch_writer_RegionCodeWriter
+C_admin_service_com_ssafy_home_batch_listener_BatchCollectionLogListener ..> C_admin_service_com_ssafy_home_batch_mapper_BatchCollectionLogMapper
+C_admin_service_com_ssafy_home_batch_processor_HouseDealProcessor ..> C_admin_service_com_ssafy_home_batch_domain_HouseType
+C_admin_service_com_ssafy_home_batch_processor_HouseDealProcessor ..> C_admin_service_com_ssafy_home_batch_mapper_HouseDealBatchMapper
+C_admin_service_com_ssafy_home_batch_reader_HousingContentReader ..> C_admin_service_com_ssafy_home_external_housing_HousingContentClient
+C_admin_service_com_ssafy_home_batch_reader_HousingContentReader ..> C_admin_service_com_ssafy_home_external_housing_HousingContentSourceProperties
+C_admin_service_com_ssafy_home_batch_reader_HousingContentReader ..> C_admin_service_com_ssafy_home_external_housing_HousingRawContent
+C_admin_service_com_ssafy_home_batch_reader_MolitHouseDealReader ..> C_admin_service_com_ssafy_home_external_molit_MolitHouseDealClient
+C_admin_service_com_ssafy_home_batch_reader_MolitHouseDealReader ..> C_admin_service_com_ssafy_home_external_molit_MolitRawHouseDeal
+C_admin_service_com_ssafy_home_batch_reader_SdscStoreReader ..> C_admin_service_com_ssafy_home_external_sdsc_SdscRawStore
+C_admin_service_com_ssafy_home_batch_reader_SdscStoreReader ..> C_admin_service_com_ssafy_home_external_sdsc_SdscStoreClient
+C_admin_service_com_ssafy_home_batch_reader_SeoulCctvReader ..> C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvClient
+C_admin_service_com_ssafy_home_batch_reader_SeoulCctvReader ..> C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulRawCctv
+C_admin_service_com_ssafy_home_batch_reader_SeoulEnvironmentReader ..> C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentClient
+C_admin_service_com_ssafy_home_batch_reader_SeoulEnvironmentReader ..> C_admin_service_com_ssafy_home_external_seoul_SeoulRawEnvironment
+C_admin_service_com_ssafy_home_batch_reader_SeoulForeignResidentReader ..> C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsClient
+C_admin_service_com_ssafy_home_batch_reader_SeoulForeignResidentReader ..> C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawForeignResident
+C_admin_service_com_ssafy_home_batch_reader_SeoulPopulationReader ..> C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsClient
+C_admin_service_com_ssafy_home_batch_reader_SeoulPopulationReader ..> C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawPopulation
+C_admin_service_com_ssafy_home_batch_reader_VworldRegionReader ..> C_admin_service_com_ssafy_home_external_vworld_VworldLegalRegionClient
+C_admin_service_com_ssafy_home_batch_reader_VworldRegionReader ..> C_admin_service_com_ssafy_home_external_vworld_VworldProperties
+C_admin_service_com_ssafy_home_batch_reader_VworldRegionReader ..> C_admin_service_com_ssafy_home_external_vworld_VworldRawRegion
+C_admin_service_com_ssafy_home_batch_report_AiServiceBatchAiClient ..> C_admin_service_com_ssafy_home_batch_report_BatchAiServiceProperties
+C_admin_service_com_ssafy_home_batch_report_BatchAiClient <|.. C_admin_service_com_ssafy_home_batch_report_AiServiceBatchAiClient
+C_admin_service_com_ssafy_home_batch_report_BatchReportFileService ..> C_admin_service_com_ssafy_home_batch_report_BatchReportMapper
+C_admin_service_com_ssafy_home_batch_report_BatchReportFileService ..> C_admin_service_com_ssafy_home_batch_report_BatchReportProperties
+C_admin_service_com_ssafy_home_batch_report_BatchReportScheduler ..> C_admin_service_com_ssafy_home_admin_service_BatchJobService
+C_admin_service_com_ssafy_home_batch_report_BatchReportScheduler ..> C_admin_service_com_ssafy_home_batch_report_BatchSchedulerProperties
+C_admin_service_com_ssafy_home_batch_report_BatchReportService ..> C_admin_service_com_ssafy_home_batch_report_BatchAiClient
+C_admin_service_com_ssafy_home_batch_report_BatchReportService ..> C_admin_service_com_ssafy_home_batch_report_BatchReportMapper
+C_admin_service_com_ssafy_home_batch_report_BatchReportService ..> C_admin_service_com_ssafy_home_batch_report_BatchReportProperties
+C_admin_service_com_ssafy_home_batch_report_BatchReportService ..> C_admin_service_com_ssafy_home_batch_report_PdfReportService
+C_admin_service_com_ssafy_home_batch_report_BatchReportTasklet ..> C_admin_service_com_ssafy_home_batch_report_BatchReportService
+C_admin_service_com_ssafy_home_batch_report_PdfReportService ..> C_admin_service_com_ssafy_home_batch_report_BatchReportProperties
+C_admin_service_com_ssafy_home_batch_writer_CctvWriter ..> C_admin_service_com_ssafy_home_batch_mapper_CctvBatchMapper
+C_admin_service_com_ssafy_home_batch_writer_CommercialAreaWriter ..> C_admin_service_com_ssafy_home_batch_mapper_CommercialAreaBatchMapper
+C_admin_service_com_ssafy_home_batch_writer_EnvironmentWriter ..> C_admin_service_com_ssafy_home_batch_mapper_EnvironmentBatchMapper
+C_admin_service_com_ssafy_home_batch_writer_ForeignResidentWriter ..> C_admin_service_com_ssafy_home_batch_mapper_DemographicsBatchMapper
+C_admin_service_com_ssafy_home_batch_writer_HouseDealWriter ..> C_admin_service_com_ssafy_home_batch_mapper_HouseDealBatchMapper
+C_admin_service_com_ssafy_home_batch_writer_HousingContentWriter ..> C_admin_service_com_ssafy_home_batch_mapper_HousingNewsBatchMapper
+C_admin_service_com_ssafy_home_batch_writer_PopulationWriter ..> C_admin_service_com_ssafy_home_batch_mapper_DemographicsBatchMapper
+C_admin_service_com_ssafy_home_batch_writer_RegionCodeWriter ..> C_admin_service_com_ssafy_home_batch_mapper_RegionBatchMapper
+C_admin_service_com_ssafy_home_external_housing_HousingContentClient <|.. C_admin_service_com_ssafy_home_external_housing_OfficialHousingContentClient
+C_admin_service_com_ssafy_home_external_housing_HousingRawContent <|.. C_admin_service_com_ssafy_home_batch_processor_HousingContentProcessor
+C_admin_service_com_ssafy_home_external_housing_HousingRawContent <|.. C_admin_service_com_ssafy_home_batch_reader_HousingContentReader
+C_admin_service_com_ssafy_home_external_housing_OfficialHousingContentClient ..> C_admin_service_com_ssafy_home_external_housing_HousingContentSourceProperties
+C_admin_service_com_ssafy_home_external_molit_AbstractMolitHouseDealClient ..> C_admin_service_com_ssafy_home_batch_domain_HouseType
+C_admin_service_com_ssafy_home_external_molit_AbstractMolitHouseDealClient <|-- C_admin_service_com_ssafy_home_external_molit_ApartmentSaleClient
+C_admin_service_com_ssafy_home_external_molit_AbstractMolitHouseDealClient ..> C_admin_service_com_ssafy_home_external_molit_MolitProperties
+C_admin_service_com_ssafy_home_external_molit_AbstractMolitHouseDealClient <|-- C_admin_service_com_ssafy_home_external_molit_MultiFamilySaleClient
+C_admin_service_com_ssafy_home_external_molit_ApartmentSaleClient ..> C_admin_service_com_ssafy_home_external_molit_MolitProperties
+C_admin_service_com_ssafy_home_external_molit_MolitHouseDealClient <|.. C_admin_service_com_ssafy_home_external_molit_AbstractMolitHouseDealClient
+C_admin_service_com_ssafy_home_external_molit_MolitHouseDealPage ..> C_admin_service_com_ssafy_home_external_molit_MolitRawHouseDeal
+C_admin_service_com_ssafy_home_external_molit_MolitRawHouseDeal <|.. C_admin_service_com_ssafy_home_batch_listener_HouseDealSkipLogListener
+C_admin_service_com_ssafy_home_external_molit_MolitRawHouseDeal <|.. C_admin_service_com_ssafy_home_batch_processor_HouseDealProcessor
+C_admin_service_com_ssafy_home_external_molit_MolitRawHouseDeal <|.. C_admin_service_com_ssafy_home_batch_reader_MolitHouseDealReader
+C_admin_service_com_ssafy_home_external_molit_MultiFamilySaleClient ..> C_admin_service_com_ssafy_home_external_molit_MolitProperties
+C_admin_service_com_ssafy_home_external_sdsc_SdscRawStore <|.. C_admin_service_com_ssafy_home_batch_processor_CommercialAreaProcessor
+C_admin_service_com_ssafy_home_external_sdsc_SdscRawStore <|.. C_admin_service_com_ssafy_home_batch_reader_SdscStoreReader
+C_admin_service_com_ssafy_home_external_sdsc_SdscStoreClient ..> C_admin_service_com_ssafy_home_external_sdsc_SdscProperties
+C_admin_service_com_ssafy_home_external_sdsc_SdscStorePage ..> C_admin_service_com_ssafy_home_external_sdsc_SdscRawStore
+C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentClient ..> C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentProperties
+C_admin_service_com_ssafy_home_external_seoul_SeoulEnvironmentPage ..> C_admin_service_com_ssafy_home_external_seoul_SeoulRawEnvironment
+C_admin_service_com_ssafy_home_external_seoul_SeoulRawEnvironment <|.. C_admin_service_com_ssafy_home_batch_processor_EnvironmentProcessor
+C_admin_service_com_ssafy_home_external_seoul_SeoulRawEnvironment <|.. C_admin_service_com_ssafy_home_batch_reader_SeoulEnvironmentReader
+C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvClient ..> C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvProperties
+C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulCctvPage ..> C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulRawCctv
+C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulRawCctv <|.. C_admin_service_com_ssafy_home_batch_processor_CctvProcessor
+C_admin_service_com_ssafy_home_external_seoul_cctv_SeoulRawCctv <|.. C_admin_service_com_ssafy_home_batch_reader_SeoulCctvReader
+C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsClient ..> C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulDemographicsProperties
+C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawForeignResident <|.. C_admin_service_com_ssafy_home_batch_processor_ForeignResidentProcessor
+C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawForeignResident <|.. C_admin_service_com_ssafy_home_batch_reader_SeoulForeignResidentReader
+C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawPopulation <|.. C_admin_service_com_ssafy_home_batch_processor_PopulationProcessor
+C_admin_service_com_ssafy_home_external_seoul_demographics_SeoulRawPopulation <|.. C_admin_service_com_ssafy_home_batch_reader_SeoulPopulationReader
+C_admin_service_com_ssafy_home_external_vworld_VworldLegalRegionClient ..> C_admin_service_com_ssafy_home_external_vworld_VworldProperties
+C_admin_service_com_ssafy_home_external_vworld_VworldRawRegion <|.. C_admin_service_com_ssafy_home_batch_processor_RegionCodeProcessor
+C_admin_service_com_ssafy_home_external_vworld_VworldRawRegion <|.. C_admin_service_com_ssafy_home_batch_reader_VworldRegionReader
+C_admin_service_com_ssafy_home_external_vworld_VworldRegionPage ..> C_admin_service_com_ssafy_home_external_vworld_VworldRawRegion
+C_admin_service_com_ssafy_home_global_auth_JwtTokenProvider ..> C_admin_service_com_ssafy_home_global_auth_JwtProperties
+C_admin_service_com_ssafy_home_global_config_WebMvcConfig ..> C_admin_service_com_ssafy_home_global_auth_LoginMemberIdArgumentResolver
+C_admin_service_com_ssafy_home_global_config_WebMvcConfig ..> C_admin_service_com_ssafy_home_global_interceptor_AuthInterceptor
+C_admin_service_com_ssafy_home_global_config_WebMvcConfig ..> C_admin_service_com_ssafy_home_global_interceptor_CookieCsrfInterceptor
+C_admin_service_com_ssafy_home_global_config_WebMvcConfig ..> C_admin_service_com_ssafy_home_global_interceptor_HttpLoggingInterceptor
+C_admin_service_com_ssafy_home_global_exception_CustomException ..> C_admin_service_com_ssafy_home_global_exception_ErrorCode
+C_admin_service_com_ssafy_home_global_interceptor_AuthInterceptor ..> C_admin_service_com_ssafy_home_global_auth_JwtTokenProvider
+C_admin_service_com_ssafy_home_global_interceptor_CookieCsrfInterceptor ..> C_admin_service_com_ssafy_home_global_config_AdminCsrfProperties
+C_admin_service_com_ssafy_home_global_response_ErrorDetail ..> C_admin_service_com_ssafy_home_global_response_FieldErrorDetail
+C_admin_service_com_ssafy_home_notice_controller_AdminNoticeController ..> C_admin_service_com_ssafy_home_notice_service_NoticeService
+C_admin_service_com_ssafy_home_notice_service_NoticeService ..> C_admin_service_com_ssafy_home_notice_mapper_NoticeMapper
+C_admin_service_com_ssafy_home_qna_controller_AdminQnaController ..> C_admin_service_com_ssafy_home_qna_service_QnaService
+C_admin_service_com_ssafy_home_qna_service_QnaService ..> C_admin_service_com_ssafy_home_qna_mapper_QnaMapper
+C_ai_service_com_ssafy_home_batchreport_controller_BatchReportSummaryController ..> C_ai_service_com_ssafy_home_batchreport_service_BatchReportSummaryService
+C_ai_service_com_ssafy_home_batchreport_service_BatchReportSummaryService ..> C_ai_service_com_ssafy_home_batchreport_prompt_BatchReportSummaryPromptProvider
+C_ai_service_com_ssafy_home_chatbot_controller_ChatbotApiDocs <|.. C_ai_service_com_ssafy_home_chatbot_controller_ChatbotController
+C_ai_service_com_ssafy_home_chatbot_controller_ChatbotController ..> C_ai_service_com_ssafy_home_chatbot_service_ChatbotService
+C_ai_service_com_ssafy_home_chatbot_controller_ChatbotController ..> C_ai_service_com_ssafy_home_chatbot_service_DocumentService
+C_ai_service_com_ssafy_home_chatbot_service_ChatbotService ..> C_ai_service_com_ssafy_home_chatbot_prompt_ChatbotPromptProvider
+C_ai_service_com_ssafy_home_global_auth_JwtTokenProvider ..> C_ai_service_com_ssafy_home_global_auth_JwtProperties
+C_ai_service_com_ssafy_home_global_config_WebMvcConfig ..> C_ai_service_com_ssafy_home_global_interceptor_AuthInterceptor
+C_ai_service_com_ssafy_home_global_interceptor_AuthInterceptor ..> C_ai_service_com_ssafy_home_global_auth_JwtTokenProvider
+C_ai_service_com_ssafy_home_toolcalling_controller_ToolCallingController ..> C_ai_service_com_ssafy_home_toolcalling_service_ToolCallingService
+C_ai_service_com_ssafy_home_toolcalling_planner_ToolCallPlan ..> C_ai_service_com_ssafy_home_toolcalling_planner_ToolCallStep
+C_ai_service_com_ssafy_home_toolcalling_service_ToolCallingService ..> C_ai_service_com_ssafy_home_toolcalling_planner_ToolCallPlanner
+C_ai_service_com_ssafy_home_toolcalling_service_ToolCallingService ..> C_ai_service_com_ssafy_home_toolcalling_prompt_ToolCallingPromptProvider
+C_ai_service_com_ssafy_home_toolcalling_service_ToolCallingService ..> C_ai_service_com_ssafy_home_toolcalling_tool_HouseSearchTool
+C_ai_service_com_ssafy_home_toolcalling_service_ToolCallingService ..> C_ai_service_com_ssafy_home_toolcalling_tool_StatsTool
+C_ai_service_com_ssafy_home_toolcalling_support_RealEstateToolDataProvider <|.. C_ai_service_com_ssafy_home_toolcalling_support_FakeRealEstateToolDataProvider
+C_ai_service_com_ssafy_home_toolcalling_tool_HouseSearchTool ..> C_ai_service_com_ssafy_home_toolcalling_support_RealEstateToolDataProvider
+C_ai_service_com_ssafy_home_toolcalling_tool_StatsTool ..> C_ai_service_com_ssafy_home_toolcalling_support_RealEstateToolDataProvider
+C_gateway_com_ssafy_home_gateway_auth_JwtTokenValidator ..> C_gateway_com_ssafy_home_gateway_auth_JwtProperties
+C_gateway_com_ssafy_home_gateway_filter_JwtAuthenticationGlobalFilter ..> C_gateway_com_ssafy_home_gateway_auth_JwtTokenValidator
+C_main_service_com_ssafy_home_auth_controller_AuthApiDocs <|.. C_main_service_com_ssafy_home_auth_controller_AuthController
+C_main_service_com_ssafy_home_auth_controller_AuthController ..> C_main_service_com_ssafy_home_auth_service_AuthService
+C_main_service_com_ssafy_home_auth_controller_AuthController ..> C_main_service_com_ssafy_home_global_auth_JwtProperties
+C_main_service_com_ssafy_home_auth_service_AuthService ..> C_main_service_com_ssafy_home_global_auth_JwtTokenProvider
+C_main_service_com_ssafy_home_auth_service_AuthService ..> C_main_service_com_ssafy_home_member_mapper_MemberMapper
+C_main_service_com_ssafy_home_board_controller_BoardController ..> C_main_service_com_ssafy_home_board_service_BoardService
+C_main_service_com_ssafy_home_board_service_BoardService ..> C_main_service_com_ssafy_home_board_mapper_BoardMapper
+C_main_service_com_ssafy_home_board_service_BoardService ..> C_main_service_com_ssafy_home_member_mapper_MemberMapper
+C_main_service_com_ssafy_home_cctv_controller_CctvApiDocs <|.. C_main_service_com_ssafy_home_cctv_controller_CctvController
+C_main_service_com_ssafy_home_cctv_controller_CctvController ..> C_main_service_com_ssafy_home_cctv_service_CctvService
+C_main_service_com_ssafy_home_cctv_service_CctvService ..> C_main_service_com_ssafy_home_cctv_mapper_CctvMapper
+C_main_service_com_ssafy_home_commercial_controller_CommercialApiDocs <|.. C_main_service_com_ssafy_home_commercial_controller_CommercialController
+C_main_service_com_ssafy_home_commercial_controller_CommercialController ..> C_main_service_com_ssafy_home_commercial_service_CommercialService
+C_main_service_com_ssafy_home_commercial_service_CommercialService ..> C_main_service_com_ssafy_home_commercial_mapper_CommercialMapper
+C_main_service_com_ssafy_home_demographics_controller_DemographicsApiDocs <|.. C_main_service_com_ssafy_home_demographics_controller_DemographicsController
+C_main_service_com_ssafy_home_demographics_controller_DemographicsController ..> C_main_service_com_ssafy_home_demographics_service_DemographicsService
+C_main_service_com_ssafy_home_demographics_service_DemographicsService ..> C_main_service_com_ssafy_home_demographics_mapper_DemographicsMapper
+C_main_service_com_ssafy_home_environment_controller_EnvironmentApiDocs <|.. C_main_service_com_ssafy_home_environment_controller_EnvironmentController
+C_main_service_com_ssafy_home_environment_controller_EnvironmentController ..> C_main_service_com_ssafy_home_environment_service_EnvironmentService
+C_main_service_com_ssafy_home_environment_service_EnvironmentService ..> C_main_service_com_ssafy_home_environment_mapper_EnvironmentMapper
+C_main_service_com_ssafy_home_favorite_controller_FavoriteApiDocs <|.. C_main_service_com_ssafy_home_favorite_controller_FavoriteController
+C_main_service_com_ssafy_home_favorite_controller_FavoriteController ..> C_main_service_com_ssafy_home_favorite_service_FavoriteService
+C_main_service_com_ssafy_home_favorite_service_FavoriteService ..> C_main_service_com_ssafy_home_favorite_mapper_FavoriteMapper
+C_main_service_com_ssafy_home_global_auth_JwtTokenProvider ..> C_main_service_com_ssafy_home_global_auth_JwtProperties
+C_main_service_com_ssafy_home_global_config_WebMvcConfig ..> C_main_service_com_ssafy_home_global_auth_LoginMemberIdArgumentResolver
+C_main_service_com_ssafy_home_global_config_WebMvcConfig ..> C_main_service_com_ssafy_home_global_interceptor_AuthInterceptor
+C_main_service_com_ssafy_home_global_config_WebMvcConfig ..> C_main_service_com_ssafy_home_global_interceptor_HttpLoggingInterceptor
+C_main_service_com_ssafy_home_global_exception_CustomException ..> C_main_service_com_ssafy_home_global_exception_ErrorCode
+C_main_service_com_ssafy_home_global_interceptor_AuthInterceptor ..> C_main_service_com_ssafy_home_global_auth_JwtTokenProvider
+C_main_service_com_ssafy_home_global_response_ErrorDetail ..> C_main_service_com_ssafy_home_global_response_FieldErrorDetail
+C_main_service_com_ssafy_home_house_controller_HouseApiDocs <|.. C_main_service_com_ssafy_home_house_controller_HouseController
+C_main_service_com_ssafy_home_house_controller_HouseController ..> C_main_service_com_ssafy_home_house_service_HouseService
+C_main_service_com_ssafy_home_house_service_HouseService ..> C_main_service_com_ssafy_home_house_mapper_HouseMapper
+C_main_service_com_ssafy_home_housinginfo_controller_HousingInfoController ..> C_main_service_com_ssafy_home_housinginfo_service_HousingInfoService
+C_main_service_com_ssafy_home_housinginfo_service_HousingInfoService ..> C_main_service_com_ssafy_home_housinginfo_mapper_HousingInfoMapper
+C_main_service_com_ssafy_home_member_controller_MemberApiDocs <|.. C_main_service_com_ssafy_home_member_controller_MemberController
+C_main_service_com_ssafy_home_member_controller_MemberController ..> C_main_service_com_ssafy_home_member_service_MemberService
+C_main_service_com_ssafy_home_member_service_MemberService ..> C_main_service_com_ssafy_home_member_mapper_MemberMapper
+C_main_service_com_ssafy_home_member_service_MemberService ..> C_main_service_com_ssafy_home_member_service_TemporaryPasswordGenerator
+C_main_service_com_ssafy_home_member_service_MemberService ..> C_main_service_com_ssafy_home_member_service_mail_PasswordResetMailSender
+C_main_service_com_ssafy_home_member_service_mail_PasswordResetMailSender <|.. C_main_service_com_ssafy_home_member_service_mail_JavaMailPasswordResetMailSender
+C_main_service_com_ssafy_home_news_controller_NewsController ..> C_main_service_com_ssafy_home_news_service_NewsService
+C_main_service_com_ssafy_home_news_service_NewsService ..> C_main_service_com_ssafy_home_news_mapper_NewsMapper
+C_main_service_com_ssafy_home_notice_controller_NoticeApiDocs <|.. C_main_service_com_ssafy_home_notice_controller_NoticeController
+C_main_service_com_ssafy_home_notice_controller_NoticeController ..> C_main_service_com_ssafy_home_notice_service_NoticeService
+C_main_service_com_ssafy_home_notice_service_NoticeService ..> C_main_service_com_ssafy_home_notice_mapper_NoticeMapper
+C_main_service_com_ssafy_home_place_controller_PlaceApiDocs <|.. C_main_service_com_ssafy_home_place_controller_PlaceController
+C_main_service_com_ssafy_home_place_controller_PlaceController ..> C_main_service_com_ssafy_home_place_service_PlaceService
+C_main_service_com_ssafy_home_place_service_PlaceService ..> C_main_service_com_ssafy_home_place_mapper_PlaceMapper
+C_main_service_com_ssafy_home_qna_controller_QnaApiDocs <|.. C_main_service_com_ssafy_home_qna_controller_QnaController
+C_main_service_com_ssafy_home_qna_controller_QnaController ..> C_main_service_com_ssafy_home_qna_service_QnaService
+C_main_service_com_ssafy_home_qna_service_QnaService ..> C_main_service_com_ssafy_home_qna_mapper_QnaMapper
+C_main_service_com_ssafy_home_region_controller_RegionApiDocs <|.. C_main_service_com_ssafy_home_region_controller_RegionController
+C_main_service_com_ssafy_home_region_controller_RegionController ..> C_main_service_com_ssafy_home_region_service_RegionService
+C_main_service_com_ssafy_home_region_service_RegionService ..> C_main_service_com_ssafy_home_region_mapper_RegionMapper
+C_main_service_com_ssafy_home_report_controller_BatchReportController ..> C_main_service_com_ssafy_home_report_service_BatchReportQueryService
+C_main_service_com_ssafy_home_report_service_BatchReportQueryService ..> C_main_service_com_ssafy_home_report_BatchReportProperties
+C_main_service_com_ssafy_home_report_service_BatchReportQueryService ..> C_main_service_com_ssafy_home_report_mapper_BatchReportMapper
+C_main_service_com_ssafy_home_route_algorithm_AStarPathFinder <|.. C_main_service_com_ssafy_home_route_algorithm_AStarAlgorithm
+C_main_service_com_ssafy_home_route_controller_RouteApiDocs <|.. C_main_service_com_ssafy_home_route_controller_RouteController
+C_main_service_com_ssafy_home_route_controller_RouteController ..> C_main_service_com_ssafy_home_route_service_RouteService
+C_main_service_com_ssafy_home_route_domain_FacilityGraph ..> C_main_service_com_ssafy_home_route_domain_Edge
+C_main_service_com_ssafy_home_route_domain_FacilityGraph ..> C_main_service_com_ssafy_home_route_domain_Node
+C_main_service_com_ssafy_home_route_service_GraphCacheService ..> C_main_service_com_ssafy_home_route_domain_FacilityGraph
+C_main_service_com_ssafy_home_route_service_GraphCacheService ..> C_main_service_com_ssafy_home_route_mapper_FacilityMapper
+C_main_service_com_ssafy_home_route_service_RouteService ..> C_main_service_com_ssafy_home_house_mapper_HouseMapper
+C_main_service_com_ssafy_home_route_service_RouteService ..> C_main_service_com_ssafy_home_place_mapper_PlaceMapper
+C_main_service_com_ssafy_home_route_service_RouteService ..> C_main_service_com_ssafy_home_route_algorithm_AStarPathFinder
+C_main_service_com_ssafy_home_route_service_RouteService ..> C_main_service_com_ssafy_home_route_mapper_RouteMapper
+C_main_service_com_ssafy_home_route_service_RouteService ..> C_main_service_com_ssafy_home_route_service_GraphCacheService
+C_main_service_com_ssafy_home_stats_controller_StatsApiDocs <|.. C_main_service_com_ssafy_home_stats_controller_StatsController
+C_main_service_com_ssafy_home_stats_controller_StatsController ..> C_main_service_com_ssafy_home_stats_service_StatsService
+C_main_service_com_ssafy_home_stats_service_StatsService ..> C_main_service_com_ssafy_home_stats_mapper_StatsMapper
+@enduml

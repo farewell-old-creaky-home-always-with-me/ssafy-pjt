@@ -16,6 +16,13 @@ services:
       ai-service:
         condition: service_healthy
 
+  reports-init:
+    image: busybox
+    container_name: ssafy-home-reports-init
+    command: ["sh", "-c", "mkdir -p /batch-reports/batch && chmod 777 /batch-reports /batch-reports/batch"]
+    volumes:
+      - reports_data:/batch-reports
+
   admin-service:
     build:
       context: .
@@ -24,6 +31,11 @@ services:
     ports:
       - "8081:8081"
     command: ["--spring.profiles.active=local"]
+    environment:
+      - BATCH_REPORT_FONT_PATH=/usr/share/fonts/truetype/nanum/NanumGothic.ttf
+      - BATCH_REPORT_OUTPUT_DIR=/batch-reports/batch
+    volumes:
+      - reports_data:/batch-reports
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8081/actuator/health"]
@@ -34,6 +46,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      reports-init:
+        condition: service_completed_successfully
 
   main-service:
     build:
@@ -43,6 +57,10 @@ services:
     ports:
       - "8082:8082"
     command: ["--spring.profiles.active=local"]
+    environment:
+      - BATCH_REPORT_OUTPUT_DIR=/batch-reports/batch
+    volumes:
+      - reports_data:/batch-reports
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO/dev/null http://localhost:8082/actuator/health"]
@@ -187,3 +205,4 @@ volumes:
   loki_data:
   grafana_data:
   prometheus_data:
+  reports_data:

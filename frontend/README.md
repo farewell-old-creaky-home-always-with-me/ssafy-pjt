@@ -1,76 +1,75 @@
-# SSAFY HOME Frontend
+# 잘살아봐라마 Frontend
 
-공공 데이터 기반 주택 실거래 정보 웹 서비스 정적 프로토타입
-
----
+사용자용 Vue 웹 애플리케이션입니다. 주택 검색, 관심 기능, 생활 정보, 게시판/QnA, AI 채팅 화면을 제공합니다.
 
 ## 기술 스택
 
-| 항목 | 내용 |
-|------|------|
-| Language | HTML5, CSS3, JavaScript (ES6+) |
-| Map | Kakao Maps API |
-| Build Tool | 없음 (정적 파일) |
+- Vue 3
+- Vite
+- Pinia
+- Vue Router
+- Axios
+- Tailwind CSS
+- lucide-vue-next
 
----
+## 주요 화면
 
-## 사전 요구사항
+- 홈: `/`
+- 주택 검색: `/search`
+- 관심 목록: `/favorites`
+- 상권 정보: `/commercial`
+- 환경 정보: `/environment`
+- 공지사항: `/notices`
+- 게시판: `/boards`
+- QnA: `/qnas`
+- 배치 리포트: `/reports/batch`
+- AI 채팅: `/chat`
+- 로그인/회원가입/마이페이지
 
-- 웹 브라우저 (Chrome 권장)
-- 백엔드 서버 실행 중 (`http://localhost:8080`)
-- Kakao Maps API 키 (지도 기능 사용 시)
-
----
-
-## 환경 설정
-
-지도 기능을 사용하려면 Kakao Maps API 키를 각 HTML 파일의 SDK 스크립트 태그에 설정한다.
-
-```html
-<!-- search.html, commercial.html, environment.html -->
-<script src="//dapi.kakao.com/v2/maps/sdk.js?appkey={YOUR_KAKAO_APP_KEY}&libraries=services"></script>
-```
-
----
-
-## 실행 방법
+## 실행
 
 ```bash
-# 브라우저에서 직접 열기
-open index.html
-
-# 또는 로컬 HTTP 서버 실행 (지도 등 HTTP 컨텍스트가 필요한 경우)
-python3 -m http.server 5500
-# → http://localhost:5500
+npm install
+npm run dev
 ```
 
----
+기본 주소: `http://localhost:5173`
 
-## 페이지 구조
+Vite 개발 서버는 `/api` 요청을 `http://localhost:8080` Gateway로 프록시합니다.
 
+## 빌드
+
+```bash
+npm run build
+npm run preview
 ```
-frontend/
-├── index.html             # 메인 홈
-├── login.html             # 로그인
-├── signup.html            # 회원 가입
-├── password-recovery.html # 비밀번호 찾기
-├── search.html            # 주택 거래 검색·지도
-├── commercial.html        # 주변 상권 조회
-├── environment.html       # 주변 환경 조회
-├── favorites.html         # 관심 지역 관리
-├── notices.html           # 공지사항 목록
-├── profile.html           # 마이페이지
-├── css/
-│   ├── reset.css          # 브라우저 초기화
-│   ├── variables.css      # 디자인 토큰
-│   ├── base.css           # 공통 기본 스타일
-│   ├── layout.css         # 레이아웃
-│   ├── components.css     # 공통 컴포넌트
-│   └── pages/             # 페이지별 스타일
-└── js/
-    ├── shared.js          # 공통 유틸 (네비게이션, 인증 상태)
-    ├── user-store.js      # 사용자 세션 상태 관리
-    ├── favorites-store.js # 관심 지역 상태 관리
-    ├── search.js          # 주택 검색·지도 로직
-    └── commercial.js      # 상권 조회·지도 로직
+
+## 환경 변수
+
+Vite 환경 파일은 `secret/` 디렉터리에서 읽습니다.
+
+```text
+frontend/secret/.env
+```
+
+필요한 경우 다음 값을 설정합니다.
+
+```bash
+VITE_API_BASE_URL=
+```
+
+값을 비워 두면 개발 서버의 `/api` 프록시를 사용합니다.
+
+## 주요 구조
+
+```text
+src/
+├── api/         # API 클라이언트
+├── components/  # 공통 컴포넌트
+├── features/    # 도메인별 페이지/컴포넌트
+├── router/      # Vue Router 설정
+├── stores/      # Pinia 상태 관리
+├── utils/       # 유틸리티
+├── App.vue
+└── main.js
 ```

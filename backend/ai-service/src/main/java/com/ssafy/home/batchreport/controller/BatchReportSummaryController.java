@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@LoginRequired
 @RestController
 @RequestMapping("/api/ai/batch/reports")
 @RequiredArgsConstructor
@@ -19,7 +20,6 @@ public class BatchReportSummaryController {
 
     private final BatchReportSummaryService batchReportSummaryService;
 
-    @LoginRequired
     @PostMapping("/summary")
     public ResponseEntity<BatchReportSummaryResponse> summarize(
             @Valid @RequestBody BatchReportSummaryRequest request

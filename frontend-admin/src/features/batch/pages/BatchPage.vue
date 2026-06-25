@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { Shield, MapPin, Building2, Play, Loader2, AlertCircle, Search } from 'lucide-vue-next'
+import { Shield, MapPin, Building2, FileText, Play, Loader2, AlertCircle, Search } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/authStore.js'
 import { adminApi } from '@/api/index.js'
 import '@css/pages/batch.css'
@@ -16,6 +16,10 @@ const regionError = ref('')
 const houseLoading = ref(false)
 const houseResult = ref(null)
 const houseError = ref('')
+
+const reportLoading = ref(false)
+const reportResult = ref(null)
+const reportError = ref('')
 const collectAllRegions = ref(true)
 const regionKeyword = ref('')
 const regionResults = ref([])
@@ -117,6 +121,19 @@ async function handleCollectHouseDeals() {
   }
 }
 
+async function handleGenerateReport() {
+  reportLoading.value = true
+  reportResult.value = null
+  reportError.value = ''
+  try {
+    reportResult.value = await adminApi.generateBatchReport()
+  } catch (err) {
+    reportError.value = err.data?.message ?? err.message ?? '실행에 실패했습니다.'
+  } finally {
+    reportLoading.value = false
+  }
+}
+
 async function handleLogout() {
   try {
     await authStore.logout()
@@ -161,6 +178,30 @@ async function handleLogout() {
         </div>
         <div v-if="regionError" class="general-error" style="margin-top:0.75rem;margin-bottom:0">
           <AlertCircle :size="16" /><span>{{ regionError }}</span>
+        </div>
+      </section>
+
+      <section class="batch-section">
+        <h2 class="batch-section-title">
+          <FileText :size="16" /> AI 리포트 생성
+        </h2>
+        <p class="batch-section-desc">최신 주택 거래 데이터를 기반으로 AI 요약 리포트를 생성합니다.</p>
+        <button
+          class="btn btn-primary btn-sm"
+          :disabled="reportLoading"
+          @click="handleGenerateReport"
+        >
+          <Loader2 v-if="reportLoading" :size="14" class="animate-spin" />
+          <Play v-else :size="14" />
+          {{ reportLoading ? '생성 중...' : '실행' }}
+        </button>
+        <div v-if="reportResult" class="batch-result">
+          <span class="batch-result-label">실행 완료</span>
+          <span>Job ID: {{ reportResult.jobExecutionId }}</span>
+          <span>상태: {{ reportResult.status }}</span>
+        </div>
+        <div v-if="reportError" class="general-error" style="margin-top:0.75rem;margin-bottom:0">
+          <AlertCircle :size="16" /><span>{{ reportError }}</span>
         </div>
       </section>
 

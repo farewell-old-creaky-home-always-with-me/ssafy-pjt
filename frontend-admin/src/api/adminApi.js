@@ -9,6 +9,11 @@ export async function collectRegionCodes() {
   return res.data
 }
 
+export async function generateBatchReport() {
+  const res = await http.post('/api/admin/batch/reports')
+  return res.data
+}
+
 export async function searchRegions(dong) {
   const res = await http.get('/api/regions', { params: { dong } })
   return res.data

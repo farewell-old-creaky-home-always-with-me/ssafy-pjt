@@ -1,84 +1,97 @@
-# SSAFY HOME Backend
+# 잘살아봐라마 Backend
 
-공공 데이터 기반 주택 실거래 정보 REST API 서버
+Spring Boot 3.5 기반 멀티 모듈 백엔드입니다. Gateway가 외부 요청을 받아 사용자 API, 관리자/배치 API, AI API로 라우팅합니다.
 
----
+## 모듈 구성
+
+| 모듈 | 포트 | 역할 |
+| --- | --- | --- |
+| `gateway` | 8080 | API Gateway, CORS, JWT 검증, 서비스 라우팅 |
+| `main-service` | 8082 | 사용자 API, 회원/인증, 주택 검색, 관심 기능, 게시판, 공지 조회 |
+| `admin-service` | 8081 | 관리자 API, 공공 데이터 수집 배치, 공지/QnA 관리 |
+| `ai-service` | 8083 | AI 채팅, RAG 문서 검색, 배치 리포트 요약 |
 
 ## 기술 스택
 
-| 항목 | 내용 |
-|------|------|
-| Language | Java 17 |
-| Framework | Spring Boot 3.5 |
-| ORM | MyBatis 3.0.5 |
-| DB | MySQL 8.x |
-| Batch | Spring Batch 5.x |
-| API Docs | SpringDoc OpenAPI (Swagger UI) |
-| Security | Spring Security Crypto |
-| Build Tool | Gradle |
+- Java 17
+- Spring Boot 3.5
+- Spring Cloud Gateway
+- Spring Security
+- MyBatis
+- Spring Batch
+- Flyway
+- MySQL 8
+- Spring AI, Chroma
+- Gradle
 
----
-
-## 사전 요구사항
+## 사전 준비
 
 - JDK 17 이상
-- MySQL 8.x 실행 중
+- Docker, Docker Compose
+- 외부 API 키
+  - 공공데이터포털/국토교통부
+  - VWorld
+  - 서울 열린데이터광장
+  - OpenAI 또는 SSAFY GMS OpenAI 호환 API
 
----
-
-## 환경 설정
-
-민감 정보(DB, API 키)는 `secret/` **서브모듈**의 `application-secret.yml`에서 관리한다.
-템플릿은 `application-secret.example.yml`을 참고한다.
+민감 정보는 `secret/application-secret.yml`에서 관리합니다.
 
 ```bash
-git submodule update --init backend/src/main/resources/secret
-# submodule 내 application-secret.yml에 molit/vworld 키 추가
+mkdir -p secret
+cp application-secret.example.yml secret/application-secret.yml
 ```
 
-| 항목 | secret yml 키 | 설명 |
-|------|---------------|------|
-| MySQL | `spring.datasource.*` | 접속 URL, 사용자, 비밀번호 |
-| 국토부 API | `molit.service-key`, `molit.apartment-sale-url`, `molit.multi-family-sale-url` | 공공데이터포털 인증키·endpoint |
-| VWorld | `vworld.api-key`, `vworld.domain` | Open API 키·등록 도메인 |
-
-현재 초기화 방식은 새로 만든 빈 DB를 전제로 한다.
-
-애플리케이션 기동 시 Flyway가 먼저 `src/main/resources/db/migration`의 아직 적용되지 않은 마이그레이션을 실행한다. Spring Batch 메타 테이블(`BATCH_*`)도 Flyway가 관리하며, `spring.batch.jdbc.initialize-schema`는 `never`로 유지한다.
-
-기본 설정에서는 이후 매 기동마다 `src/main/resources/data.sql`의 목업 데이터를 트랜잭션으로 반영하며, `app.database.seed-enabled`를 `false`로 설정하면 생략할 수 있다. 목업 데이터는 Flyway 이력에 포함하지 않으며, 반복 실행할 수 있도록 UPSERT로 관리한다.
-
----
-
-## 실행 방법
+## Docker Compose 실행
 
 ```bash
-# 애플리케이션 실행
-./gradlew bootRun
+docker compose -f docker-compose.local.yml up --build
+```
 
-# 테스트 실행
+함께 실행되는 주요 인프라:
+
+- MySQL: `localhost:3306`
+- Chroma: `localhost:8000`
+- Grafana: `localhost:3000`
+- Prometheus: `localhost:9090`
+- Loki: `localhost:3100`
+
+## 로컬 실행
+
+각 서비스는 개별 `bootRun`으로 실행할 수 있습니다. MySQL, Chroma 등 필요한 외부 인프라는 별도로 실행되어 있어야 합니다.
+
+```bash
+./gradlew :main-service:bootRun
+./gradlew :admin-service:bootRun
+./gradlew :ai-service:bootRun
+./gradlew :gateway:bootRun
+```
+
+## 테스트 및 빌드
+
+```bash
 ./gradlew test
+./gradlew build
 ```
 
-Swagger UI: `http://localhost:8080/swagger-ui/index.html`
+특정 모듈만 실행할 수도 있습니다.
 
----
-
-## 패키지 구조
-
+```bash
+./gradlew :main-service:test
+./gradlew :admin-service:test
+./gradlew :ai-service:test
+./gradlew :gateway:test
 ```
-com.ssafy.home
-├── member/       # 회원 관리
-├── auth/         # 세션 인증
-├── house/        # 주택 거래 검색·조회
-├── favorite/     # 관심 지역 등록·조회·삭제
-├── place/        # 회원 장소 저장·조회
-├── commercial/   # 주변 상권 정보
-├── environment/  # 주변 환경 정보
-├── route/        # A* 경로 탐색
-├── notice/       # 공지사항
-├── admin/        # 관리자 배치 실행 API
-├── batch/        # Spring Batch 공공 데이터 수집
-├── external/     # 외부 API 클라이언트 (국토부, VWorld, 서울)
-└── global/       # 공통 응답, 예외, 인터셉터
-```
+
+## 설정 파일
+
+- 공통 설정: 각 모듈의 `src/main/resources/application.yml`
+- 로컬 Docker 설정: 각 모듈의 `src/main/resources/application-local.yml`
+- 운영 설정: 각 모듈의 `src/main/resources/application-prod.yml`
+- 민감 정보: `secret/application-secret.yml`
+
+## 참고
+
+- 사용자 API 상세: `main-service/README.md`
+- 관리자/배치 API 상세: `admin-service/README.md`
+- AI API 상세: `ai-service/README.md`
+- Gateway 상세: `gateway/README.md`

@@ -1,6 +1,6 @@
 <script setup>
 import { computed, nextTick, ref } from 'vue'
-import { AlertCircle, Bot, Loader2, MessageCircle, Send, Sparkles, UserCircle } from 'lucide-vue-next'
+import { AlertCircle, Bot, CheckCircle2, Loader2, MessageCircle, Paperclip, Send, Sparkles, UserCircle } from 'lucide-vue-next'
 import { chatApi } from '@/api/index.js'
 
 const input = ref('')
@@ -13,8 +13,11 @@ const messages = ref([
   },
 ])
 const loading = ref(false)
+const uploading = ref(false)
+const uploadSuccess = ref(false)
 const error = ref('')
 const messageList = ref(null)
+const fileInput = ref(null)
 
 const trimmedInput = computed(() => input.value.trim())
 const canSubmit = computed(() => trimmedInput.value.length > 0 && !loading.value)
@@ -59,6 +62,25 @@ async function handleSubmit() {
   } finally {
     loading.value = false
     await scrollToLatest()
+  }
+}
+
+async function handleFileChange(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
+  e.target.value = ''
+
+  error.value = ''
+  uploading.value = true
+  uploadSuccess.value = false
+  try {
+    await chatApi.uploadDocument(file)
+    uploadSuccess.value = true
+    setTimeout(() => { uploadSuccess.value = false }, 3000)
+  } catch (err) {
+    error.value = err.data?.message ?? '파일 업로드에 실패했습니다.'
+  } finally {
+    uploading.value = false
   }
 }
 </script>
@@ -121,6 +143,26 @@ async function handleSubmit() {
         </div>
 
         <form class="flex items-end gap-2" @submit.prevent="handleSubmit">
+          <input
+            ref="fileInput"
+            type="file"
+            accept=".txt,.md,.pdf"
+            class="hidden"
+            @change="handleFileChange"
+          />
+          <button
+            type="button"
+            class="w-10 h-10 rounded-xl border border-gray-200 flex items-center justify-center shrink-0 transition-colors hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed"
+            :class="uploadSuccess ? 'text-green-600 border-green-200 bg-green-50' : 'text-gray-400'"
+            :disabled="uploading || loading"
+            :title="uploadSuccess ? '업로드 완료' : '문서 첨부 (.txt .md .pdf)'"
+            @click="fileInput.click()"
+          >
+            <Loader2 v-if="uploading" :size="18" class="animate-spin" />
+            <CheckCircle2 v-else-if="uploadSuccess" :size="18" />
+            <Paperclip v-else :size="18" />
+          </button>
+
           <label class="sr-only" for="chat-message">질문 입력</label>
           <textarea
             id="chat-message"
