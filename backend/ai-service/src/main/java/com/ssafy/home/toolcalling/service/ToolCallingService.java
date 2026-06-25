@@ -2,10 +2,14 @@ package com.ssafy.home.toolcalling.service;
 
 import com.ssafy.home.toolcalling.dto.ToolChatResponse;
 import com.ssafy.home.toolcalling.dto.ToolMultiChatResponse;
+import com.ssafy.home.toolcalling.dto.ToolMultiStepResponse;
 import com.ssafy.home.toolcalling.dto.ToolTestResponse;
 import com.ssafy.home.toolcalling.prompt.ToolCallingPromptProvider;
 import com.ssafy.home.toolcalling.tool.HouseSearchTool;
 import com.ssafy.home.toolcalling.tool.StatsTool;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.stereotype.Service;
@@ -13,6 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class ToolCallingService {
+
+    private static final Pattern REGION_PATTERN = Pattern.compile("(서울|[가-힣]+구)");
+    private static final Pattern AVERAGE_PRICE_PATTERN = Pattern.compile("평균 거래가:\\s*([0-9,]+)억\\s*([0-9,]+)만원");
 
     private final ChatClient chatClient;
     private final ToolCallingPromptProvider promptProvider;
@@ -30,36 +37,77 @@ public class ToolCallingService {
     }
 
     public ToolMultiChatResponse multiChat(String message) {
-        String statsResult = chatClient.prompt()
-            .system(promptProvider.statsChainPrompt())
-            .tools(statsTool)
-            .user(message)
-            .call()
-            .content();
+        String regionName = extractRegionName(message);
+        String houseType = extractHouseType(message);
+        String statsInput = "regionName=%s, metric=평균 거래가, period=최근 3개월".formatted(regionName);
+        String statsResult = statsTool.getRegionStats(regionName, "평균 거래가", "최근 3개월");
 
-        String houseSearchResult = chatClient.prompt()
-            .system(promptProvider.houseChainPrompt(statsResult))
-            .tools(houseSearchTool)
-            .user(message)
-            .call()
-            .content();
+        String nextRegionName = extractRegionName(statsResult);
+        int maxPrice = extractAveragePriceInManwon(statsResult);
+        String houseSearchInput = "getRegionRealEstateStats 결과 기반: regionName=%s, houseType=%s, maxPrice=%d"
+            .formatted(nextRegionName, houseType, maxPrice);
+        String houseSearchResult = houseSearchTool.searchHouses(nextRegionName, houseType, maxPrice);
 
         String answer = chatClient.prompt()
-            .system(promptProvider.finalChainPrompt())
+            .system(promptProvider.multiToolSystemPrompt())
             .user("""
                 사용자 질문:
                 %s
 
-                통계 결과:
+                1단계 도구 입력:
                 %s
 
-                주택 검색 결과:
+                1단계 도구 결과:
                 %s
-                """.formatted(message, statsResult, houseSearchResult))
+
+                2단계 도구 입력:
+                %s
+
+                2단계 도구 결과:
+                %s
+                """.formatted(message, statsInput, statsResult, houseSearchInput, houseSearchResult))
             .call()
             .content();
 
-        return new ToolMultiChatResponse(answer, statsResult, houseSearchResult, true);
+        return new ToolMultiChatResponse(
+            answer,
+            statsResult,
+            houseSearchResult,
+            true,
+            true,
+            List.of(
+                new ToolMultiStepResponse("getRegionRealEstateStats", statsInput, statsResult),
+                new ToolMultiStepResponse("searchHousesByCondition", houseSearchInput, houseSearchResult)
+            )
+        );
+    }
+
+    private String extractRegionName(String text) {
+        Matcher matcher = REGION_PATTERN.matcher(text);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "강남구";
+    }
+
+    private String extractHouseType(String message) {
+        if (message.contains("다세대")) {
+            return "다세대";
+        }
+        if (message.contains("오피스텔")) {
+            return "오피스텔";
+        }
+        return "아파트";
+    }
+
+    private int extractAveragePriceInManwon(String statsResult) {
+        Matcher matcher = AVERAGE_PRICE_PATTERN.matcher(statsResult);
+        if (matcher.find()) {
+            int eok = Integer.parseInt(matcher.group(1).replace(",", ""));
+            int manwon = Integer.parseInt(matcher.group(2).replace(",", ""));
+            return eok * 10_000 + manwon;
+        }
+        return 50_000;
     }
 
     public ToolTestResponse testTools() {

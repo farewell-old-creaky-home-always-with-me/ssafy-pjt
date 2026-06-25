@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
 
 import com.ssafy.home.toolcalling.prompt.ToolCallingPromptProvider;
 import com.ssafy.home.toolcalling.support.FakeRealEstateToolDataProvider;
@@ -72,33 +71,33 @@ class ToolCallingServiceTest {
     }
 
     @Test
+    void multiChat은_첫_tool_결과를_다음_tool_입력으로_사용한다() {
+        given(chatModel.call(any(Prompt.class))).willReturn(
+            new org.springframework.ai.chat.model.ChatResponse(
+                List.of(new Generation(new AssistantMessage("통계 기반 추천 응답입니다.")))));
+
+        var response = toolCallingService.multiChat("강남구 평균 거래가를 기준으로 아파트 추천해줘");
+
+        assertThat(response.toolCallingEnabled()).isTrue();
+        assertThat(response.toolChainEnabled()).isTrue();
+        assertThat(response.answer()).isEqualTo("통계 기반 추천 응답입니다.");
+        assertThat(response.statsResult()).contains("[StatsTool 결과]", "지역: 강남구");
+        assertThat(response.houseSearchResult()).contains("[HouseSearchTool 결과]", "검색 지역: 강남구", "최대 금액: 124,000만원");
+        assertThat(response.steps()).hasSize(2);
+        assertThat(response.steps().get(0).toolName()).isEqualTo("getRegionRealEstateStats");
+        assertThat(response.steps().get(0).result()).contains("[StatsTool 결과]", "지역: 강남구");
+        assertThat(response.steps().get(1).toolName()).isEqualTo("searchHousesByCondition");
+        assertThat(response.steps().get(1).input())
+            .contains("getRegionRealEstateStats 결과 기반", "regionName=강남구", "maxPrice=124000");
+        assertThat(response.steps().get(1).result())
+            .contains("[HouseSearchTool 결과]", "검색 지역: 강남구", "최대 금액: 124,000만원");
+    }
+
+    @Test
     void testTools는_두_tool의_직접_실행_결과를_반환한다() {
         var response = toolCallingService.testTools();
 
         assertThat(response.statsResult()).contains("[StatsTool 결과]", "강남구");
         assertThat(response.houseSearchResult()).contains("[HouseSearchTool 결과]", "아파트");
-    }
-
-    @Test
-    void multiChat은_통계_결과를_주택_검색_입력으로_연결한다() {
-        given(chatModel.call(any(Prompt.class)))
-            .willReturn(new org.springframework.ai.chat.model.ChatResponse(
-                List.of(new Generation(new AssistantMessage("평균 거래가: 12억 4,000만원")))))
-            .willReturn(new org.springframework.ai.chat.model.ChatResponse(
-                List.of(new Generation(new AssistantMessage("추천 매물 목록")))))
-            .willReturn(new org.springframework.ai.chat.model.ChatResponse(
-                List.of(new Generation(new AssistantMessage("통계 기반 추천입니다.")))));
-
-        var response = toolCallingService.multiChat("강남구 평균 거래가를 보고 예산에 맞는 아파트 추천해줘");
-
-        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
-        then(chatModel).should(times(3)).call(promptCaptor.capture());
-        Prompt houseSearchPrompt = promptCaptor.getAllValues().get(1);
-
-        assertThat(houseSearchPrompt.getContents()).contains("평균 거래가: 12억 4,000만원");
-        assertThat(response.statsResult()).isEqualTo("평균 거래가: 12억 4,000만원");
-        assertThat(response.houseSearchResult()).isEqualTo("추천 매물 목록");
-        assertThat(response.answer()).isEqualTo("통계 기반 추천입니다.");
-        assertThat(response.toolChainEnabled()).isTrue();
     }
 }
