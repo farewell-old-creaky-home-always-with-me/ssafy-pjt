@@ -34,6 +34,13 @@ pnpm-debug.log*
 # Config
 js/config.js
 
+# Terraform
+infra/terraform.tfvars
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/.terraform.lock.hcl
+
 # Backend
 backend/HELP.md
 backend/.gradle/
