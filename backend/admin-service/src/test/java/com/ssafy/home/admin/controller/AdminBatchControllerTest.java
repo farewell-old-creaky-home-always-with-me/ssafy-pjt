@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.ssafy.home.admin.dto.DemographicsCollectResponse;
 import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
 import com.ssafy.home.admin.service.BatchJobService;
 import com.ssafy.home.batch.report.BatchReportFileService;
@@ -70,6 +71,37 @@ class AdminBatchControllerTest {
                         .header(HttpHeaders.AUTHORIZATION, "Bearer access-token"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.code").value("AUTH_FORBIDDEN"));
+    }
+
+    @Test
+    @DisplayName("관리자 토큰으로 동네 구성원 수집 배치를 실행한다")
+    void collectDemographicsReturns200ForAdminToken() throws Exception {
+        // Given
+        authenticate(true);
+        given(batchJobService.collectDemographics(1L))
+                .willReturn(new DemographicsCollectResponse(10L, "demographicsCollectJob", "STARTING"));
+
+        // When / Then
+        mockMvc.perform(post("/api/admin/batch/demographics")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.executionId").value(10L))
+                .andExpect(jsonPath("$.jobName").value("demographicsCollectJob"))
+                .andExpect(jsonPath("$.status").value("STARTING"));
+
+        verify(batchJobService).collectDemographics(1L);
+    }
+
+    @Test
+    @DisplayName("일반 사용자 토큰으로 동네 구성원 수집 배치를 실행하면 403을 반환한다")
+    void collectDemographicsReturns403ForNonAdminToken() throws Exception {
+        // Given
+        authenticate(false);
+
+        // When / Then
+        mockMvc.perform(post("/api/admin/batch/demographics")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token"))
+                .andExpect(status().isForbidden());
     }
 
     private void authenticate(boolean admin) {
