@@ -1,8 +1,10 @@
 package com.ssafy.home.global.config;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 @Configuration
 public class AiConfig {
@@ -10,5 +12,14 @@ public class AiConfig {
     @Bean
     public ChatClient chatClient(ChatClient.Builder builder) {
         return builder.build();
+    }
+
+    @Bean
+    public RestClientCustomizer bufferedHttpRequestFactory() {
+        return builder -> {
+            SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+            factory.setOutputStreaming(false);
+            builder.requestFactory(factory);
+        };
     }
 }

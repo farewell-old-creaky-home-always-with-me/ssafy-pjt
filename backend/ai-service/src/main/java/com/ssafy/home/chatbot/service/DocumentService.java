@@ -1,6 +1,7 @@
 package com.ssafy.home.chatbot.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.document.Document;
 import org.springframework.ai.reader.tika.TikaDocumentReader;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
@@ -11,16 +12,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.IntStream;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class DocumentService {
 
     private static final Set<String> SUPPORTED_EXTENSIONS = Set.of("txt", "md", "pdf");
     private static final TokenTextSplitter TEXT_SPLITTER = new TokenTextSplitter();
-    private static final int UPSERT_BATCH_SIZE = 10;
+    private static final int UPSERT_BATCH_SIZE = 1;
 
     private final VectorStore vectorStore;
 
@@ -40,7 +43,23 @@ public class DocumentService {
         TikaDocumentReader reader = new TikaDocumentReader(resource);
         List<Document> docs = reader.get();
 
-        List<Document> chunks = TEXT_SPLITTER.apply(docs);
+        List<Document> chunks = TEXT_SPLITTER.apply(docs).stream()
+            .map(doc -> {
+                String raw = doc.getText();
+                if (raw == null) return null;
+                // 탭·개행을 제외한 C0/C1 제어 문자를 제거하여 ChromaDB JSON 직렬화 오류 방지
+                String cleaned = raw.replaceAll("[\\x00-\\x08\\x0B\\x0C\\x0E-\\x1F\\x7F]", "").strip();
+                if (cleaned.isEmpty()) return null;
+                return Document.builder().text(cleaned).metadata(doc.getMetadata()).build();
+            })
+            .filter(Objects::nonNull)
+            .toList();
+
+        if (chunks.isEmpty()) {
+            throw new IllegalArgumentException("문서에서 텍스트를 추출할 수 없습니다.");
+        }
+
+        log.info("Ingesting {} chunks from {}", chunks.size(), file.getOriginalFilename());
 
         IntStream.range(0, (chunks.size() + UPSERT_BATCH_SIZE - 1) / UPSERT_BATCH_SIZE)
             .mapToObj(i -> chunks.subList(i * UPSERT_BATCH_SIZE,
