@@ -77,4 +77,42 @@ CREATE TABLE IF NOT EXISTS house_deal (
     FOREIGN KEY (house_id) REFERENCES house(id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS housing_news (
+    id           BIGINT       NOT NULL AUTO_INCREMENT,
+    title        VARCHAR(200) NOT NULL,
+    summary      CLOB,
+    source_name  VARCHAR(100) NOT NULL,
+    source_url   VARCHAR(500) NOT NULL,
+    category     VARCHAR(30)  NOT NULL,
+    published_at DATETIME,
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME,
+    PRIMARY KEY (id),
+    UNIQUE (source_url)
+);
+
+CREATE INDEX IF NOT EXISTS idx_housing_news_published
+    ON housing_news (published_at, id);
+CREATE INDEX IF NOT EXISTS idx_housing_news_category
+    ON housing_news (category);
+
+CREATE TABLE IF NOT EXISTS housing_info (
+    id           BIGINT       NOT NULL AUTO_INCREMENT,
+    title        VARCHAR(200) NOT NULL,
+    content      CLOB         NOT NULL,
+    source_name  VARCHAR(100) NOT NULL,
+    source_url   VARCHAR(500) NOT NULL,
+    info_type    VARCHAR(30)  NOT NULL,
+    published_at DATETIME,
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME,
+    PRIMARY KEY (id),
+    UNIQUE (source_url)
+);
+
+CREATE INDEX IF NOT EXISTS idx_housing_info_published
+    ON housing_info (published_at, id);
+CREATE INDEX IF NOT EXISTS idx_housing_info_type
+    ON housing_info (info_type);
+
 SET REFERENTIAL_INTEGRITY TRUE;
