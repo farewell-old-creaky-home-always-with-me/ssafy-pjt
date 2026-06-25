@@ -2,6 +2,7 @@ package com.ssafy.home;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.ssafy.home.board.mapper.BoardMapper;
 import com.ssafy.home.commercial.mapper.CommercialMapper;
 import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
@@ -72,6 +73,9 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     BatchReportMapper batchReportMapper;
+
+    @MockitoBean
+    BoardMapper boardMapper;
 
     @MockitoBean
     NewsMapper newsMapper;

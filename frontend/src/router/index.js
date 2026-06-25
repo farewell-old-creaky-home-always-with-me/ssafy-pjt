@@ -45,6 +45,30 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
+    path: '/boards',
+    name: 'BoardsPage',
+    component: () => import('@/features/board/pages/BoardsPage.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/boards/new',
+    name: 'BoardCreatePage',
+    component: () => import('@/features/board/pages/BoardCreatePage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/boards/:id',
+    name: 'BoardDetailPage',
+    component: () => import('@/features/board/pages/BoardDetailPage.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/boards/:id/edit',
+    name: 'BoardEditPage',
+    component: () => import('@/features/board/pages/BoardEditPage.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
     path: '/qnas',
     name: 'QnasPage',
     component: () => import('@/features/qna/pages/QnasPage.vue'),
