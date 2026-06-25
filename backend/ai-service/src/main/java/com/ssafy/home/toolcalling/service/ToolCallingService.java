@@ -4,9 +4,13 @@ import com.ssafy.home.toolcalling.dto.ToolChatResponse;
 import com.ssafy.home.toolcalling.dto.ToolMultiChatResponse;
 import com.ssafy.home.toolcalling.dto.ToolMultiStepResponse;
 import com.ssafy.home.toolcalling.dto.ToolTestResponse;
+import com.ssafy.home.toolcalling.planner.ToolCallPlan;
+import com.ssafy.home.toolcalling.planner.ToolCallPlanner;
+import com.ssafy.home.toolcalling.planner.ToolCallStep;
 import com.ssafy.home.toolcalling.prompt.ToolCallingPromptProvider;
 import com.ssafy.home.toolcalling.tool.HouseSearchTool;
 import com.ssafy.home.toolcalling.tool.StatsTool;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +29,7 @@ public class ToolCallingService {
     private final ToolCallingPromptProvider promptProvider;
     private final StatsTool statsTool;
     private final HouseSearchTool houseSearchTool;
+    private final ToolCallPlanner toolCallPlanner;
 
     public ToolChatResponse chat(String message) {
         String answer = chatClient.prompt()
@@ -37,16 +42,28 @@ public class ToolCallingService {
     }
 
     public ToolMultiChatResponse multiChat(String message) {
+        ToolCallPlan plan = toolCallPlanner.plan(message);
         String regionName = extractRegionName(message);
         String houseType = extractHouseType(message);
-        String statsInput = "regionName=%s, metric=평균 거래가, period=최근 3개월".formatted(regionName);
-        String statsResult = statsTool.getRegionStats(regionName, "평균 거래가", "최근 3개월");
+        String statsInput = "";
+        String statsResult = "";
+        String houseSearchInput = "";
+        String houseSearchResult = "";
+        List<ToolMultiStepResponse> steps = new ArrayList<>();
 
-        String nextRegionName = extractRegionName(statsResult);
-        int maxPrice = extractAveragePriceInManwon(statsResult);
-        String houseSearchInput = "getRegionRealEstateStats 결과 기반: regionName=%s, houseType=%s, maxPrice=%d"
-            .formatted(nextRegionName, houseType, maxPrice);
-        String houseSearchResult = houseSearchTool.searchHouses(nextRegionName, houseType, maxPrice);
+        if (plan.hasStep(ToolCallStep.REGION_STATS)) {
+            statsInput = "regionName=%s, metric=평균 거래가, period=최근 3개월".formatted(regionName);
+            statsResult = statsTool.getRegionStats(regionName, "평균 거래가", "최근 3개월");
+            steps.add(new ToolMultiStepResponse("getRegionRealEstateStats", statsInput, statsResult));
+        }
+
+        if (plan.hasStep(ToolCallStep.HOUSE_SEARCH)) {
+            String nextRegionName = statsResult.isBlank() ? regionName : extractRegionName(statsResult);
+            Integer maxPrice = statsResult.isBlank() ? null : extractAveragePriceInManwon(statsResult);
+            houseSearchInput = formatHouseSearchInput(statsResult, nextRegionName, houseType, maxPrice);
+            houseSearchResult = houseSearchTool.searchHouses(nextRegionName, houseType, maxPrice);
+            steps.add(new ToolMultiStepResponse("searchHousesByCondition", houseSearchInput, houseSearchResult));
+        }
 
         String answer = chatClient.prompt()
             .system(promptProvider.multiToolSystemPrompt())
@@ -73,13 +90,18 @@ public class ToolCallingService {
             answer,
             statsResult,
             houseSearchResult,
-            true,
-            true,
-            List.of(
-                new ToolMultiStepResponse("getRegionRealEstateStats", statsInput, statsResult),
-                new ToolMultiStepResponse("searchHousesByCondition", houseSearchInput, houseSearchResult)
-            )
+            steps.size() > 1,
+            plan.usesTool(),
+            steps
         );
+    }
+
+    private String formatHouseSearchInput(String statsResult, String regionName, String houseType, Integer maxPrice) {
+        if (statsResult.isBlank()) {
+            return "regionName=%s, houseType=%s, maxPrice=%s".formatted(regionName, houseType, maxPrice);
+        }
+        return "getRegionRealEstateStats 결과 기반: regionName=%s, houseType=%s, maxPrice=%d"
+            .formatted(regionName, houseType, maxPrice);
     }
 
     private String extractRegionName(String text) {

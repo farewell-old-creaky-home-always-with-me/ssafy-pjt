@@ -5,6 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import com.ssafy.home.toolcalling.planner.ToolCallPlanner;
 import com.ssafy.home.toolcalling.prompt.ToolCallingPromptProvider;
 import com.ssafy.home.toolcalling.support.FakeRealEstateToolDataProvider;
 import com.ssafy.home.toolcalling.tool.HouseSearchTool;
@@ -38,7 +39,8 @@ class ToolCallingServiceTest {
             chatClient,
             new ToolCallingPromptProvider(),
             new StatsTool(dataProvider),
-            new HouseSearchTool(dataProvider)
+            new HouseSearchTool(dataProvider),
+            new ToolCallPlanner()
         );
     }
 
