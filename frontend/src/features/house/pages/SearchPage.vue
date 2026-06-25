@@ -8,6 +8,7 @@ import { useFavoritesStore } from '@/stores/favoritesStore.js'
 import { useAuthStore } from '@/stores/authStore.js'
 import { housesApi, regionsApi } from '@/api/index.js'
 import BaseButton from '@/components/base/BaseButton.vue'
+import RoutePanel from '@/features/route/components/RoutePanel.vue'
 import { escapeHtml } from '@/utils/html.js'
 import { buildHouseSearchParams } from './searchParams.js'
 
@@ -465,6 +466,7 @@ onMounted(async () => {
               </div>
             </div>
           </div>
+          <RoutePanel :house-id="modalItem.houseId" />
         </div>
         <div class="px-6 py-4 border-t border-gray-100">
           <BaseButton
