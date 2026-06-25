@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.batch.mapper.HousingNewsBatchMapper">
+
+    <insert id="upsertNews">
+        INSERT INTO housing_news (
+            title, summary, source_url, source_name, category, published_at
+        ) VALUES (
+            #{title}, #{summary}, #{sourceUrl}, #{sourceName}, #{category}, #{publishedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            title = VALUES(title),
+            summary = VALUES(summary),
+            source_name = VALUES(source_name),
+            category = VALUES(category),
+            published_at = VALUES(published_at),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+
+    <insert id="upsertInfo">
+        INSERT INTO housing_info (
+            title, content, source_url, source_name, info_type, published_at
+        ) VALUES (
+            #{title}, #{content}, #{sourceUrl}, #{sourceName}, #{infoType}, #{publishedAt}
+        )
+        ON DUPLICATE KEY UPDATE
+            title = VALUES(title),
+            content = VALUES(content),
+            source_name = VALUES(source_name),
+            info_type = VALUES(info_type),
+            published_at = VALUES(published_at),
+            updated_at = CURRENT_TIMESTAMP
+    </insert>
+</mapper>
