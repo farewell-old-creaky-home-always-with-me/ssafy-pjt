@@ -27,14 +27,11 @@ public class SeoulCctvReader implements ItemStreamReader<SeoulRawCctv> {
 
     @Override
     public SeoulRawCctv read() {
-        if (finished) {
-            return null;
-        }
         while (!buffer.hasNext()) {
-            loadNextPage();
             if (finished) {
                 return null;
             }
+            loadNextPage();
         }
         return buffer.next();
     }
