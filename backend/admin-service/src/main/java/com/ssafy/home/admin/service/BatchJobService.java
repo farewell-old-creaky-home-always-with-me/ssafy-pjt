@@ -181,7 +181,7 @@ public class BatchJobService {
     public DemographicsCollectResponse collectDemographics(Long memberId) {
         JobParameters parameters = new JobParametersBuilder()
                 .addLong("requestedMemberId", memberId, false)
-                .addLong("requestedAt", clock.millis())
+                .addLong("requestedAt", clock.millis(), false)
                 .toJobParameters();
         return launch(demographicsCollectJob, parameters, execution -> new DemographicsCollectResponse(
                 execution.getId(),
