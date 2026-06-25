@@ -104,7 +104,7 @@ const pageRange = computed(() => {
 
 function setSort(key) {
   if (sortKey.value === key) sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
-  else { sortKey.value = key; sortDir.value = 'asc' }
+  else { sortKey.value = key; sortDir.value = key === 'recommend' ? 'desc' : 'asc' }
   currentPage.value = 1
   fetchHouses()
 }

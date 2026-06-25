@@ -350,7 +350,7 @@
 | maxAmount | | 최대 거래금액 (만 원) |
 | page | | 페이지 번호 (기본 1) |
 | size | | 페이지 크기 (기본 20) |
-| sortBy | | 정렬 기준 (`name`, `area`, `floor`, `price`, `date`, 기본 `date`) |
+| sortBy | | 정렬 기준 (`name`, `area`, `floor`, `price`, `date`, `recommend`, 기본 `date`) |
 | sortDir | | 정렬 방향 (`asc`, `desc`, 기본 `desc`) |
 
 **응답 (200)**

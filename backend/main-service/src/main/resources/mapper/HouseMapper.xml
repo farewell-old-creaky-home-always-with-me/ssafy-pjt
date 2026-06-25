@@ -102,7 +102,7 @@
                     + COALESCE(ld.area, 0) * 100
                     + COALESCE(ld.floor, 0) * 10
                     + COALESCE(h.build_year, 0)
-                    + TIMESTAMPDIFF(DAY, '2000-01-01', ld.deal_date)
+                    + COALESCE(TIMESTAMPDIFF(DAY, '2000-01-01', ld.deal_date), 0)
                 )
             </when>
             <otherwise>ld.deal_date</otherwise>
