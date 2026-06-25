@@ -115,6 +115,18 @@ seoul:
       dong-field: ADSTRD_NM
       foreign-count-field: FRNR_CNT
       reference-date-field: STDR_DE_ID
+  cctv:
+    base-url: https://openapi.seoul.go.kr:8088
+    page-size: 1000
+    timeout: 15s
+    retry-count: 2
+    skip-limit: 500
+    service-name: ${SEOUL_CCTV_SERVICE_NAME:TvctCctvStusInfo}
+    purpose-field: ${SEOUL_CCTV_PURPOSE_FIELD:CCTV_SE_NM}
+    camera-count-field: ${SEOUL_CCTV_CAMERA_COUNT_FIELD:CCTV_CNT}
+    address-field: ${SEOUL_CCTV_ADDRESS_FIELD:ROAD_ADDR_NM}
+    latitude-field: ${SEOUL_CCTV_LATITUDE_FIELD:LATITUDE_NM}
+    longitude-field: ${SEOUL_CCTV_LONGITUDE_FIELD:LONGITUDE_NM}
 
 housing:
   content:

@@ -5,6 +5,7 @@ import static com.ssafy.home.global.exception.ErrorCode.BATCH_INVALID_PARAMETER;
 import static com.ssafy.home.global.exception.ErrorCode.BATCH_LAUNCH_FAILED;
 
 import com.ssafy.home.admin.dto.BatchReportGenerateResponse;
+import com.ssafy.home.admin.dto.CctvCollectResponse;
 import com.ssafy.home.admin.dto.CommercialAreaCollectResponse;
 import com.ssafy.home.admin.dto.DemographicsCollectResponse;
 import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
@@ -43,6 +44,7 @@ public class BatchJobService {
     public static final String ENVIRONMENT_JOB_NAME = "environmentCollectJob";
     public static final String DEMOGRAPHICS_JOB_NAME = "demographicsCollectJob";
     public static final String HOUSING_NEWS_JOB_NAME = "housingNewsCollectJob";
+    public static final String CCTV_JOB_NAME = "cctvCollectJob";
     private static final String REGION_SYNC_SCOPE = "FULL";
     private static final int LAWD_CODE_LENGTH = 5;
     private static final int LEGAL_DONG_CODE_LENGTH = 10;
@@ -57,6 +59,7 @@ public class BatchJobService {
     private final Job environmentCollectJob;
     private final Job demographicsCollectJob;
     private final Job housingNewsCollectJob;
+    private final Job cctvCollectJob;
     private final Clock clock;
 
     public BatchJobService(
@@ -68,6 +71,7 @@ public class BatchJobService {
             @Qualifier(ENVIRONMENT_JOB_NAME) Job environmentCollectJob,
             @Qualifier(DEMOGRAPHICS_JOB_NAME) Job demographicsCollectJob,
             @Qualifier(HOUSING_NEWS_JOB_NAME) Job housingNewsCollectJob,
+            @Qualifier(CCTV_JOB_NAME) Job cctvCollectJob,
             Clock clock
     ) {
         this.jobLauncher = jobLauncher;
@@ -78,6 +82,7 @@ public class BatchJobService {
         this.environmentCollectJob = environmentCollectJob;
         this.demographicsCollectJob = demographicsCollectJob;
         this.housingNewsCollectJob = housingNewsCollectJob;
+        this.cctvCollectJob = cctvCollectJob;
         this.clock = clock;
     }
 
@@ -203,6 +208,18 @@ public class BatchJobService {
         return launch(housingNewsCollectJob, parameters, execution -> new HousingNewsCollectResponse(
                 execution.getId(),
                 HOUSING_NEWS_JOB_NAME,
+                execution.getStatus().name()
+        ));
+    }
+
+    public CctvCollectResponse collectCctv(Long memberId) {
+        JobParameters parameters = new JobParametersBuilder()
+                .addLong("requestedMemberId", memberId, false)
+                .addLong("requestedAt", clock.millis(), false)
+                .toJobParameters();
+        return launch(cctvCollectJob, parameters, execution -> new CctvCollectResponse(
+                execution.getId(),
+                CCTV_JOB_NAME,
                 execution.getStatus().name()
         ));
     }
