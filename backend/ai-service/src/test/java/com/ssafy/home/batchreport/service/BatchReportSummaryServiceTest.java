@@ -3,17 +3,20 @@ package com.ssafy.home.batchreport.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ssafy.home.batchreport.dto.BatchReportSummaryRequest;
 import com.ssafy.home.batchreport.dto.HouseDealSummaryItem;
+import com.ssafy.home.batchreport.prompt.BatchReportSummaryPromptProvider;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.ai.chat.client.ChatClient;
@@ -33,7 +36,11 @@ class BatchReportSummaryServiceTest {
     @BeforeEach
     void setUp() {
         ChatClient chatClient = ChatClient.builder(chatModel).build();
-        service = new BatchReportSummaryService(chatClient, new ObjectMapper());
+        service = new BatchReportSummaryService(
+                chatClient,
+                new ObjectMapper(),
+                new BatchReportSummaryPromptProvider()
+        );
     }
 
     @Test
@@ -64,6 +71,24 @@ class BatchReportSummaryServiceTest {
 
         assertThat(response.summary()).isEqualTo("강남구 거래 요약입니다.");
         assertThat(response.translatedSummary()).isEqualTo("This is a Gangnam transaction summary.");
+    }
+
+    @Test
+    void summarizeUsesSeparatedPromptProvider() {
+        when(chatModel.call(any(Prompt.class))).thenReturn(
+                new org.springframework.ai.chat.model.ChatResponse(
+                        List.of(new Generation(new AssistantMessage("""
+                                {"summary":"요약입니다.","translatedSummary":"Summary."}
+                                """)))));
+
+        service.summarize(request());
+
+        ArgumentCaptor<Prompt> promptCaptor = ArgumentCaptor.forClass(Prompt.class);
+        verify(chatModel).call(promptCaptor.capture());
+        assertThat(promptCaptor.getValue().getInstructions())
+                .anySatisfy(message -> assertThat(message.getText()).contains("strict JSON"));
+        assertThat(promptCaptor.getValue().getInstructions())
+                .anySatisfy(message -> assertThat(message.getText()).contains("regionCode=11680"));
     }
 
     @Test
