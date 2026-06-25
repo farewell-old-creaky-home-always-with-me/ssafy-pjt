@@ -93,6 +93,28 @@ seoul:
         measured-date-field: ${SEOUL_ENV_AIR_MEASURED_DATE_FIELD:MEASURED_DATE}
         latitude-field: ${SEOUL_ENV_AIR_LATITUDE_FIELD:LAT}
         longitude-field: ${SEOUL_ENV_AIR_LONGITUDE_FIELD:LNG}
+  demographics:
+    base-url: https://openapi.seoul.go.kr:8088
+    page-size: 1000
+    timeout: 15s
+    retry-count: 2
+    skip-limit: 500
+    population:
+      service-name: SPOP_PEOPLE_INGU_JACHI
+      sido-field: SIDO_NM
+      sigungu-field: SIGNGU_NM
+      dong-field: ADSTRD_NM
+      total-population-field: PPLTN_CNT
+      household-field: HOUSE_CNT
+      senior-field: AGRDE_65_ABOVE_PPLTN_CNT
+      reference-date-field: STDR_DE_ID
+    foreign-resident:
+      service-name: SPOP_FRNR_RNTS
+      sido-field: SIDO_NM
+      sigungu-field: SIGNGU_NM
+      dong-field: ADSTRD_NM
+      foreign-count-field: FRNR_CNT
+      reference-date-field: STDR_DE_ID
 
 batch:
   ai-service:
