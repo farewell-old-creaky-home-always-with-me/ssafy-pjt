@@ -1,27 +1,28 @@
 package com.ssafy.home.route.service;
 
-import com.ssafy.home.global.exception.CustomException;
 import static com.ssafy.home.global.exception.ErrorCode.HOUSE_NOT_FOUND;
 import static com.ssafy.home.global.exception.ErrorCode.PLACE_FORBIDDEN;
 import static com.ssafy.home.global.exception.ErrorCode.PLACE_NOT_FOUND;
 import static com.ssafy.home.global.exception.ErrorCode.ROUTE_NOT_FOUND;
 import static com.ssafy.home.global.exception.ErrorCode.ROUTE_NO_FACILITIES;
 import static com.ssafy.home.global.exception.ErrorCode.ROUTE_UNREACHABLE;
-import com.ssafy.home.house.mapper.dto.HouseDetailResult;
+
+import com.ssafy.home.global.exception.CustomException;
 import com.ssafy.home.house.mapper.HouseMapper;
-import com.ssafy.home.place.mapper.dto.PlaceResult;
+import com.ssafy.home.house.mapper.dto.HouseDetailResult;
 import com.ssafy.home.place.mapper.PlaceMapper;
-import com.ssafy.home.route.algorithm.AStarAlgorithm;
+import com.ssafy.home.place.mapper.dto.PlaceResult;
+import com.ssafy.home.route.algorithm.AStarPathFinder;
 import com.ssafy.home.route.algorithm.Haversine;
 import com.ssafy.home.route.domain.Edge;
 import com.ssafy.home.route.domain.FacilityGraph;
 import com.ssafy.home.route.domain.Node;
-import com.ssafy.home.route.mapper.dto.RoutePathParam;
 import com.ssafy.home.route.dto.RoutePathPoint;
 import com.ssafy.home.route.dto.RouteRequest;
-import com.ssafy.home.route.mapper.dto.RouteRequestParam;
 import com.ssafy.home.route.dto.RouteResponse;
 import com.ssafy.home.route.mapper.RouteMapper;
+import com.ssafy.home.route.mapper.dto.RoutePathParam;
+import com.ssafy.home.route.mapper.dto.RouteRequestParam;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -41,7 +42,7 @@ public class RouteService {
     private final PlaceMapper placeMapper;
     private final GraphCacheService graphCacheService;
     private final RouteMapper routeMapper;
-    private final AStarAlgorithm aStarAlgorithm;
+    private final AStarPathFinder pathFinder;
 
     @Transactional
     public RouteResponse calculateRoute(Long memberId, RouteRequest request) {
@@ -77,7 +78,7 @@ public class RouteService {
             throw new CustomException(ROUTE_UNREACHABLE);
         }
 
-        List<Node> path = aStarAlgorithm.search(workGraph, start, end);
+        List<Node> path = pathFinder.search(workGraph, start, end);
         if (path.isEmpty()) {
             throw new CustomException(ROUTE_NOT_FOUND);
         }
