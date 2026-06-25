@@ -47,6 +47,9 @@ public enum ErrorCode {
 
     NOTICE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 공지사항을 찾을 수 없습니다"),
 
+    BOARD_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다"),
+    BOARD_FORBIDDEN(HttpStatus.FORBIDDEN, "게시글 권한이 없습니다"),
+
     QNA_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 QnA를 찾을 수 없습니다"),
     QNA_FORBIDDEN(HttpStatus.FORBIDDEN, "본인 QnA만 수정하거나 삭제할 수 있습니다"),
     QNA_ANSWER_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 답변을 찾을 수 없습니다"),

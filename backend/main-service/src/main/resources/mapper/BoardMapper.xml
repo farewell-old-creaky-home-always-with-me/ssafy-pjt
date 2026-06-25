@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.board.mapper.BoardMapper">
+
+    <select id="countAll" resultType="long">
+        SELECT COUNT(*)
+        FROM board
+    </select>
+
+    <select id="findAll" resultType="com.ssafy.home.board.mapper.dto.BoardResult">
+        SELECT
+            b.id,
+            b.member_id,
+            b.title,
+            b.content,
+            m.name AS author_name,
+            b.created_at,
+            b.updated_at
+        FROM board b
+        INNER JOIN member m ON m.id = b.member_id
+        ORDER BY b.created_at DESC, b.id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <select id="findById" resultType="com.ssafy.home.board.mapper.dto.BoardResult">
+        SELECT
+            b.id,
+            b.member_id,
+            b.title,
+            b.content,
+            m.name AS author_name,
+            b.created_at,
+            b.updated_at
+        FROM board b
+        INNER JOIN member m ON m.id = b.member_id
+        WHERE b.id = #{boardId}
+    </select>
+
+    <insert id="insert" parameterType="com.ssafy.home.board.mapper.dto.BoardCreateParam" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO board (
+            member_id,
+            title,
+            content
+        ) VALUES (
+            #{memberId},
+            #{title},
+            #{content}
+        )
+    </insert>
+
+    <update id="updateById" parameterType="com.ssafy.home.board.mapper.dto.BoardUpdateParam">
+        UPDATE board
+        SET
+            title = #{title},
+            content = #{content},
+            updated_at = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM board
+        WHERE id = #{boardId}
+    </delete>
+</mapper>

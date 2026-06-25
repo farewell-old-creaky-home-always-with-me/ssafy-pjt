@@ -46,6 +46,17 @@ CREATE TABLE IF NOT EXISTS qna (
     FOREIGN KEY (member_id) REFERENCES member(id)
 );
 
+CREATE TABLE IF NOT EXISTS board (
+    id          BIGINT       NOT NULL AUTO_INCREMENT,
+    member_id   BIGINT       NOT NULL,
+    title       VARCHAR(200) NOT NULL,
+    content     CLOB         NOT NULL,
+    created_at  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at  TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (member_id) REFERENCES member(id)
+);
+
 CREATE TABLE IF NOT EXISTS house (
     id           BIGINT       NOT NULL AUTO_INCREMENT,
     region_code  VARCHAR(10)  NOT NULL,
