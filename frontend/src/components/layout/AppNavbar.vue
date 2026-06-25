@@ -32,6 +32,9 @@
         <RouterLink to="/notices" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white/70 text-[0.8125rem] transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold">
           <FileText :size="16" /> 공지사항
         </RouterLink>
+        <RouterLink to="/boards" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white/70 text-[0.8125rem] transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold">
+          <FileText :size="16" /> 공유게시판
+        </RouterLink>
         <RouterLink to="/qnas" class="flex items-center gap-1.5 px-3 py-2 rounded-lg text-white/70 text-[0.8125rem] transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold">
           <FileText :size="16" /> Q&A
         </RouterLink>
@@ -92,6 +95,9 @@
       </RouterLink>
       <RouterLink to="/notices" class="flex items-center gap-2 px-6 py-3 text-white/70 text-sm transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold" @click="mobileOpen = false">
         <FileText :size="16" /> 공지사항
+      </RouterLink>
+      <RouterLink to="/boards" class="flex items-center gap-2 px-6 py-3 text-white/70 text-sm transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold" @click="mobileOpen = false">
+        <FileText :size="16" /> 공유게시판
       </RouterLink>
       <RouterLink to="/qnas" class="flex items-center gap-2 px-6 py-3 text-white/70 text-sm transition-colors hover:text-white hover:bg-white/10 [&.router-link-active]:text-white [&.router-link-active]:bg-white/15 [&.router-link-active]:font-semibold" @click="mobileOpen = false">
         <FileText :size="16" /> Q&A
