@@ -9,6 +9,7 @@ import com.ssafy.home.admin.dto.CommercialAreaCollectResponse;
 import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
+import com.ssafy.home.admin.dto.HousingNewsCollectResponse;
 import com.ssafy.home.admin.dto.RegionCodeCollectResponse;
 import com.ssafy.home.batch.domain.HouseType;
 import com.ssafy.home.global.exception.CustomException;
@@ -39,6 +40,7 @@ public class BatchJobService {
     public static final String BATCH_REPORT_JOB_NAME = "batchReportGenerateJob";
     public static final String COMMERCIAL_AREA_JOB_NAME = "commercialAreaCollectJob";
     public static final String ENVIRONMENT_JOB_NAME = "environmentCollectJob";
+    public static final String HOUSING_NEWS_JOB_NAME = "housingNewsCollectJob";
     private static final String REGION_SYNC_SCOPE = "FULL";
     private static final int LAWD_CODE_LENGTH = 5;
     private static final int LEGAL_DONG_CODE_LENGTH = 10;
@@ -51,6 +53,7 @@ public class BatchJobService {
     private final Job batchReportGenerateJob;
     private final Job commercialAreaCollectJob;
     private final Job environmentCollectJob;
+    private final Job housingNewsCollectJob;
     private final Clock clock;
 
     public BatchJobService(
@@ -60,6 +63,7 @@ public class BatchJobService {
             @Qualifier(BATCH_REPORT_JOB_NAME) Job batchReportGenerateJob,
             @Qualifier(COMMERCIAL_AREA_JOB_NAME) Job commercialAreaCollectJob,
             @Qualifier(ENVIRONMENT_JOB_NAME) Job environmentCollectJob,
+            @Qualifier(HOUSING_NEWS_JOB_NAME) Job housingNewsCollectJob,
             Clock clock
     ) {
         this.jobLauncher = jobLauncher;
@@ -68,6 +72,7 @@ public class BatchJobService {
         this.batchReportGenerateJob = batchReportGenerateJob;
         this.commercialAreaCollectJob = commercialAreaCollectJob;
         this.environmentCollectJob = environmentCollectJob;
+        this.housingNewsCollectJob = housingNewsCollectJob;
         this.clock = clock;
     }
 
@@ -169,6 +174,18 @@ public class BatchJobService {
         return launch(environmentCollectJob, parameters, execution -> new EnvironmentCollectResponse(
                 execution.getId(),
                 ENVIRONMENT_JOB_NAME,
+                execution.getStatus().name()
+        ));
+    }
+
+    public HousingNewsCollectResponse collectHousingNews(Long memberId) {
+        JobParameters parameters = new JobParametersBuilder()
+                .addLong("requestedMemberId", memberId, false)
+                .addLong("requestedAt", clock.millis(), false)
+                .toJobParameters();
+        return launch(housingNewsCollectJob, parameters, execution -> new HousingNewsCollectResponse(
+                execution.getId(),
+                HOUSING_NEWS_JOB_NAME,
                 execution.getStatus().name()
         ));
     }

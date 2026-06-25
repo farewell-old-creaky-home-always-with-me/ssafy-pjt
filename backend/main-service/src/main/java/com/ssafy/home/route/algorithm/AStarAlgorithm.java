@@ -15,8 +15,9 @@ import java.util.Set;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AStarAlgorithm {
+public class AStarAlgorithm implements AStarPathFinder {
 
+    @Override
     public List<Node> search(FacilityGraph graph, Node start, Node end) {
         if (start.getId() == end.getId()) {
             return List.of(start);

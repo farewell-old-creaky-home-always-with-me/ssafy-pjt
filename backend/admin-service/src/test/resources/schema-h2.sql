@@ -5,6 +5,8 @@ DROP TABLE IF EXISTS environment_info;
 DROP TABLE IF EXISTS qna;
 DROP TABLE IF EXISTS batch_report;
 DROP TABLE IF EXISTS batch_collection_log;
+DROP TABLE IF EXISTS housing_info;
+DROP TABLE IF EXISTS housing_news;
 DROP TABLE IF EXISTS house_deal;
 DROP TABLE IF EXISTS house;
 DROP TABLE IF EXISTS region_code;
@@ -139,5 +141,43 @@ CREATE TABLE environment_info (
     PRIMARY KEY (id),
     UNIQUE (item_name, identity_measured_date, latitude, longitude)
 );
+
+CREATE TABLE housing_news (
+    id           BIGINT       NOT NULL AUTO_INCREMENT,
+    title        VARCHAR(200) NOT NULL,
+    summary      CLOB,
+    source_name  VARCHAR(100) NOT NULL,
+    source_url   VARCHAR(500) NOT NULL,
+    category     VARCHAR(30)  NOT NULL,
+    published_at DATETIME,
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME,
+    PRIMARY KEY (id),
+    UNIQUE (source_url)
+);
+
+CREATE INDEX idx_housing_news_published
+    ON housing_news (published_at, id);
+CREATE INDEX idx_housing_news_category
+    ON housing_news (category);
+
+CREATE TABLE housing_info (
+    id           BIGINT       NOT NULL AUTO_INCREMENT,
+    title        VARCHAR(200) NOT NULL,
+    content      CLOB         NOT NULL,
+    source_name  VARCHAR(100) NOT NULL,
+    source_url   VARCHAR(500) NOT NULL,
+    info_type    VARCHAR(30)  NOT NULL,
+    published_at DATETIME,
+    created_at   DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at   DATETIME,
+    PRIMARY KEY (id),
+    UNIQUE (source_url)
+);
+
+CREATE INDEX idx_housing_info_published
+    ON housing_info (published_at, id);
+CREATE INDEX idx_housing_info_type
+    ON housing_info (info_type);
 
 SET REFERENTIAL_INTEGRITY TRUE;

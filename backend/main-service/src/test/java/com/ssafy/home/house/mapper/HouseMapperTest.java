@@ -51,6 +51,27 @@ class HouseMapperTest {
     }
 
     @Test
+    @DisplayName("추천순은 예산 중앙값과 주거 조건에 가까운 주택을 먼저 반환한다")
+    void searchOrdersByRecommendationScore() {
+        // given
+        HouseSearchParam condition = new HouseSearchParam();
+        condition.setRegionCode("1168010100");
+        condition.setMinAmount(160000);
+        condition.setMaxAmount(196000);
+        condition.setSortBy("recommend");
+        condition.setSortDir("desc");
+        condition.setSize(20);
+        condition.setOffset(0);
+
+        // when
+        List<HouseSummaryResult> houses = houseMapper.search(condition);
+
+        // then
+        assertThat(houses).extracting(HouseSummaryResult::getAptName)
+                .containsExactly("역삼래미안", "역삼푸르지오");
+    }
+
+    @Test
     @DisplayName("아파트명으로 주택을 검색한다")
     void searchByHouseName() {
         // given

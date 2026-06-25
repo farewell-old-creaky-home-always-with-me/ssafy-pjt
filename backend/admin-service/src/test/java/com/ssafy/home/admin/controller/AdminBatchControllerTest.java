@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
+import com.ssafy.home.admin.dto.HousingNewsCollectResponse;
 import com.ssafy.home.admin.service.BatchJobService;
 import com.ssafy.home.batch.report.BatchReportFileService;
 import com.ssafy.home.global.auth.JwtTokenProvider;
@@ -57,6 +58,25 @@ class AdminBatchControllerTest {
                 .andExpect(jsonPath("$.status").value("STARTING"));
 
         verify(batchJobService).collectEnvironment(1L);
+    }
+
+    @Test
+    @DisplayName("관리자 토큰으로 주거 뉴스 수집 배치를 실행한다")
+    void collectHousingNewsReturns200ForAdminToken() throws Exception {
+        // Given
+        authenticate(true);
+        given(batchJobService.collectHousingNews(1L))
+                .willReturn(new HousingNewsCollectResponse(10L, "housingNewsCollectJob", "STARTING"));
+
+        // When / Then
+        mockMvc.perform(post("/api/admin/batch/news")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer access-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.executionId").value(10L))
+                .andExpect(jsonPath("$.jobName").value("housingNewsCollectJob"))
+                .andExpect(jsonPath("$.status").value("STARTING"));
+
+        verify(batchJobService).collectHousingNews(1L);
     }
 
     @Test

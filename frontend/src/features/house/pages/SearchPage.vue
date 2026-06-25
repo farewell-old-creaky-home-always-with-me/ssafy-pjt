@@ -8,6 +8,7 @@ import { useFavoritesStore } from '@/stores/favoritesStore.js'
 import { useAuthStore } from '@/stores/authStore.js'
 import { housesApi, regionsApi } from '@/api/index.js'
 import BaseButton from '@/components/base/BaseButton.vue'
+import RoutePanel from '@/features/route/components/RoutePanel.vue'
 import { escapeHtml } from '@/utils/html.js'
 import { buildHouseSearchParams } from './searchParams.js'
 
@@ -104,7 +105,7 @@ const pageRange = computed(() => {
 
 function setSort(key) {
   if (sortKey.value === key) sortDir.value = sortDir.value === 'asc' ? 'desc' : 'asc'
-  else { sortKey.value = key; sortDir.value = 'asc' }
+  else { sortKey.value = key; sortDir.value = key === 'recommend' ? 'desc' : 'asc' }
   currentPage.value = 1
   fetchHouses()
 }
@@ -371,6 +372,9 @@ onMounted(async () => {
               <table class="w-full min-w-[600px]">
                 <thead>
                   <tr class="bg-bg-page">
+                    <th class="px-4 py-3 text-xs font-semibold text-navy cursor-pointer select-none transition-colors whitespace-nowrap hover:bg-gray-200/40" @click="setSort('recommend')">
+                      <span class="inline-flex items-center gap-1">추천순 <ChevronsUpDown v-if="sortKey !== 'recommend'" :size="12" /><ChevronUp v-else-if="sortDir === 'asc'" :size="12" /><ChevronDown v-else :size="12" /></span>
+                    </th>
                     <th class="px-4 py-3 text-xs font-semibold text-navy cursor-pointer select-none transition-colors whitespace-nowrap hover:bg-gray-200/40" @click="setSort('name')">
                       <span class="inline-flex items-center gap-1">건물명 <ChevronsUpDown v-if="sortKey !== 'name'" :size="12" /><ChevronUp v-else-if="sortDir === 'asc'" :size="12" /><ChevronDown v-else :size="12" /></span>
                     </th>
@@ -390,13 +394,13 @@ onMounted(async () => {
                 </thead>
                 <tbody>
                   <tr v-if="!filters.regionCode">
-                    <td colspan="5" class="text-center py-12 text-gray-400">좌측 필터에서 법정동을 선택하고 검색하세요.</td>
+                    <td colspan="6" class="text-center py-12 text-gray-400">좌측 필터에서 법정동을 선택하고 검색하세요.</td>
                   </tr>
                   <tr v-else-if="loading">
-                    <td colspan="5" class="text-center py-12 text-gray-400">불러오는 중...</td>
+                    <td colspan="6" class="text-center py-12 text-gray-400">불러오는 중...</td>
                   </tr>
                   <tr v-else-if="pageData.length === 0">
-                    <td colspan="5" class="text-center py-12 text-gray-400">
+                    <td colspan="6" class="text-center py-12 text-gray-400">
                       {{ loadError ? '데이터를 불러오는 중 오류가 발생했습니다.' : '검색 결과가 없습니다.' }}
                     </td>
                   </tr>
@@ -407,6 +411,7 @@ onMounted(async () => {
                     :class="{ 'bg-blue/5 border-l-[3px] border-l-blue': selectedHouseId === item.houseId }"
                     @click="openModal(item)"
                   >
+                    <td class="px-4 py-3 text-[0.8125rem] font-semibold text-blue">추천</td>
                     <td class="px-4 py-3 text-[0.8125rem] font-medium text-navy">{{ item.aptName }}</td>
                     <td class="px-4 py-3 text-[0.8125rem]">{{ item.latestDeal?.area?.toFixed(2) ?? '-' }}</td>
                     <td class="px-4 py-3 text-[0.8125rem]">{{ item.latestDeal?.floor != null ? item.latestDeal.floor + '층' : '-' }}</td>
@@ -465,6 +470,7 @@ onMounted(async () => {
               </div>
             </div>
           </div>
+          <RoutePanel :house-id="modalItem.houseId" />
         </div>
         <div class="px-6 py-4 border-t border-gray-100">
           <BaseButton

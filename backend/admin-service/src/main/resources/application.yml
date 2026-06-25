@@ -94,6 +94,12 @@ seoul:
         latitude-field: ${SEOUL_ENV_AIR_LATITUDE_FIELD:LAT}
         longitude-field: ${SEOUL_ENV_AIR_LONGITUDE_FIELD:LNG}
 
+housing:
+  content:
+    timeout: 10s
+    skip-limit: 100
+    sources: []
+
 batch:
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL}

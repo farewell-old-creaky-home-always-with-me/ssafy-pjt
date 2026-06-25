@@ -8,7 +8,9 @@ import com.ssafy.home.environment.mapper.EnvironmentMapper;
 import com.ssafy.home.favorite.mapper.FavoriteMapper;
 import com.ssafy.home.global.config.database.InitialDataLoader;
 import com.ssafy.home.house.mapper.HouseMapper;
+import com.ssafy.home.housinginfo.mapper.HousingInfoMapper;
 import com.ssafy.home.member.mapper.MemberMapper;
+import com.ssafy.home.news.mapper.NewsMapper;
 import com.ssafy.home.notice.mapper.NoticeMapper;
 import com.ssafy.home.place.mapper.PlaceMapper;
 import com.ssafy.home.qna.mapper.QnaMapper;
@@ -74,6 +76,12 @@ class SsafyHomeApplicationTests {
 
     @MockitoBean
     BoardMapper boardMapper;
+
+    @MockitoBean
+    NewsMapper newsMapper;
+
+    @MockitoBean
+    HousingInfoMapper housingInfoMapper;
 
     @Test
     void contextLoads() {

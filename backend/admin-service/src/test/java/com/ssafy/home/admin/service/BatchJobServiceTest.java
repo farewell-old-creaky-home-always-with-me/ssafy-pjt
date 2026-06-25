@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.given;
 import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
+import com.ssafy.home.admin.dto.HousingNewsCollectResponse;
 import com.ssafy.home.global.exception.CustomException;
 import java.time.Clock;
 import java.time.Instant;
@@ -46,6 +47,9 @@ class BatchJobServiceTest {
     @Mock
     private Job environmentCollectJob;
 
+    @Mock
+    private Job housingNewsCollectJob;
+
     private BatchJobService service;
 
     @BeforeEach
@@ -58,6 +62,7 @@ class BatchJobServiceTest {
                 batchReportGenerateJob,
                 commercialAreaCollectJob,
                 environmentCollectJob,
+                housingNewsCollectJob,
                 clock
         );
     }
@@ -139,6 +144,25 @@ class BatchJobServiceTest {
         assertThat(parametersCaptor.getValue().getLong("requestedMemberId")).isEqualTo(1L);
         assertThat(response.executionId()).isEqualTo(9L);
         assertThat(response.jobName()).isEqualTo("environmentCollectJob");
+        assertThat(response.status()).isEqualTo("STARTING");
+    }
+
+    @Test
+    @DisplayName("주거 뉴스 수집 배치를 실행한다")
+    void collectHousingNewsRunsHousingNewsJob() throws Exception {
+        // Given
+        ArgumentCaptor<JobParameters> parametersCaptor = ArgumentCaptor.forClass(JobParameters.class);
+        given(jobLauncher.run(eq(housingNewsCollectJob), parametersCaptor.capture()))
+                .willReturn(new JobExecution(10L));
+
+        // When
+        HousingNewsCollectResponse response = service.collectHousingNews(7L);
+
+        // Then
+        assertThat(parametersCaptor.getValue().getLong("requestedMemberId")).isEqualTo(7L);
+        assertThat(parametersCaptor.getValue().getLong("requestedAt")).isEqualTo(1_782_259_200_000L);
+        assertThat(response.executionId()).isEqualTo(10L);
+        assertThat(response.jobName()).isEqualTo("housingNewsCollectJob");
         assertThat(response.status()).isEqualTo("STARTING");
     }
 }
