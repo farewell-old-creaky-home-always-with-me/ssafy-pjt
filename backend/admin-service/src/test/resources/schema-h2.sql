@@ -1,5 +1,6 @@
 SET REFERENTIAL_INTEGRITY FALSE;
 
+DROP TABLE IF EXISTS neighborhood_demographics;
 DROP TABLE IF EXISTS commercial_area;
 DROP TABLE IF EXISTS environment_info;
 DROP TABLE IF EXISTS qna;
@@ -138,6 +139,22 @@ CREATE TABLE environment_info (
     created_at    TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     UNIQUE (item_name, identity_measured_date, latitude, longitude)
+);
+
+CREATE TABLE neighborhood_demographics (
+    id               BIGINT      NOT NULL AUTO_INCREMENT,
+    sido_name        VARCHAR(20) NOT NULL,
+    sigungu_name     VARCHAR(30) NOT NULL,
+    dong_name        VARCHAR(30) NOT NULL,
+    total_population INT,
+    household_count  INT,
+    senior_count     INT,
+    foreign_count    INT,
+    reference_date   VARCHAR(6)  NOT NULL,
+    created_at       TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at       TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE (sido_name, sigungu_name, dong_name, reference_date)
 );
 
 SET REFERENTIAL_INTEGRITY TRUE;
