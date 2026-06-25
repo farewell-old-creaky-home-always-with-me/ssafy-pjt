@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.home.demographics.mapper.DemographicsMapper">
+
+    <select id="findLatestByLocation"
+            resultType="com.ssafy.home.demographics.mapper.dto.DemographicsResult">
+        SELECT sido_name, sigungu_name, dong_name,
+               total_population, household_count, senior_count, foreign_count, reference_date
+        FROM neighborhood_demographics
+        WHERE sido_name    = #{sidoName}
+          AND sigungu_name = #{sigunguName}
+          AND dong_name    = #{dongName}
+        ORDER BY reference_date DESC
+        LIMIT 1
+    </select>
+
+</mapper>
