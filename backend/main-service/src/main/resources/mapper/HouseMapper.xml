@@ -91,6 +91,20 @@
             <when test="sortBy == 'area'">ld.area</when>
             <when test="sortBy == 'floor'">ld.floor</when>
             <when test="sortBy == 'price'">COALESCE(ld.deal_amount, ld.deposit_amount, 0)</when>
+            <when test="sortBy == 'recommend'">
+                (
+                    CASE
+                        WHEN #{minAmount} IS NOT NULL AND #{maxAmount} IS NOT NULL THEN
+                            1000000 - ABS(COALESCE(ld.deal_amount, ld.deposit_amount, 0) - ((#{minAmount} + #{maxAmount}) / 2))
+                        ELSE
+                            1000000 - COALESCE(ld.deal_amount, ld.deposit_amount, 0)
+                    END
+                    + COALESCE(ld.area, 0) * 100
+                    + COALESCE(ld.floor, 0) * 10
+                    + COALESCE(h.build_year, 0)
+                    + TIMESTAMPDIFF(DAY, '2000-01-01', ld.deal_date)
+                )
+            </when>
             <otherwise>ld.deal_date</otherwise>
         </choose>
         <choose>

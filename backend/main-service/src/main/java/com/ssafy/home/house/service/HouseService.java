@@ -32,7 +32,7 @@ public class HouseService {
 
     private static final Set<String> ALLOWED_HOUSE_TYPES = Set.of("아파트", "다세대");
     private static final Set<String> ALLOWED_DEAL_TYPES = Set.of("매매", "전세", "월세", "전월세");
-    private static final Set<String> ALLOWED_SORT_BY = Set.of("name", "area", "floor", "price", "date");
+    private static final Set<String> ALLOWED_SORT_BY = Set.of("name", "area", "floor", "price", "date", "recommend");
     private static final Set<String> ALLOWED_SORT_DIR = Set.of("asc", "desc");
 
     private final HouseMapper houseMapper;
