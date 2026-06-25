@@ -33,6 +33,7 @@ pnpm-debug.log*
 
 # Config
 js/config.js
+backend/admin-service/src/main/resources/secret/application-secret.yml
 
 # Backend
 backend/HELP.md

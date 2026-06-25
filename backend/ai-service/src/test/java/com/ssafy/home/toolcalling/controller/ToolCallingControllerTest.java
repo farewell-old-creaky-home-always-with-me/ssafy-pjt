@@ -15,6 +15,7 @@ import com.ssafy.home.toolcalling.dto.ToolChatRequest;
 import com.ssafy.home.toolcalling.dto.ToolChatResponse;
 import com.ssafy.home.toolcalling.dto.ToolMultiChatRequest;
 import com.ssafy.home.toolcalling.dto.ToolMultiChatResponse;
+import com.ssafy.home.toolcalling.dto.ToolMultiStepResponse;
 import com.ssafy.home.toolcalling.dto.ToolTestResponse;
 import com.ssafy.home.toolcalling.service.ToolCallingService;
 import io.jsonwebtoken.Jwts;
@@ -22,6 +23,7 @@ import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -71,25 +73,19 @@ class ToolCallingControllerTest {
     }
 
     @Test
-    void GET_api_ai_tools_test_정상_응답을_반환한다() throws Exception {
-        given(toolCallingService.testTools())
-            .willReturn(new ToolTestResponse("StatsTool 결과", "HouseSearchTool 결과"));
-
-        mockMvc.perform(get("/api/ai/tools/test")
-                .header("Authorization", generateTestToken()))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.statsResult").value("StatsTool 결과"))
-            .andExpect(jsonPath("$.houseSearchResult").value("HouseSearchTool 결과"));
-    }
-
-    @Test
     void POST_api_ai_tools_multi는_연쇄_tool_calling_응답을_반환한다() throws Exception {
         given(toolCallingService.multiChat("강남구 평균 거래가를 보고 예산에 맞는 아파트 추천해줘"))
             .willReturn(new ToolMultiChatResponse(
                 "통계 기반 추천입니다.",
                 "평균 거래가 요약",
                 "추천 매물 목록",
-                true));
+                true,
+                true,
+                List.of(
+                    new ToolMultiStepResponse("getRegionRealEstateStats", "강남구 평균 거래가", "평균 거래가 요약"),
+                    new ToolMultiStepResponse("searchHousesByCondition", "StatsTool 결과 기반 입력", "추천 매물 목록")
+                )
+            ));
 
         mockMvc.perform(post("/api/ai/tools/multi")
                 .header("Authorization", generateTestToken())
@@ -100,7 +96,23 @@ class ToolCallingControllerTest {
             .andExpect(jsonPath("$.answer").value("통계 기반 추천입니다."))
             .andExpect(jsonPath("$.statsResult").value("평균 거래가 요약"))
             .andExpect(jsonPath("$.houseSearchResult").value("추천 매물 목록"))
-            .andExpect(jsonPath("$.toolChainEnabled").value(true));
+            .andExpect(jsonPath("$.toolChainEnabled").value(true))
+            .andExpect(jsonPath("$.toolCallingEnabled").value(true))
+            .andExpect(jsonPath("$.steps[0].toolName").value("getRegionRealEstateStats"))
+            .andExpect(jsonPath("$.steps[1].toolName").value("searchHousesByCondition"))
+            .andExpect(jsonPath("$.steps[1].input").value("StatsTool 결과 기반 입력"));
+    }
+
+    @Test
+    void GET_api_ai_tools_test_정상_응답을_반환한다() throws Exception {
+        given(toolCallingService.testTools())
+            .willReturn(new ToolTestResponse("StatsTool 결과", "HouseSearchTool 결과"));
+
+        mockMvc.perform(get("/api/ai/tools/test")
+                .header("Authorization", generateTestToken()))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.statsResult").value("StatsTool 결과"))
+            .andExpect(jsonPath("$.houseSearchResult").value("HouseSearchTool 결과"));
     }
 
     @Test
