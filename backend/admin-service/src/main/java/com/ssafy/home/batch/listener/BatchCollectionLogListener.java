@@ -46,6 +46,10 @@ public class BatchCollectionLogListener implements JobExecutionListener {
         return new BatchCollectionLogListener(mapper, "ENVIRONMENT", false, false);
     }
 
+    public static BatchCollectionLogListener forDemographics(BatchCollectionLogMapper mapper) {
+        return new BatchCollectionLogListener(mapper, "DEMOGRAPHICS", false, false);
+    }
+
     public static BatchCollectionLogListener forCctv(BatchCollectionLogMapper mapper) {
         return new BatchCollectionLogListener(mapper, "CCTV", false, false);
     }

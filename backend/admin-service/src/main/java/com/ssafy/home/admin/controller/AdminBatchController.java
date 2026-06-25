@@ -3,6 +3,7 @@ package com.ssafy.home.admin.controller;
 import com.ssafy.home.admin.dto.BatchReportGenerateResponse;
 import com.ssafy.home.admin.dto.CctvCollectResponse;
 import com.ssafy.home.admin.dto.CommercialAreaCollectResponse;
+import com.ssafy.home.admin.dto.DemographicsCollectResponse;
 import com.ssafy.home.admin.dto.EnvironmentCollectResponse;
 import com.ssafy.home.admin.dto.HouseDealCollectRequest;
 import com.ssafy.home.admin.dto.HouseDealCollectResponse;
@@ -70,6 +71,13 @@ public class AdminBatchController {
             @LoginMemberId Long memberId
     ) {
         return ResponseEntity.ok(batchJobService.collectEnvironment(memberId));
+    }
+
+    @PostMapping("/demographics")
+    public ResponseEntity<DemographicsCollectResponse> collectDemographics(
+            @LoginMemberId Long memberId
+    ) {
+        return ResponseEntity.ok(batchJobService.collectDemographics(memberId));
     }
 
     @PostMapping("/news")

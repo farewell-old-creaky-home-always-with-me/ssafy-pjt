@@ -63,6 +63,8 @@ public enum ErrorCode {
     CCTV_INVALID_COORDINATE(HttpStatus.BAD_REQUEST, "유효하지 않은 좌표입니다"),
     CCTV_INVALID_RADIUS(HttpStatus.BAD_REQUEST, "반경은 0보다 커야 합니다"),
 
+    DEMOGRAPHICS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 동네 구성원 정보를 찾을 수 없습니다"),
+
     ROUTE_NO_FACILITIES(HttpStatus.UNPROCESSABLE_ENTITY, "등록된 시설물이 없습니다"),
     ROUTE_UNREACHABLE(HttpStatus.UNPROCESSABLE_ENTITY, "출발지 또는 도착지 1km 내에 시설물이 없습니다"),
     ROUTE_NOT_FOUND(HttpStatus.UNPROCESSABLE_ENTITY, "경로를 찾을 수 없습니다"),
