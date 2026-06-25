@@ -11,6 +11,6 @@ RUN apt-get update -q && apt-get install -y --no-install-recommends wget fonts-n
     addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 WORKDIR /app
 COPY --from=builder /app/admin-service/build/libs/admin-service-0.0.1-SNAPSHOT.jar app.jar
-RUN mkdir -p /app/reports/batch && chown appuser:appgroup app.jar /app/reports /app/reports/batch
+RUN chown appuser:appgroup app.jar
 USER appuser
 ENTRYPOINT ["java", "-jar", "app.jar"]
