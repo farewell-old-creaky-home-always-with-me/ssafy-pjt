@@ -27,7 +27,7 @@ jwt:
 
 batch:
   report:
-    output-dir: ${BATCH_REPORT_OUTPUT_DIR}
+    output-dir: /tmp/ssafy-home/reports/batch
 
 management:
   endpoints:
