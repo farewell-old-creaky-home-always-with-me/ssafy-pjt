@@ -47,9 +47,9 @@ class GraphCacheServiceTest {
     }
 
     @Test
-    @DisplayName("1km를 초과하는 시설물은 연결되지 않는다")
-    void facilitiesOver1kmAreNotConnected() {
-        // given — A(37.000, 127.000) — B(37.010, 127.000): Haversine ≈ 1112m
+    @DisplayName("1km를 초과하더라도 고립된 컴포넌트는 최근접 노드로 브릿지 연결된다")
+    void isolatedComponentsAreBridged() {
+        // given — A(37.000, 127.000) — B(37.010, 127.000): Haversine ≈ 1112m, 별도 컴포넌트
         given(facilityMapper.findAll()).willReturn(List.of(
                 facility(1L, 37.000, 127.000),
                 facility(2L, 37.010, 127.000)
@@ -59,9 +59,9 @@ class GraphCacheServiceTest {
         graphCacheService.rebuild();
         FacilityGraph graph = graphCacheService.getGraph();
 
-        // then
-        assertThat(graph.getAdjacentEdges(1L)).noneMatch(e -> e.getToId() == 2L);
-        assertThat(graph.getAdjacentEdges(2L)).noneMatch(e -> e.getToId() == 1L);
+        // then — 고립 컴포넌트끼리 브릿지 엣지로 연결되어야 한다
+        assertThat(graph.getAdjacentEdges(1L)).anyMatch(e -> e.getToId() == 2L);
+        assertThat(graph.getAdjacentEdges(2L)).anyMatch(e -> e.getToId() == 1L);
     }
 
     private FacilityResult facility(Long id, double lat, double lng) {
